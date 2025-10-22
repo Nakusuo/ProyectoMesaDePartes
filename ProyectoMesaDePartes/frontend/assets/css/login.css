@@ -1,0 +1,169 @@
+body {
+    background-color: #f0f2f5; /* Color específico para el fondo del login */
+}
+
+/* Contenedor principal (estilo 2 paneles) */
+.login-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* Panel izquierdo: Branding (logo y bienvenida) */
+.login-branding {
+    width: 50%;
+    /* Gradiente verde y dorado de PNP */
+    background: linear-gradient(135deg, #00642e, #005025);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.login-branding img {
+    width: 150px;
+    height: 150px;
+    margin-bottom: 20px;
+    /* Reemplaza este placeholder con la ruta a tu logo real */
+    /* src="assets/images/logo_pnp.png" */
+    content: url('https://placehold.co/150x150/ffffff/00642e?text=Logo%5CnPNP');
+    border-radius: 50%;
+    background-color: white;
+    padding: 10px;
+}
+
+.login-branding h2 {
+    font-size: 2.5rem;
+    margin-top: 0;
+    font-weight: 700;
+    color: white; /* Sobrescribimos el h2 de style.css */
+    border: none; /* Sobrescribimos el h2 de style.css */
+}
+
+.login-branding p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+/* Panel derecho: Formulario */
+.login-form-container {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    padding: 40px;
+    box-sizing: border-box;
+}
+
+#loginForm {
+    width: 100%;
+    max-width: 400px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    background: #fff;
+}
+
+#loginForm h1 {
+    text-align: center;
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-weight: 700;
+    border: none; /* Sobrescribimos el h1 de style.css */
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box; /* Para que el padding no afecte el ancho */
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #00642e;
+    box-shadow: 0 0 0 3px rgba(0, 100, 46, 0.1);
+}
+
+/* Mensaje de error (oculto por defecto) */
+#errorMessage {
+    color: #d93025;
+    text-align: center;
+    font-size: 14px;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    display: none; /* Oculto hasta que haya un error */
+}
+
+.login-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #00642e; /* Verde PNP */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 700;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+.login-button:hover {
+    background-color: #004d24; /* Verde más oscuro */
+}
+
+.login-button:active {
+    transform: scale(0.98);
+}
+
+.forgot-password {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #00642e;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+/* Diseño Responsivo (para celulares) */
+@media (max-width: 800px) {
+    /* Ocultamos el panel de branding */
+    .login-branding {
+        display: none;
+    }
+
+    /* El formulario ocupa todo el ancho */
+    .login-form-container {
+        width: 100%;
+        padding: 20px;
+    }
+
+    #loginForm {
+        box-shadow: none; /* Quitamos la sombra en móvil */
+        padding: 20px;
+    }
+}

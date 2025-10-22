@@ -1,1 +1,68 @@
  
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Mesa de Partes PNP</title>
+    
+    <!-- 
+      ¡AQUÍ ESTÁ LA MAGIA!
+      Enlazamos los archivos CSS que creamos.
+    -->
+    <link rel="stylesheet" href="assets/css/style.css"> <!-- 1. El CSS Global -->
+    <link rel="stylesheet" href="assets/css/login.css"> <!-- 2. El CSS Específico -->
+
+</head>
+<body>
+
+    <div class="login-container">
+        
+        <!-- Panel Izquierdo (Branding) -->
+        <div class="login-branding">
+            <!-- 
+              Recuerda crear la carpeta 'assets/images/'
+              y poner tu logo 'logo_pnp.png' ahí.
+            -->
+            <!-- <img src="assets/images/logo_pnp.png" alt="Logo PNP"> -->
+            <img src="https://placehold.co/150x150/ffffff/00642e?text=Logo%5CnPNP" alt="Logo PNP (Placeholder)">
+            
+            <h2>Mesa de Partes Digital</h2>
+            <p>Policía Nacional del Perú</p>
+        </div>
+
+        <!-- Panel Derecho (Formulario) -->
+        <div class="login-form-container">
+            
+            <form id="loginForm">
+                <h1>Iniciar Sesión</h1>
+                
+                <div class="input-group">
+                    <label for="username">Usuario</label>
+                    <input type="text" id="username" name="username" placeholder="Ingrese su usuario" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" placeholder="Ingrese su contraseña" required>
+                </div>
+                
+                <!-- Aquí se mostrarán los errores -->
+                <p id="errorMessage"></p>
+                
+                <button type="submit" class="login-button">Ingresar</button>
+                
+                <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- 
+      Enlazamos el archivo JavaScript justo antes de cerrar el <body>
+    -->
+    <script src="assets/js/login.js"></script>
+
+</body>
+</html>
+
