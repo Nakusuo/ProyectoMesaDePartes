@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Documento - Mesa de Partes</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/navbar.css">
+    <link rel="stylesheet" href="../assets/css/registrar-interno.css">
+</head>
+<body>
+    <div id="navbar-placeholder"><p>Cargando menú...</p></div>
+    <main class="container">
+        <form id="registro-form" class="registro-form">
+            <h3>Datos del Documento</h3>
+            <div class="form-grid">
+                <div class="form-group span-2">
+                    <label for="titulo">Asunto / Título *</label>
+                    <input type="text" id="titulo" required placeholder="Ej: Solicitud de información sobre patrullaje">
+                </div>
+                <div class="form-group">
+                    <label for="tipo-documento">Tipo de Documento *</label>
+                    <select id="tipo-documento-select" required>
+                        <option value="">Cargando tipos...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="numero-documento">N° Documento Externo</label>
+                    <input type="text" id="numero-documento" placeholder="Ej: OFICIO-0123-2024">
+                </div>
+                <div class="form-group">
+                    <label for="numero-ht">N° Hoja de Trámite (HT)</label>
+                    <input type="text" id="numero-ht" placeholder="Ej: 2024-001234">
+                </div>
+                <div class="form-group">
+                    <label for="remitente">Remitente (Texto) *</label>
+                    <input type="text" id="remitente" required placeholder="Ej: Juan Perez, DIRCOCOR, etc.">
+                </div>
+                <div class="form-group span-2">
+                    <label for="descripcion">Descripción / Sumilla</label>
+                    <textarea id="descripcion" rows="3" placeholder="Breve resumen del contenido del documento..."></textarea>
+                </div>
+            </div>
+            <h3 class="seccion-titulo">Asignación y Archivo</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="usuario-asignado">Asignar a Usuario (Trabajador) *</label>
+                    <select id="usuario-asignado-select" required>
+                        <option value="">Cargando usuarios...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="archivo-url">URL del Archivo (Temporal)</label>
+                    <input type="text" id="archivo-url" placeholder="Ej: https://.../documento.pdf">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-submit">
+                    Registrar Documento
+                </button>
+            </div>
+        </form>
+    </main>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/navbar.js"></script>
+    <script src="../assets/js/registrar-interno.js"></script>
+</body>
+</html>

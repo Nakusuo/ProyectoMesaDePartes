@@ -1,5 +1,3 @@
-/* Estilos solo para la tabla y modal de gestión de usuarios */
-
 .header-container {
   display: flex;
   justify-content: space-between;
@@ -43,6 +41,9 @@
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
+  margin-right: 4px;
+  display: inline-block;
+  margin-bottom: 4px;
 }
 
 .badge-success {
@@ -58,10 +59,8 @@
 .badge-role {
   background-color: #e0e7ff;
   color: #3730a3;
-  margin-right: 4px;
 }
 
-/* --- Estilos del Modal --- */
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -92,16 +91,15 @@
 
 #user-form {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* 2 columnas */
-  gap: 16px 20px; /* espacio vertical y horizontal */
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 20px;
 }
 
-/* Ajustes para que algunos campos ocupen 2 columnas */
-.form-group:nth-of-type(3), /* Username */
-.form-group:nth-of-type(4), /* Email */
-.form-group:nth-of-type(5), /* Password */
+.form-group:nth-of-type(3),
+.form-group:nth-of-type(4),
+.form-group:nth-of-type(5),
 .form-group-checkbox {
-  grid-column: 1 / -1; /* Ocupa todo el ancho */
+  grid-column: 1 / -1;
 }
 
 .form-group label,
@@ -125,6 +123,11 @@
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+.form-group select[multiple] {
+    height: auto;
+    min-height: 80px;
+}
+
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
@@ -143,7 +146,7 @@
 }
 
 .modal-actions {
-  grid-column: 1 / -1; /* Ocupa todo el ancho */
+  grid-column: 1 / -1;
   display: flex;
   justify-content: flex-end;
   gap: 12px;

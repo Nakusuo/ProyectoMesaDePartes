@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bitácora del Sistema - Mesa de Partes</title>
+  
+  <!-- Estilos Globales -->
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <!-- Estilos del Navbar -->
+  <link rel="stylesheet" href="../assets/css/navbar.css"> 
+  
+  <!-- (Opcional) Crear estilos específicos para la bitácora si es necesario -->
+  <!-- <link rel="stylesheet" href="../assets/css/bitacora.css"> -->
+  
+  <style> /* Estilos básicos temporales para la tabla */
+    .bitacora-table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; }
+    .bitacora-table th, .bitacora-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+    .bitacora-table th { background-color: #f8f9fa; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <!-- Placeholder para el Navbar Dinámico -->
+  <div id="navbar-placeholder"><p>Cargando menú...</p></div>
+
+  <main class="container">
+    <h2>Bitácora de Eventos</h2>
+    <p>Registro de acciones realizadas en el sistema.</p>
+    
+    <!-- (Opcional) Filtros de búsqueda para la bitácora -->
+    <!-- <div class="filtros-bitacora"> ... </div> -->
+
+    <table class="bitacora-table">
+      <thead>
+        <tr>
+          <th>Fecha y Hora</th>
+          <th>Usuario</th>
+          <th>Acción</th>
+          <th>Entidad Afectada</th>
+          <th>Detalles</th>
+        </tr>
+      </thead>
+      <tbody id="bitacora-table-body">
+        <!-- Los eventos se cargarán aquí con JavaScript -->
+        <tr><td colspan="5">Cargando eventos...</td></tr>
+      </tbody>
+    </table>
+    
+  </main>
+
+  <!-- Módulo de Autenticación -->
+  <script src="../assets/js/auth.js"></script>
+  
+  <!-- Script del Navbar -->
+  <script src="../assets/js/navbar.js"></script>
+  
+  <!-- (Pendiente) Lógica Específica de esta página -->
+  <!-- <script src="../assets/js/bitacora.js"></script> -->
+</body>
+</html>
