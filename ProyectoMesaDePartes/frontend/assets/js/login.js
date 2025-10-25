@@ -1,71 +1,78 @@
-document.addEventListener("DOMContentLoaded", () => {
-            
-    const loginForm = document.getElementById("loginForm");
-    const errorMessage = document.getElementById("errorMessage");
+const loginForm = document.getElementById('loginForm');
+const usernameInput = document.getElementById('username');
+const passwordInput = document.getElementById('password');
+const errorMessage = document.getElementById('errorMessage');
 
-    // Escuchamos el evento "submit" del formulario
-    loginForm.addEventListener("submit", async (e) => {
-        
-        // Prevenimos que la página se recargue
-        e.preventDefault(); 
-        
-        // Ocultamos errores anteriores
-        errorMessage.style.display = 'none';
-        errorMessage.textContent = '';
+const API_LOGIN_URL = 'http://localhost:8080/api/auth/login';
 
-        // Obtenemos los valores del formulario
-        const username = e.target.username.value;
-        const password = e.target.password.value;
+async function handleLogin(event) {
+    event.preventDefault();
 
-        // Esta es la URL de tu backend (Asegúrate que el backend esté corriendo)
-        const apiUrl = "http://localhost:8080/api/auth/login";
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value.trim();
 
-        try {
-            // Hacemos la llamada (fetch) al backend
-            const response = await fetch(apiUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    username: username,
-                    password: password
-                })
-            });
+    if (!username || !password) {
+        mostrarError('Por favor, ingrese usuario y contraseña.');
+        return;
+    }
 
-            // Convertimos la respuesta a JSON
-            const data = await response.json();
+    ocultarError();
+    const submitButton = loginForm.querySelector('.login-button');
+    submitButton.disabled = true;
+    submitButton.textContent = 'Ingresando...';
 
-            // Si la respuesta NO fue exitosa (ej: 401 No Autorizado)
-            if (!response.ok) {
-                // Lanzamos un error con el mensaje del backend
-                throw new Error(data.message || 'Usuario o contraseña incorrectos');
-            }
+    try {
+        const response = await fetch(API_LOGIN_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password })
+        });
 
-            // ¡ÉXITO! Guardamos los datos en el navegador
-            localStorage.setItem("userToken", data.token);
-            localStorage.setItem("username", data.username);
-            localStorage.setItem("userRoles", data.roles.join(',')); // Guardamos roles como "Admin,User"
+        const data = await response.json();
 
-            // Redirigimos al usuario según su rol
-            // (Tus roles son: 'Administrador', 'Mesa de Partes', 'Trabajador', 'Jefatura')
-            if (data.roles.includes("Administrador")) {
-                window.location.href = "admin/dashboard.html";
-            } else if (data.roles.includes("Mesa de Partes")) {
-                window.location.href = "mesadepartes/bandeja-entrada.html";
-            } else if (data.roles.includes("Trabajador")) {
-                window.location.href = "trabajador/mis-asignaciones.html";
-            } else if (data.roles.includes("Jefatura")) {
-                window.location.href = "jefatura/dashboard-area.html";
-            } else {
-                // Fallback por si no tiene un rol conocido
-                throw new Error("Rol de usuario no reconocido.");
-            }
-
-        } catch (error) {
-            // Si algo falló (red, error 401, etc.), mostramos el error
-            errorMessage.textContent = error.message;
-            errorMessage.style.display = 'block';
+        if (!response.ok) {
+            throw new Error(data.message || `Error ${response.status}`);
         }
-    });
-});
+
+        if (data.idUsuario && data.username && data.roles) {
+            localStorage.setItem('user', JSON.stringify({
+                id: data.idUsuario,
+                username: data.username,
+                email: data.email,
+                roles: data.roles
+            }));
+
+            let redirectTo = '../admin/dashboard.html';
+            if (data.roles.includes('Trabajador')) {
+                redirectTo = '../trabajador/mis-asignaciones.html';
+            } else if (data.roles.includes('Mesa de Partes')) {
+                 redirectTo = '../documentos/registro.html';
+            }
+
+            window.location.href = redirectTo;
+
+        } else {
+             throw new Error('Respuesta inesperada del servidor.');
+        }
+
+    } catch (error) {
+        console.error('Error en el login:', error);
+        mostrarError(error.message || 'Usuario o contraseña incorrectos.');
+        submitButton.disabled = false;
+        submitButton.textContent = 'Ingresar';
+    }
+}
+
+function mostrarError(mensaje) {
+    errorMessage.textContent = mensaje;
+    errorMessage.style.display = 'block';
+}
+
+function ocultarError() {
+    errorMessage.textContent = '';
+    errorMessage.style.display = 'none';
+}
+
+loginForm.addEventListener('submit', handleLogin);
