@@ -15,10 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.pnp.mesadepartes.dto.JwtResponse;
 import com.pnp.mesadepartes.dto.LoginRequest;
-import com.pnp.mesadepartes.security.jwt.JwtUtils;
 import com.pnp.mesadepartes.security.services.UserDetailsImpl;
 
 @CrossOrigin(origins = "*", maxAge = 3600) 
@@ -31,30 +28,25 @@ public class AuthController {
     AuthenticationManager authenticationManager;
 
     @Autowired
-    JwtUtils jwtUtils;
-
-    @Autowired
     PasswordEncoder encoder; 
     // FIN CORRECCIÓN
 
-    @PostMapping("/login")
+@PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
-        
+
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
-
-        return ResponseEntity.ok(new JwtResponse(jwt,
-                                                 userDetails.getIdUsuario(),
-                                                 userDetails.getUsername(),
-                                                 userDetails.getEmail(),
-                                                 roles));
+        return ResponseEntity.ok(new UserInfoResponse(
+                                        userDetails.getIdUsuario(),
+                                        userDetails.getUsername(),
+                                        userDetails.getEmail(),
+                                        roles));
     }
 }

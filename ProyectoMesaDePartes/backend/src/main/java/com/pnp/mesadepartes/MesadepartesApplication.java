@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class MesadepartesApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(MesadepartesApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(MesadepartesApplication.class, args);
+    }
 
 }

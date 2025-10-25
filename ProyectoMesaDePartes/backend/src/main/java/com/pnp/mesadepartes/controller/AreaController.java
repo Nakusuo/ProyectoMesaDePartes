@@ -66,3 +66,4 @@ public class AreaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 }
+

@@ -20,6 +20,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+
 @Data
 @Entity
 @Table(name = "documentos")
@@ -36,7 +37,7 @@ public class Documento {
     @Column(nullable = false, length = 200)
     private String titulo;
 
-    @Lob // Para campos de texto largo
+    @Lob
     private String descripcion;
 
     @Column(name = "numero_documento", length = 100)
@@ -58,12 +59,10 @@ public class Documento {
     @Column(name = "archivo_url", length = 255)
     private String archivoUrl;
 
-    // Relación: Quién registró este documento
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_usuario_registro")
     private Usuario usuarioRegistro;
 
-    // Relación: Qué tipo de documento es
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_tipo_documento")
     private TipoDocumento tipoDocumento;
@@ -75,13 +74,4 @@ public class Documento {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Timestamp updatedAt;
-}
-
-// Enum para los estados del documento
-enum EstadoDocumento {
-    Registrado,
-    EnProceso, // Nota: "En Proceso" en la BD, Java no permite espacios
-    Observado,
-    Finalizado,
-    Salida
 }

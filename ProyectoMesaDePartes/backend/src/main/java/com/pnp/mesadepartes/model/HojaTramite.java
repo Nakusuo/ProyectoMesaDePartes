@@ -24,7 +24,6 @@ public class HojaTramite {
     @Column(name = "numero_ht", length = 50)
     private String numeroHt;
 
-    // Relación: A qué documento pertenece esta HT
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_documento")
     private Documento documento;

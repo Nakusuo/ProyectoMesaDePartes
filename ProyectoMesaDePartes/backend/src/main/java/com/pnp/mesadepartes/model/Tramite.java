@@ -21,17 +21,14 @@ public class Tramite {
     @Column(name = "ID_tramite")
     private Long idTramite;
 
-    // Relación: Qué documento se está tramitando
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_documento")
     private Documento documento;
 
-    // Relación: Quién creó este trámite (ej: Mesa de Partes)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_usuario_creador")
     private Usuario usuarioCreador;
 
-    // Relación: A quién se le asignó el trámite
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_usuario_asignado")
     private Usuario usuarioAsignado;

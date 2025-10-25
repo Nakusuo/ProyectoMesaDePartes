@@ -40,17 +40,14 @@ public class SalidaDocumento {
     @Column(name = "archivo_cargo_url", length = 255)
     private String archivoCargoUrl;
 
-    // Relación: A qué documento de entrada corresponde esta salida
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_documento", nullable = false)
     private Documento documento;
 
-    // Relación: Qué tipo de documento es (Oficio, Carta, etc.)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_tipo_documento")
     private TipoDocumento tipoDocumento;
 
-    // Relación: Qué usuario registró la salida
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_usuario_salida")
     private Usuario usuarioSalida;

@@ -51,7 +51,7 @@ public class Usuario {
     private String username;
 
     @Column(name = "password_hash", nullable = false, length = 255)
-    private String passwordHash; // Usamos camelCase en Java
+    private String passwordHash;
 
     @Column(length = 255)
     private String avatarUrl;
@@ -59,15 +59,13 @@ public class Usuario {
     @Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean activo = true;
 
-    // Relación con Area (Muchos usuarios pueden pertenecer a UN área)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_area") // Esta es la columna FK en la tabla usuarios
+    @JoinColumn(name = "ID_area")
     private Area area;
 
-    // Relación con Rol (Muchos usuarios pueden tener MUCHOS roles)
-    @ManyToMany(fetch = FetchType.EAGER) // EAGER para cargar roles con el usuario
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-        name = "usuario_roles", // La tabla intermedia que creaste
+        name = "usuario_roles",
         joinColumns = @JoinColumn(name = "ID_usuario"),
         inverseJoinColumns = @JoinColumn(name = "ID_rol")
     )
@@ -82,7 +80,6 @@ public class Usuario {
     private Timestamp updatedAt;
 }
 
-// Enum para el tipo de contrato
 enum TipoContrato {
     CAS, LOCADOR, PNP
 }

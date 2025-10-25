@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-@Data // Anotación de Lombok para crear getters/setters/etc.
+@Data
 @Entity
 @Table(name = "areas")
 public class Area {
