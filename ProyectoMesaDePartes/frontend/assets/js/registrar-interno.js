@@ -1,8 +1,31 @@
-checkAuth();
+// Verificar autenticación
+function checkAuth() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = 'login.html';
+        return false;
+    }
+    return true;
+}
+
+// Función de logout
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = 'login.html';
+}
+
+// Obtener token para las peticiones
+function getAuthHeaders() {
+    const token = localStorage.getItem('token');
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    };
+}
 
 const API_URL = 'http://localhost:8080/api';
 
-const btnLogout = document.getElementById('btn-logout');
 const registroForm = document.getElementById('registro-form');
 
 const tipoDocumentoSelect = document.getElementById('tipo-documento-select');
@@ -16,7 +39,9 @@ const archivoUrlField = document.getElementById('archivo-url');
 
 async function cargarTiposDocumento() {
   try {
-    const response = await fetch(`${API_URL}/tipos-documento`);
+    const response = await fetch(`${API_URL}/tipos-documento`, {
+      headers: getAuthHeaders()
+    });
     if (!response.ok) throw new Error('Error al cargar tipos de documento');
 
     const tipos = await response.json();
@@ -33,7 +58,9 @@ async function cargarTiposDocumento() {
 
 async function cargarUsuariosParaAsignar() {
   try {
-    const response = await fetch(`${API_URL}/usuarios`);
+    const response = await fetch(`${API_URL}/usuarios`, {
+      headers: getAuthHeaders()
+    });
     if (!response.ok) throw new Error('Error al cargar usuarios');
 
     const usuarios = await response.json();
@@ -79,9 +106,7 @@ async function handleSubmitRegistro(event) {
   try {
     const response = await fetch(`${API_URL}/documentos/registrar`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify(datosDocumento)
     });
 
@@ -109,13 +134,18 @@ async function handleSubmitRegistro(event) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Verificar autenticación al cargar
+  if (!checkAuth()) return;
+
+  // Mostrar información del usuario en el header
+  const userInfo = JSON.parse(localStorage.getItem('user'));
+  const userInfoElement = document.getElementById('user-info');
+  if (userInfo && userInfoElement) {
+    userInfoElement.textContent = `👤 ${userInfo.username}`;
+  }
+
   cargarTiposDocumento();
   cargarUsuariosParaAsignar();
-
-  const btnLogoutElement = document.getElementById('btn-logout');
-  if (btnLogoutElement) {
-      btnLogoutElement.addEventListener('click', logout);
-  }
 
   registroForm.addEventListener('submit', handleSubmitRegistro);
 });
