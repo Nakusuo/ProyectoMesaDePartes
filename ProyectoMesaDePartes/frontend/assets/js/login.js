@@ -36,7 +36,11 @@ async function handleLogin(event) {
             throw new Error(data.message || `Error ${response.status}`);
         }
 
-        if (data.idUsuario && data.username && data.roles) {
+        if (data.idUsuario && data.username && data.roles && data.token) {
+            // Guardar token JWT
+            localStorage.setItem('token', data.token);
+            
+            // Guardar información del usuario
             localStorage.setItem('user', JSON.stringify({
                 id: data.idUsuario,
                 username: data.username,
@@ -44,14 +48,8 @@ async function handleLogin(event) {
                 roles: data.roles
             }));
 
-            let redirectTo = '../admin/dashboard.html';
-            if (data.roles.includes('Trabajador')) {
-                redirectTo = '../trabajador/mis-asignaciones.html';
-            } else if (data.roles.includes('Mesa de Partes')) {
-                 redirectTo = '../documentos/registro.html';
-            }
-
-            window.location.href = redirectTo;
+            // Redirigir a registro.html como dashboard principal
+            window.location.href = 'registro.html';
 
         } else {
              throw new Error('Respuesta inesperada del servidor.');

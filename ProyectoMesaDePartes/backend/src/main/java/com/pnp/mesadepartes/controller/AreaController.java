@@ -27,7 +27,6 @@ public class AreaController {
     private AreaRepository areaRepository;
 
     @GetMapping
-    @PreAuthorize("isAuthenticated()")
     public List<Area> getAllAreas() {
         return areaRepository.findAll();
     }
