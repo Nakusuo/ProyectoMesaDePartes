@@ -8,7 +8,6 @@ import com.pnp.mesadepartes.repository.RolRepository;
 import com.pnp.mesadepartes.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +28,6 @@ public class UsuarioController {
     @Autowired private PasswordEncoder passwordEncoder;
 
     @GetMapping
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Jefatura')")
     public List<Usuario> getAllUsuarios() {
         List<Usuario> usuarios = usuarioRepository.findAll();
         usuarios.forEach(u -> {
@@ -39,7 +37,6 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Jefatura')")
     public ResponseEntity<Usuario> getUsuarioById(@PathVariable Long id) {
         return usuarioRepository.findById(id)
                 .map(usuario -> {
@@ -50,7 +47,6 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('Administrador')")
     public ResponseEntity<Usuario> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuarioDetails) {
         return usuarioRepository.findById(id)
                 .map(usuario -> {
@@ -61,7 +57,6 @@ public class UsuarioController {
                     usuario.setTelefono(usuarioDetails.getTelefono());
                     usuario.setActivo(usuarioDetails.isActivo());
                     usuario.setTipoContrato(usuarioDetails.getTipoContrato());
-                    usuario.setAvatarUrl(usuarioDetails.getAvatarUrl());
 
                     if (usuarioDetails.getPasswordHash() != null && !usuarioDetails.getPasswordHash().isEmpty()) {
                         usuario.setPasswordHash(passwordEncoder.encode(usuarioDetails.getPasswordHash()));
@@ -93,7 +88,6 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('Administrador')")
     public ResponseEntity<?> deleteUsuario(@PathVariable Long id) {
         return usuarioRepository.findById(id)
                 .map(usuario -> {

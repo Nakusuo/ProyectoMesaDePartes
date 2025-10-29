@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,13 +26,11 @@ public class AreaController {
     private AreaRepository areaRepository;
 
     @GetMapping
-    @PreAuthorize("isAuthenticated()")
     public List<Area> getAllAreas() {
         return areaRepository.findAll();
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('Administrador')")
     public ResponseEntity<Area> createArea(@RequestBody Area area) {
         if (area.getNombre() == null || area.getNombre().isEmpty()) {
              return ResponseEntity.badRequest().build();
@@ -43,7 +40,6 @@ public class AreaController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('Administrador')")
     public ResponseEntity<Area> updateArea(@PathVariable Long id, @RequestBody Area areaDetails) {
         return areaRepository.findById(id)
                 .map(area -> {
@@ -56,7 +52,6 @@ public class AreaController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('Administrador')")
     public ResponseEntity<?> deleteArea(@PathVariable Long id) {
         return areaRepository.findById(id)
                 .map(area -> {

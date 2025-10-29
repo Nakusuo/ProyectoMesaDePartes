@@ -3,18 +3,21 @@ package com.pnp.mesadepartes.controller;
 import com.pnp.mesadepartes.dto.DocumentoRegistroDTO;
 import com.pnp.mesadepartes.model.*;
 import com.pnp.mesadepartes.repository.*;
-import com.pnp.mesadepartes.security.services.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.HashMap;
+import java.util.Map;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -28,58 +31,83 @@ public class DocumentoController {
     @Autowired private HojaTramiteRepository hojaTramiteRepository;
 
     @PostMapping("/registrar")
-    @PreAuthorize("hasAuthority('Mesa de Partes') or hasAuthority('Administrador')")
     public ResponseEntity<?> registrarDocumento(@RequestBody DocumentoRegistroDTO dto) {
+        try {
+            System.out.println("=== Iniciando registro de documento ===");
+            System.out.println("DTO recibido: " + dto);
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Usuario usuarioRegistrador = usuarioRepository.findById(userDetails.getIdUsuario())
-                .orElseThrow(() -> new RuntimeException("Error: Usuario registrador no encontrado."));
+            Usuario usuarioRegistrador = usuarioRepository.findById(1L)
+                    .orElseThrow(() -> new RuntimeException("Error: Usuario registrador no encontrado."));
+            System.out.println("Usuario registrador: " + usuarioRegistrador.getNombre());
 
-        Usuario usuarioAsignado = usuarioRepository.findById(dto.getIdUsuarioAsignado())
-                .orElseThrow(() -> new RuntimeException("Error: Usuario asignado no encontrado."));
+            Usuario usuarioAsignado = usuarioRepository.findById(dto.getIdUsuarioAsignado())
+                    .orElseThrow(() -> new RuntimeException("Error: Usuario asignado no encontrado."));
+            System.out.println("Usuario asignado: " + usuarioAsignado.getNombre());
 
-        TipoDocumento tipoDoc = tipoDocumentoRepository.findById(dto.getIdTipoDocumento())
-                .orElseThrow(() -> new RuntimeException("Error: Tipo de documento no encontrado."));
+            TipoDocumento tipoDoc = tipoDocumentoRepository.findById(dto.getIdTipoDocumento())
+                    .orElseThrow(() -> new RuntimeException("Error: Tipo de documento no encontrado."));
+            System.out.println("Tipo documento: " + tipoDoc.getNombre());
 
-        Documento doc = new Documento();
-        doc.setCodigo(UUID.randomUUID().toString().substring(0, 10).toUpperCase());
-        doc.setTitulo(dto.getTitulo());
-        doc.setDescripcion(dto.getDescripcion());
-        doc.setRemitente(dto.getRemitente());
-        doc.setNumeroDocumento(dto.getNumeroDocumento());
-        doc.setFechaIngreso(LocalDateTime.now());
-        doc.setEstado(EstadoDocumento.Registrado);
-        doc.setTipoDocumento(tipoDoc);
-        doc.setUsuarioRegistro(usuarioRegistrador);
-        doc.setArchivoUrl(dto.getArchivoUrl());
+            // Generar código secuencial basado en el total de documentos
+            long totalDocumentos = documentoRepository.count();
+            String codigo = String.format("DOC-%06d", totalDocumentos + 1);
+            System.out.println("Código generado: " + codigo);
 
-        Documento docGuardado = documentoRepository.save(doc);
+            Documento doc = new Documento();
+            doc.setCodigo(codigo);
+            doc.setTitulo(dto.getTitulo());
+            doc.setDescripcion(dto.getDescripcion());
+            doc.setRemitente(dto.getRemitente());
+            doc.setNumeroDocumento(dto.getNumeroDocumento());
+            doc.setFechaIngreso(LocalDateTime.now());
+            doc.setEstado(EstadoDocumento.Registrado);
+            doc.setTipoDocumento(tipoDoc);
+            doc.setUsuarioRegistro(usuarioRegistrador);
+            doc.setArchivoUrl(dto.getArchivoUrl());
 
-        if (dto.getNumeroHt() != null && !dto.getNumeroHt().isEmpty()) {
-            HojaTramite ht = new HojaTramite();
-            ht.setNumeroHt(dto.getNumeroHt());
-            ht.setDocumento(docGuardado);
-            hojaTramiteRepository.save(ht);
+            System.out.println("Guardando documento...");
+            Documento docGuardado = documentoRepository.save(doc);
+            System.out.println("Documento guardado con ID: " + docGuardado.getIdDocumento());
+
+            if (dto.getNumeroHt() != null && !dto.getNumeroHt().isEmpty()) {
+                System.out.println("Guardando hoja de trámite...");
+                HojaTramite ht = new HojaTramite();
+                ht.setNumeroHt(dto.getNumeroHt());
+                ht.setDocumento(docGuardado);
+                hojaTramiteRepository.save(ht);
+            }
+
+            System.out.println("Creando trámite...");
+            Tramite tramite = new Tramite();
+            tramite.setDocumento(docGuardado);
+            tramite.setUsuarioCreador(usuarioRegistrador);
+            tramite.setUsuarioAsignado(usuarioAsignado);
+            tramiteRepository.save(tramite);
+
+            System.out.println("=== Registro completado exitosamente ===");
+            return ResponseEntity.ok(docGuardado);
+
+        } catch (Exception e) {
+            System.err.println("ERROR al registrar documento: " + e.getMessage());
+            e.printStackTrace();
+            
+            HashMap<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", e.getMessage());
+            errorResponse.put("error", "Error al registrar el documento");
+            
+            return ResponseEntity.badRequest().body(errorResponse);
         }
-
-        Tramite tramite = new Tramite();
-        tramite.setDocumento(docGuardado);
-        tramite.setUsuarioCreador(usuarioRegistrador);
-        tramite.setUsuarioAsignado(usuarioAsignado);
-
-        tramiteRepository.save(tramite);
-
-        return ResponseEntity.ok(docGuardado);
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Jefatura')")
-    public List<Documento> getAllDocumentos() {
-        return documentoRepository.findAll();
+    public ResponseEntity<List<Documento>> getAllDocumentos() {
+        System.out.println("📋 Obteniendo todos los documentos");
+        List<Documento> documentos = documentoRepository.findAll();
+        System.out.println("✅ Total de documentos: " + documentos.size());
+        return ResponseEntity.ok(documentos);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Documento> getDocumentoById(@PathVariable Long id) {
         return documentoRepository.findById(id)
                 .map(ResponseEntity::ok)
@@ -87,7 +115,6 @@ public class DocumentoController {
     }
 
     @GetMapping("/buscar/{codigo}")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> buscarDocumentoPorCodigo(@PathVariable String codigo) {
         Optional<Documento> optDoc = documentoRepository.findByCodigo(codigo);
         if (!optDoc.isPresent()) {
@@ -108,5 +135,45 @@ public class DocumentoController {
         respuesta.put("asignadoA", asignadoA);
 
         return ResponseEntity.ok(respuesta);
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
+        try {
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "El archivo está vacío"));
+            }
+
+            if (!file.getContentType().equals("application/pdf")) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Solo se permiten archivos PDF"));
+            }
+
+            String uploadDir = "uploads/documentos/";
+            Path uploadPath = Paths.get(uploadDir);
+
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            // Generar nombre único con timestamp
+            long timestamp = System.currentTimeMillis();
+            String fileName = timestamp + "_" + file.getOriginalFilename();
+            Path filePath = uploadPath.resolve(fileName);
+
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            String fileUrl = "/uploads/documentos/" + fileName;
+
+            var response = new HashMap<String, String>();
+            response.put("url", fileUrl);
+            response.put("message", "Archivo subido exitosamente");
+
+            return ResponseEntity.ok(response);
+
+        } catch (IOException e) {
+            System.err.println("Error al subir archivo: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("error", "Error al subir el archivo: " + e.getMessage()));
+        }
     }
 }

@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,13 +26,11 @@ public class TipoDocumentoController {
     private TipoDocumentoRepository tipoDocumentoRepository;
 
     @GetMapping
-    @PreAuthorize("isAuthenticated()")
     public List<TipoDocumento> getAllTiposDocumento() {
         return tipoDocumentoRepository.findAll();
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('Administrador')")
     public ResponseEntity<TipoDocumento> createTipoDocumento(@RequestBody TipoDocumento tipoDocumento) {
          if (tipoDocumento.getNombre() == null || tipoDocumento.getNombre().isEmpty()) {
              return ResponseEntity.badRequest().build();
@@ -43,7 +40,6 @@ public class TipoDocumentoController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('Administrador')")
     public ResponseEntity<TipoDocumento> updateTipoDocumento(@PathVariable Long id, @RequestBody TipoDocumento tipoDetails) {
         return tipoDocumentoRepository.findById(id)
                 .map(tipo -> {
@@ -55,7 +51,6 @@ public class TipoDocumentoController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('Administrador')")
     public ResponseEntity<?> deleteTipoDocumento(@PathVariable Long id) {
         return tipoDocumentoRepository.findById(id)
                 .map(tipo -> {

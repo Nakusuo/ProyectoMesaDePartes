@@ -6,6 +6,8 @@ import java.util.Set;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -53,14 +55,12 @@ public class Usuario {
     @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
 
-    @Column(length = 255)
-    private String avatarUrl;
-
     @Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean activo = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_area")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Area area;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -78,8 +78,4 @@ public class Usuario {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Timestamp updatedAt;
-}
-
-enum TipoContrato {
-    CAS, LOCADOR, PNP
 }

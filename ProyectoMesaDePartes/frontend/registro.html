@@ -4,12 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Documento - Mesa de Partes</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../assets/css/navbar.css">
-    <link rel="stylesheet" href="../assets/css/registrar-interno.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/registro.css">
 </head>
 <body>
-    <div id="navbar-placeholder"><p>Cargando menú...</p></div>
+    <header style="background: #003366; color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+        <h1 style="margin: 0; font-size: 1.5rem;">Mesa de Partes - PNP</h1>
+        <div>
+            <span id="user-info" style="margin-right: 1rem;"></span>
+            <button onclick="logout()" style="background: #dc3545; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">Cerrar Sesión</button>
+        </div>
+    </header>
     <main class="container">
         <form id="registro-form" class="registro-form">
             <h3>Datos del Documento</h3>
@@ -26,15 +31,17 @@
                 </div>
                 <div class="form-group">
                     <label for="numero-documento">N° Documento Externo</label>
-                    <input type="text" id="numero-documento" placeholder="Ej: OFICIO-0123-2024">
+                    <input type="text" id="numero-documento" placeholder="Ej: 1956" pattern="[0-9]*" title="Solo números">
                 </div>
                 <div class="form-group">
                     <label for="numero-ht">N° Hoja de Trámite (HT)</label>
-                    <input type="text" id="numero-ht" placeholder="Ej: 2024-001234">
+                    <input type="text" id="numero-ht" placeholder="Ej: 2024001234" pattern="[0-9]*" title="Solo números">
                 </div>
                 <div class="form-group">
-                    <label for="remitente">Remitente (Texto) *</label>
-                    <input type="text" id="remitente" required placeholder="Ej: Juan Perez, DIRCOCOR, etc.">
+                    <label for="remitente">Área Remitente *</label>
+                    <select id="remitente-select" required>
+                        <option value="">Cargando áreas...</option>
+                    </select>
                 </div>
                 <div class="form-group span-2">
                     <label for="descripcion">Descripción / Sumilla</label>
@@ -50,8 +57,9 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="archivo-url">URL del Archivo (Temporal)</label>
-                    <input type="text" id="archivo-url" placeholder="Ej: https://.../documento.pdf">
+                    <label for="archivo-pdf">Archivo PDF del Documento</label>
+                    <input type="file" id="archivo-pdf" accept=".pdf" style="padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; width: 100%;">
+                    <small style="color: #666; font-size: 0.85rem;">Solo archivos PDF (opcional)</small>
                 </div>
             </div>
             <div class="form-actions">
@@ -61,8 +69,6 @@
             </div>
         </form>
     </main>
-    <script src="../assets/js/auth.js"></script>
-    <script src="../assets/js/navbar.js"></script>
-    <script src="../assets/js/registrar-interno.js"></script>
+    <script src="assets/js/registrar-interno.js"></script>
 </body>
 </html>
