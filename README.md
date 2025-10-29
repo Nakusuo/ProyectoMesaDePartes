@@ -312,7 +312,7 @@ public class DocumentoController {
 
 | Módulo | Completado | Estado | Observaciones |
 |--------|-----------|--------|---------------|
-| **Autenticación y Seguridad** | 70% | 🔄 En desarrollo | JWT básico implementado, falta refresh token y validaciones avanzadas |
+| **Autenticación y Seguridad** | 70% | 🔄 En desarrollo | Sistema básico implementado, faltan validaciones avanzadas |
 | **Gestión de Usuarios** | 65% | 🔄 En desarrollo | CRUD básico, falta edición de contraseña y validaciones |
 | **Gestión de Documentos** | 60% | 🔄 En desarrollo | Registro básico funcional, falta edición y validaciones completas |
 | **Sistema de Áreas** | 80% | ✅ Funcional | Separación DEPARTAMENTO_PNP/AREA_TRABAJO implementada |
