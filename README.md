@@ -389,7 +389,6 @@ public class DocumentoController {
 - ⏳ **Recuperación de contraseña**: Sistema de reset por email
 
 #### Baja Prioridad (Mejoras Futuras)
-- ⏳ **Refresh tokens**: Renovación automática de JWT
 - ⏳ **Multi-idioma**: i18n para español/quechua
 - ⏳ **Firma digital**: Integración con certificados digitales
 - ⏳ **OCR**: Extracción de texto de PDFs escaneados
