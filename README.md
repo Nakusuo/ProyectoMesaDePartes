@@ -599,37 +599,6 @@ mvnw clean package -DskipTests
 
 El archivo JAR estará en: `target/mesadepartes-0.0.1-SNAPSHOT.jar`
 
-### 🐳 Docker (Opcional)
-
-**Dockerfile:**
-```dockerfile
-FROM eclipse-temurin:21-jdk-alpine
-WORKDIR /app
-COPY target/*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
-```
-
-**docker-compose.yml:**
-```yaml
-version: '3.8'
-services:
-  mysql:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: mesa_partes_db
-    ports:
-      - "3306:3306"
-  
-  backend:
-    build: ./backend
-    ports:
-      - "8080:8080"
-    depends_on:
-      - mysql
-```
-
 ### ☁️ Consideraciones
 
 - Cambiar contraseñas de BD
@@ -686,26 +655,12 @@ mkdir -p uploads/documentos
 
 ## 📈 Mejoras Futuras
 
-### 🎯 Roadmap
-
 - [ ] **Notificaciones en tiempo real** (WebSocket)
 - [ ] **Generación de reportes PDF** (JasperReports)
 - [ ] **Búsqueda avanzada** con filtros
 - [ ] **Dashboard con estadísticas** (gráficos)
-- [ ] **Firma digital** de documentos
-- [ ] **Integración con RENIEC** para validación DNI
-- [ ] **App móvil** (React Native)
-- [ ] **API Gateway** para microservicios
 - [ ] **Auditoría completa** de acciones
 - [ ] **Backup automático** programado
-
-### 🔮 Funcionalidades Planificadas
-
-1. **Workflow de aprobaciones**: Flujo multinivel
-2. **Calendario de vencimientos**: Alertas automáticas
-3. **Escaneo OCR**: Extracción de texto de PDFs
-4. **Integración SUNAT**: Validación RUC
-5. **Chat interno**: Comunicación entre usuarios
 
 ---
 
@@ -713,7 +668,7 @@ mkdir -p uploads/documentos
 
 ### 💻 Equipo de Desarrollo
 
-- **Desarrollador Principal**: [Tu Nombre]
+- **Desarrollador Principal**: [Nakusu]
 - **Backend**: Spring Boot + MySQL
 - **Frontend**: HTML5 + JavaScript Vanilla
 - **Base de Datos**: MySQL Schema Design
@@ -726,37 +681,8 @@ Este proyecto es de uso interno para la **Policía Nacional del Perú (PNP)**.
 
 ---
 
-## 📞 Soporte y Contacto
 
-### 🆘 Obtener Ayuda
-
-- **Email**: soporte.mesadepartes@pnp.gob.pe
-- **Teléfono**: (01) 123-4567
-- **Horario**: Lunes a Viernes, 8:00 AM - 6:00 PM
-
-### 📚 Documentación Adicional
-
-- [Guía de Usuario Completa](docs/GUIA_USUARIO.pdf)
-- [Manual Técnico](docs/MANUAL_TECNICO.pdf)
-- [Políticas de Seguridad](docs/SEGURIDAD.pdf)
-
----
-
-## 🎓 Créditos Tecnológicos
-
-Este proyecto fue construido con:
-
-- **[Spring Framework](https://spring.io/)** - Framework Java
-- **[MySQL](https://www.mysql.com/)** - Base de datos relacional
-- **[Lombok](https://projectlombok.org/)** - Reducción de código Java
-- **[BCrypt](https://github.com/patrickfav/bcrypt)** - Hashing de contraseñas
-- **[Bootstrap Icons](https://icons.getbootstrap.com/)** - Iconografía
-
----
-
-<div align="center">
-
-**🇵🇪 Desarrollado con ❤️ para la Policía Nacional del Perú**
+**🇵🇪 Desarrollado para el Curso Integrador I**
 
 [![Java](https://img.shields.io/badge/Powered_by-Java_21-ED8B00?style=flat&logo=openjdk)](https://adoptium.net/)
 [![Spring](https://img.shields.io/badge/Built_with-Spring_Boot-6DB33F?style=flat&logo=spring)](https://spring.io/)
