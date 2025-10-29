@@ -3,53 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bitácora del Sistema - Mesa de Partes</title>
+  <title>Dashboard - Mesa de Partes PNP</title>
   
   <!-- Estilos Globales -->
   <link rel="stylesheet" href="assets/css/style.css">
-  
-  <!-- Estilos del Navbar -->
-  <link rel="stylesheet" href="assets/css/navbar.css"> 
-  
-  <!-- Estilos específicos para la bitácora -->
+  <link rel="stylesheet" href="assets/css/sidebar.css">
   <link rel="stylesheet" href="assets/css/bitacora.css">
 
 </head>
 <body>
 
-  <!-- Placeholder para el Navbar Dinámico -->
-  <div id="navbar-placeholder"><p>Cargando menú...</p></div>
+  <!-- El sidebar se insertará aquí automáticamente via JavaScript -->
 
-  <main class="container">
-    <h2>Bitácora de Eventos</h2>
-    <p>Registro de acciones realizadas en el sistema.</p>
-    
-    <!-- (Opcional) Filtros de búsqueda para la bitácora -->
-    <!-- <div class="filtros-bitacora"> ... </div> -->
+  <main class="main-content">
+    <div class="container">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Dashboard - Bitácora de Eventos</h2>
+          <div>
+            <button class="btn btn-secondary btn-sm">
+              <span>📥</span>
+              Exportar
+            </button>
+          </div>
+        </div>
 
-    <table class="bitacora-table">
-      <thead>
-        <tr>
-          <th>Fecha y Hora</th>
-          <th>Usuario</th>
-          <th>Acción</th>
-          <th>Entidad Afectada</th>
-          <th>Detalles</th>
-        </tr>
-      </thead>
-      <tbody id="bitacora-table-body">
-        <!-- Los eventos se cargarán aquí con JavaScript -->
-        <tr><td colspan="5">Cargando eventos...</td></tr>
-      </tbody>
-    </table>
-    
+        <div style="margin-bottom: 20px;">
+          <p style="color: var(--text-secondary);">Registro de acciones realizadas en el sistema de Mesa de Partes.</p>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha y Hora</th>
+              <th>Usuario</th>
+              <th>Acción</th>
+              <th>Entidad</th>
+              <th>Detalles</th>
+            </tr>
+          </thead>
+          <tbody id="bitacora-table-body">
+            <!-- Los eventos se cargarán aquí con JavaScript -->
+            <tr>
+              <td colspan="5" style="text-align: center; padding: 40px;">
+                <div class="spinner" style="margin: 0 auto;"></div>
+                <p style="margin-top: 16px; color: var(--text-light);">Cargando eventos...</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </main>
 
+  <!-- Sidebar Script (debe cargarse primero) -->
+  <script src="assets/js/sidebar.js"></script>
+  
   <!-- Módulo de Autenticación -->
   <script src="assets/js/auth.js"></script>
-  
-  <!-- Script del Navbar -->
-  <script src="assets/js/navbar.js"></script>
   
   <!-- Lógica Específica de esta página -->
   <script src="assets/js/bitacora.js"></script>

@@ -102,7 +102,15 @@ function pintarUsuariosEnTabla(usuarios) {
   }
 
   usuarios.forEach(user => {
-    // Convertimos la lista de roles en "badges"
+    // Extraer el área física/departamento (sigla)
+    const areaFisica = user.area ? user.area.sigla : 'N/A';
+    
+    // Convertimos la lista de roles en texto simple (para la columna Área mostraremos el rol principal)
+    const rolPrincipal = user.roles && user.roles.length > 0 
+      ? user.roles[0].nombre.toUpperCase()
+      : 'SIN ROL';
+    
+    // Para la columna de roles, mostramos todos los roles como badges
     const rolesHtml = user.roles && user.roles.length > 0
       ? user.roles.map(rol => `<span class="badge badge-role">${rol.nombre}</span>`).join(' ')
       : 'Sin roles';
@@ -113,7 +121,7 @@ function pintarUsuariosEnTabla(usuarios) {
       <td>${user.nombre} ${user.apellido}</td>
       <td>${user.username}</td>
       <td>${user.email}</td>
-      <td>${user.area ? user.area.sigla : 'N/A'}</td>
+      <td>${areaFisica}</td>
       <td>${rolesHtml}</td>
       <td>
         <span class="badge ${user.activo ? 'badge-success' : 'badge-danger'}">

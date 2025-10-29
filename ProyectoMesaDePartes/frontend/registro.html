@@ -3,72 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Documento - Mesa de Partes</title>
+    <title>Registrar Documento - Mesa de Partes PNP</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
     <link rel="stylesheet" href="assets/css/registro.css">
 </head>
 <body>
-    <header style="background: #003366; color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
-        <h1 style="margin: 0; font-size: 1.5rem;">Mesa de Partes - PNP</h1>
-        <div>
-            <span id="user-info" style="margin-right: 1rem;"></span>
-            <button onclick="logout()" style="background: #dc3545; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">Cerrar Sesión</button>
+
+    <!-- El sidebar se insertará aquí automáticamente -->
+
+    <main class="main-content">
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Registrar Nuevo Documento</h2>
+                </div>
+
+                <form id="registro-form" class="registro-form">
+                    <h3 style="color: var(--pnp-green); margin-top: 0; border-bottom: 2px solid var(--pnp-yellow); padding-bottom: 10px;">
+                        📄 Datos del Documento
+                    </h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group span-2">
+                            <label for="titulo">Asunto / Título *</label>
+                            <input type="text" id="titulo" required placeholder="Ej: Solicitud de información sobre patrullaje">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="tipo-documento">Tipo de Documento *</label>
+                            <select id="tipo-documento-select" required>
+                                <option value="">Cargando tipos...</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="numero-documento">N° Documento Externo</label>
+                            <input type="text" id="numero-documento" placeholder="Ej: 1956" pattern="[0-9]*" title="Solo números">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="numero-ht">N° Hoja de Trámite (HT)</label>
+                            <input type="text" id="numero-ht" placeholder="Ej: 2024001234" pattern="[0-9]*" title="Solo números">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="remitente">Área Remitente *</label>
+                            <select id="remitente-select" required>
+                                <option value="">Cargando áreas...</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group span-2">
+                            <label for="descripcion">Descripción / Sumilla</label>
+                            <textarea id="descripcion" rows="4" placeholder="Breve resumen del contenido del documento..."></textarea>
+                        </div>
+                    </div>
+
+                    <h3 style="color: var(--pnp-green); margin-top: 24px; border-bottom: 2px solid var(--pnp-yellow); padding-bottom: 10px;">
+                        👤 Asignación y Archivo
+                    </h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="usuario-asignado">Asignar a Usuario (Trabajador) *</label>
+                            <select id="usuario-asignado-select" required>
+                                <option value="">Cargando usuarios...</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="archivo-pdf">Archivo PDF del Documento</label>
+                            <input type="file" id="archivo-pdf" accept=".pdf">
+                            <small style="color: var(--text-light); font-size: 0.85rem; display: block; margin-top: 8px;">
+                                Solo archivos PDF (opcional)
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="form-actions" style="margin-top: 32px; display: flex; gap: 12px; justify-content: flex-end;">
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='bitacora.html'">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-submit">
+                            <span>✓</span>
+                            Registrar Documento
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </header>
-    <main class="container">
-        <form id="registro-form" class="registro-form">
-            <h3>Datos del Documento</h3>
-            <div class="form-grid">
-                <div class="form-group span-2">
-                    <label for="titulo">Asunto / Título *</label>
-                    <input type="text" id="titulo" required placeholder="Ej: Solicitud de información sobre patrullaje">
-                </div>
-                <div class="form-group">
-                    <label for="tipo-documento">Tipo de Documento *</label>
-                    <select id="tipo-documento-select" required>
-                        <option value="">Cargando tipos...</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="numero-documento">N° Documento Externo</label>
-                    <input type="text" id="numero-documento" placeholder="Ej: 1956" pattern="[0-9]*" title="Solo números">
-                </div>
-                <div class="form-group">
-                    <label for="numero-ht">N° Hoja de Trámite (HT)</label>
-                    <input type="text" id="numero-ht" placeholder="Ej: 2024001234" pattern="[0-9]*" title="Solo números">
-                </div>
-                <div class="form-group">
-                    <label for="remitente">Área Remitente *</label>
-                    <select id="remitente-select" required>
-                        <option value="">Cargando áreas...</option>
-                    </select>
-                </div>
-                <div class="form-group span-2">
-                    <label for="descripcion">Descripción / Sumilla</label>
-                    <textarea id="descripcion" rows="3" placeholder="Breve resumen del contenido del documento..."></textarea>
-                </div>
-            </div>
-            <h3 class="seccion-titulo">Asignación y Archivo</h3>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="usuario-asignado">Asignar a Usuario (Trabajador) *</label>
-                    <select id="usuario-asignado-select" required>
-                        <option value="">Cargando usuarios...</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="archivo-pdf">Archivo PDF del Documento</label>
-                    <input type="file" id="archivo-pdf" accept=".pdf" style="padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; width: 100%;">
-                    <small style="color: #666; font-size: 0.85rem;">Solo archivos PDF (opcional)</small>
-                </div>
-            </div>
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary btn-submit">
-                    Registrar Documento
-                </button>
-            </div>
-        </form>
     </main>
+
+    <!-- Scripts -->
+    <script src="assets/js/sidebar.js"></script>
     <script src="assets/js/registrar-interno.js"></script>
 </body>
 </html>

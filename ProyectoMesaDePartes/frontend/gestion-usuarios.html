@@ -3,39 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Usuarios - Mesa de Partes</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../assets/css/navbar.css">
-    <link rel="stylesheet" href="../assets/css/gestion-usuarios.css">
+    <title>Gestión de Usuarios - Mesa de Partes PNP</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link rel="stylesheet" href="assets/css/gestion-usuarios.css">
 </head>
 <body>
-    <div id="navbar-placeholder"><p>Cargando menú...</p></div>
-    <main class="container">
-        <div class="header-container">
-            <h2>Gestión de Usuarios</h2>
-            <button id="btn-nuevo-usuario" class="btn btn-primary" style="display: none;">
-                + Nuevo Usuario
-            </button>
+
+    <!-- El sidebar se insertará aquí automáticamente -->
+
+    <main class="main-content">
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Gestión de Usuarios</h2>
+                    <button id="btn-nuevo-usuario" class="btn btn-primary" style="display: none;">
+                        <span>+</span>
+                        Nuevo Usuario
+                    </button>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Área</th>
+                            <th>Roles</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table-body">
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 40px;">
+                                <div class="spinner" style="margin: 0 auto;"></div>
+                                <p style="margin-top: 16px; color: var(--text-light);">Cargando usuarios...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <table class="user-table">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Usuario (Username)</th>
-                    <th>Email</th>
-                    <th>Área</th>
-                    <th>Roles</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="user-table-body">
-                <tr>
-                    <td colspan="7">Cargando usuarios...</td>
-                </tr>
-            </tbody>
-        </table>
     </main>
+
+    <!-- Modal -->
     <div id="user-modal" class="modal-backdrop" style="display: none;">
         <div class="modal">
             <h3 id="modal-title">Editar Usuario</h3>
@@ -84,8 +97,10 @@
             </form>
         </div>
     </div>
-    <script src="../assets/js/auth.js"></script>
-    <script src="../assets/js/navbar.js"></script>
-    <script src="../assets/js/gestion-usuarios.js"></script>
+
+    <!-- Scripts -->
+    <script src="assets/js/sidebar.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/gestion-usuarios.js"></script>
 </body>
 </html>

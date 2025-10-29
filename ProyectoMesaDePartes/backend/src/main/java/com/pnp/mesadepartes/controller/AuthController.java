@@ -57,6 +57,36 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body(new MessageResponse("No autenticado"));
+        }
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        
+        Usuario usuario = usuarioRepository.findById(userDetails.getIdUsuario())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        List<String> roles = usuario.getRoles().stream()
+                .map(Rol::getNombre)
+                .collect(Collectors.toList());
+
+        // Crear respuesta con toda la información del usuario
+        return ResponseEntity.ok(new UserInfoResponse(
+                usuario.getIdUsuario(),
+                usuario.getUsername(),
+                usuario.getEmail(),
+                roles,
+                null, // No devolver el token aquí
+                usuario.getNombre(),
+                usuario.getApellido(),
+                usuario.getArea() != null ? usuario.getArea().getNombre() : null
+        ));
+    }
+
     @GetMapping("/generate-hash")
     public ResponseEntity<?> generateHash() {
         String password = "123456";

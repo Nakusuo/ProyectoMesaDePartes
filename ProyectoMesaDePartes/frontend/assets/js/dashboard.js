@@ -1,181 +1,355 @@
-// --- 1. Verificación de Seguridad ---
-// Permitimos que 'Administrador' o 'Jefatura' vean el dashboard.
-// (Nota: auth.js no soporta roles múltiples, usaremos solo Admin por ahora)
-checkAuth('Administrador'); // O 'Jefatura'
+// Dashboard.js - Cargar datos reales desde la API
+const API_URL = window.API_URL || 'http://localhost:8080/api';
 
+// Variables para las gráficas
+let chartPorTipo = null;
+let chartPorEstado = null;
+let chartTiempo = null;
 
-// --- 2. Variables Globales y Constantes ---
-const API_URL = 'http://localhost:8080/api';
-const token = getToken();
-
-// Elementos del DOM
-const btnLogout = document.getElementById('btn-logout');
-const statIngresados = document.getElementById('stat-ingresados');
-const statProceso = document.getElementById('stat-proceso');
-const statFinalizados = document.getElementById('stat-finalizados');
-const statArchivados = document.getElementById('stat-archivados');
-
-// Contextos de los Gráficos
-const ctxArea = document.getElementById('areaChart').getContext('2d');
-const ctxEstado = document.getElementById('estadoChart').getContext('2d');
-
-// Variables para guardar las instancias de los gráficos (para destruirlos al recargar)
-let areaChartInstance = null;
-let estadoChartInstance = null;
-
-// --- 3. Funciones de Carga de Datos ---
-
-// Carga el resumen de estadísticas y datos de gráficos
-async function cargarDashboard() {
-  try {
-    // ¡OJO! Este endpoint /api/dashboard/resumen no lo hemos creado en el backend.
-    // Dará error hasta que lo creemos.
-    const response = await fetch(`${API_URL}/dashboard/resumen`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    
-    if (!response.ok) {
-      throw new Error('Error al cargar el resumen del dashboard');
-    }
-    
-    const data = await response.json();
-
-    // 1. Actualizar las tarjetas de estadísticas
-    statIngresados.textContent = data.ingresados || 0;
-    statProceso.textContent = data.enProceso || 0;
-    statFinalizados.textContent = data.finalizados || 0;
-    statArchivados.textContent = data.archivados || 0;
-
-    // 2. Crear los gráficos
-    crearGraficoDeAreas(data.documentosPorArea || []);
-    crearGraficoDeEstados(data.tramitesPorEstado || []);
-
-  } catch (error) {
-    console.error(error);
-    alert('No se pudo cargar la información del dashboard.');
-  }
-}
-
-// --- 4. Funciones para Dibujar Gráficos (usando Chart.js) ---
-
-/**
- * Crea un gráfico de Dona (Doughnut) para "Documentos por Área"
- * @param {Array} data - Un array de objetos, ej: [{nombre: 'DIRIN', cantidad: 10}, ...]
- */
-function crearGraficoDeAreas(data) {
-  // Si ya existe un gráfico, lo destruimos antes de crear uno nuevo
-  if (areaChartInstance) {
-    areaChartInstance.destroy();
-  }
-  
-  // Extraemos las etiquetas (labels) y los datos (cantidades)
-  const labels = data.map(item => item.nombre);
-  const cantidades = data.map(item => item.cantidad);
-
-  areaChartInstance = new Chart(ctxArea, {
-    type: 'doughnut', // Tipo de gráfico
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'Documentos',
-        data: cantidades,
-        backgroundColor: [
-          '#007bff',
-          '#28a745',
-          '#ffc107',
-          '#dc3545',
-          '#17a2b8',
-          '#6c757d'
-        ],
-        hoverOffset: 4
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      plugins: {
-        legend: {
-          position: 'right', // Mueve las etiquetas a la derecha
-        }
-      }
-    }
-  });
-}
-
-/**
- * Crea un gráfico de Barras para "Trámites por Estado"
- * @param {Array} data - Un array de objetos, ej: [{estado: 'Registrado', cantidad: 5}, ...]
- */
-function crearGraficoDeEstados(data) {
-  if (estadoChartInstance) {
-    estadoChartInstance.destroy();
-  }
-
-  const labels = data.map(item => item.estado);
-  const cantidades = data.map(item => item.cantidad);
-
-  estadoChartInstance = new Chart(ctxEstado, {
-    type: 'bar', // Tipo de gráfico
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'Cantidad de Trámites',
-        data: cantidades,
-        backgroundColor: '#28a745',
-        borderColor: '#218838',
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      plugins: {
-        legend: {
-          display: false 
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    }
-  });
-}
-
-
-// --- 5. Event Listeners ---
-document.addEventListener('DOMContentLoaded', () => {
-  cargarDashboard();
-  
-  // Mock Data 
-  // --------------------------------------------------
-  const mockData = {
-    ingresados: 120,
-    enProceso: 45,
-    finalizados: 60,
-    archivados: 15,
-    documentosPorArea: [
-      { nombre: 'DIRIN', cantidad: 10 },
-      { nombre: 'DIRCOCOR', cantidad: 25 },
-      { nombre: 'DIREED', cantidad: 15 },
-      { nombre: 'DIRSAPOL', cantidad: 5 }
-    ],
-    tramitesPorEstado: [
-      { estado: 'Registrado', cantidad: 30 },
-      { estado: 'En Proceso', cantidad: 45 },
-      { estado: 'Observado', cantidad: 12 },
-      { estado: 'Finalizado', cantidad: 60 }
-    ]
-  };
-  statIngresados.textContent = mockData.ingresados;
-  statProceso.textContent = mockData.enProceso;
-  statFinalizados.textContent = mockData.finalizados;
-  statArchivados.textContent = mockData.archivados;
-  crearGraficoDeAreas(mockData.documentosPorArea);
-  crearGraficoDeEstados(mockData.tramitesPorEstado);
-  // --------------------------------------------------
-  // FIN DE MOCK DATA
-
-  btnLogout.addEventListener('click', logout);
+// Inicializar dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    mostrarFechaActual();
+    cargarDashboard();
 });
+
+// Mostrar fecha actual
+function mostrarFechaActual() {
+    const fecha = new Date();
+    const opciones = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    };
+    document.getElementById('fecha-actual').textContent = 
+        fecha.toLocaleDateString('es-PE', opciones);
+}
+
+// Cargar todos los datos del dashboard
+async function cargarDashboard() {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        await cargarMetricas(token);
+        await cargarGraficas(token);
+        await cargarDocumentosRecientes(token);
+        
+    } catch (error) {
+        console.error('Error al cargar dashboard:', error);
+    }
+}
+
+// Cargar métricas principales
+async function cargarMetricas(token) {
+    try {
+        const responseDocumentos = await fetch(`${API_URL}/documentos`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (responseDocumentos.ok) {
+            const documentos = await responseDocumentos.json();
+            
+            const total = documentos.length;
+            const enProceso = documentos.filter(d => 
+                d.estadoDocumento?.nombre?.toUpperCase() === 'EN_PROCESO' || 
+                d.estadoDocumento?.nombre?.toUpperCase() === 'PENDIENTE'
+            ).length;
+            const finalizados = documentos.filter(d => 
+                d.estadoDocumento?.nombre?.toUpperCase() === 'FINALIZADO' ||
+                d.estadoDocumento?.nombre?.toUpperCase() === 'ATENDIDO'
+            ).length;
+
+            document.getElementById('total-documentos').textContent = total;
+            document.getElementById('documentos-proceso').textContent = enProceso;
+            document.getElementById('documentos-finalizados').textContent = finalizados;
+        }
+
+        const responseUsuarios = await fetch(`${API_URL}/usuarios`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (responseUsuarios.ok) {
+            const usuarios = await responseUsuarios.json();
+            const usuariosActivos = usuarios.filter(u => u.activo).length;
+            document.getElementById('total-usuarios').textContent = usuariosActivos;
+        }
+
+    } catch (error) {
+        console.error('Error al cargar métricas:', error);
+    }
+}
+
+// Cargar datos para las gráficas
+async function cargarGraficas(token) {
+    try {
+        const response = await fetch(`${API_URL}/documentos`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            console.error('Error al cargar documentos para gráficas');
+            return;
+        }
+
+        const documentos = await response.json();
+
+        // Gráfica por tipo de documento
+        crearGraficaPorTipo(documentos);
+
+        // Gráfica por estado
+        crearGraficaPorEstado(documentos);
+
+        // Gráfica de documentos en el tiempo
+        crearGraficaTiempo(documentos);
+
+    } catch (error) {
+        console.error('Error al cargar gráficas:', error);
+    }
+}
+
+// Crear gráfica de documentos por tipo
+function crearGraficaPorTipo(documentos) {
+    const tipos = {};
+    
+    documentos.forEach(doc => {
+        const tipo = doc.tipoDocumento?.nombre || 'Sin Tipo';
+        tipos[tipo] = (tipos[tipo] || 0) + 1;
+    });
+
+    const ctx = document.getElementById('chart-por-tipo');
+    if (!ctx) {
+        console.error('Canvas chart-por-tipo no encontrado');
+        return;
+    }
+
+    if (chartPorTipo) {
+        chartPorTipo.destroy();
+    }
+
+    chartPorTipo = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(tipos),
+            datasets: [{
+                data: Object.values(tipos),
+                backgroundColor: [
+                    'rgba(0, 100, 46, 0.8)',
+                    'rgba(251, 191, 36, 0.8)',
+                    'rgba(16, 185, 129, 0.8)',
+                    'rgba(245, 158, 11, 0.8)',
+                    'rgba(0, 140, 64, 0.8)',
+                    'rgba(252, 211, 77, 0.8)'
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        font: { size: 12 }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Crear gráfica de documentos por estado
+function crearGraficaPorEstado(documentos) {
+    const estados = {};
+    
+    documentos.forEach(doc => {
+        const estado = doc.estado || 'Sin Estado';
+        estados[estado] = (estados[estado] || 0) + 1;
+    });
+
+    const ctx = document.getElementById('chart-por-estado');
+    if (!ctx) {
+        console.error('Canvas chart-por-estado no encontrado');
+        return;
+    }
+
+    if (chartPorEstado) {
+        chartPorEstado.destroy();
+    }
+
+    chartPorEstado = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(estados),
+            datasets: [{
+                label: 'Cantidad',
+                data: Object.values(estados),
+                backgroundColor: 'rgba(0, 100, 46, 0.8)',
+                borderColor: 'rgba(0, 100, 46, 1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Crear gráfica de documentos en el tiempo
+function crearGraficaTiempo(documentos) {
+    const porMes = {};
+    
+    documentos.forEach(doc => {
+        if (doc.fechaIngreso) {
+            const fecha = new Date(doc.fechaIngreso);
+            const mes = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
+            porMes[mes] = (porMes[mes] || 0) + 1;
+        }
+    });
+
+    const mesesOrdenados = Object.keys(porMes).sort();
+    const valores = mesesOrdenados.map(mes => porMes[mes]);
+
+    const ctx = document.getElementById('chart-tiempo');
+    if (!ctx) {
+        console.error('Canvas chart-tiempo no encontrado');
+        return;
+    }
+
+    if (chartTiempo) {
+        chartTiempo.destroy();
+    }
+
+    chartTiempo = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: mesesOrdenados.map(mes => {
+                const [year, month] = mes.split('-');
+                const fecha = new Date(year, month - 1);
+                return fecha.toLocaleDateString('es-PE', { month: 'short', year: 'numeric' });
+            }),
+            datasets: [{
+                label: 'Documentos Registrados',
+                data: valores,
+                borderColor: 'rgba(0, 100, 46, 1)',
+                backgroundColor: 'rgba(0, 100, 46, 0.1)',
+                tension: 0.4,
+                fill: true,
+                borderWidth: 3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Cargar documentos recientes
+async function cargarDocumentosRecientes(token) {
+    try {
+        const response = await fetch(`${API_URL}/documentos`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Error al cargar documentos');
+        }
+
+        const documentos = await response.json();
+        
+        const recientes = documentos
+            .sort((a, b) => new Date(b.fechaIngreso) - new Date(a.fechaIngreso))
+            .slice(0, 10);
+
+        mostrarDocumentosRecientes(recientes);
+
+    } catch (error) {
+        console.error('Error al cargar documentos recientes:', error);
+        document.getElementById('documentos-recientes-body').innerHTML = 
+            '<tr><td colspan="5" style="text-align: center; padding: 20px;">Error al cargar documentos</td></tr>';
+    }
+}
+
+// Mostrar documentos recientes en la tabla
+function mostrarDocumentosRecientes(documentos) {
+    const tbody = document.getElementById('documentos-recientes-body');
+    
+    if (documentos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">No hay documentos registrados</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = documentos.map(doc => {
+        const fecha = doc.fechaIngreso ? 
+            new Date(doc.fechaIngreso).toLocaleDateString('es-PE') : 
+            'Sin fecha';
+        
+        const estado = doc.estado || 'Sin estado';
+        let badgeClass = 'badge-info';
+        
+        if (estado.toUpperCase().includes('FINALIZADO')) {
+            badgeClass = 'badge-success';
+        } else if (estado.toUpperCase().includes('PROCESO')) {
+            badgeClass = 'badge-warning';
+        } else if (estado.toUpperCase().includes('REGISTRADO')) {
+            badgeClass = 'badge-info';
+        }
+
+        return `
+            <tr>
+                <td>${fecha}</td>
+                <td>${doc.titulo || 'Sin título'}</td>
+                <td>${doc.tipoDocumento?.nombre || 'Sin tipo'}</td>
+                <td>${doc.remitente || 'Sin remitente'}</td>
+                <td><span class="badge ${badgeClass}">${estado}</span></td>
+            </tr>
+        `;
+    }).join('');
+}
