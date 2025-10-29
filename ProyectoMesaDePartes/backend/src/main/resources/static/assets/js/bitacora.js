@@ -42,10 +42,10 @@ async function cargarDocumentos() {
     const tableBody = document.getElementById('bitacora-table-body');
     
     try {
-        console.log('📡 Obteniendo documentos de:', `${API_URL}/documentos`);
+        console.log('📡 Obteniendo documentos de bitácora:', `${API_URL}/documentos/bitacora`);
         
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_URL}/documentos`, {
+        const response = await fetch(`${API_URL}/documentos/bitacora`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -66,7 +66,7 @@ async function cargarDocumentos() {
         }
         
         // Ordenar por fecha de ingreso (más recientes primero)
-        documentos.sort((a, b) => new Date(b.fechaIngreso) - new Date(a.fechaIngreso));
+        documentos.sort((a, b) => new Date(b.documento.fechaIngreso) - new Date(a.documento.fechaIngreso));
         
         mostrarDocumentos(documentos);
         
@@ -91,16 +91,17 @@ function mostrarDocumentos(documentos) {
         return;
     }
     
-    tableBody.innerHTML = documentos.map(doc => {
+    tableBody.innerHTML = documentos.map(item => {
+        const doc = item.documento;
         const fecha = formatearFecha(doc.fechaIngreso);
-        const usuario = doc.usuario ? doc.usuario.nombre : 'Sin asignar';
+        const usuarioAsignado = item.usuarioAsignado || 'Sin asignar';
         const tipo = doc.tipoDocumento ? doc.tipoDocumento.nombre : 'N/A';
         const estado = obtenerEstadoBadge(doc.estado);
         
         return `
             <tr>
                 <td>${fecha}</td>
-                <td><strong>${usuario}</strong></td>
+                <td><strong>${usuarioAsignado}</strong></td>
                 <td>Registro de documento</td>
                 <td>${tipo}</td>
                 <td>
@@ -141,37 +142,40 @@ function aplicarFiltros() {
     
     // Filtrar por palabra clave (busca en título, descripción, remitente, código)
     if (palabra) {
-        documentosFiltrados = documentosFiltrados.filter(doc => 
-            (doc.titulo && doc.titulo.toLowerCase().includes(palabra)) ||
-            (doc.descripcion && doc.descripcion.toLowerCase().includes(palabra)) ||
-            (doc.remitente && doc.remitente.toLowerCase().includes(palabra)) ||
-            (doc.codigo && doc.codigo.toLowerCase().includes(palabra))
-        );
+        documentosFiltrados = documentosFiltrados.filter(item => {
+            const doc = item.documento;
+            return (doc.titulo && doc.titulo.toLowerCase().includes(palabra)) ||
+                   (doc.descripcion && doc.descripcion.toLowerCase().includes(palabra)) ||
+                   (doc.remitente && doc.remitente.toLowerCase().includes(palabra)) ||
+                   (doc.codigo && doc.codigo.toLowerCase().includes(palabra));
+        });
     }
     
     // Filtrar por número de documento
     if (nroDoc) {
-        documentosFiltrados = documentosFiltrados.filter(doc => 
-            doc.codigo && doc.codigo.toLowerCase().includes(nroDoc)
-        );
+        documentosFiltrados = documentosFiltrados.filter(item => {
+            const doc = item.documento;
+            return doc.codigo && doc.codigo.toLowerCase().includes(nroDoc);
+        });
     }
     
     // Filtrar por número de HT
     if (nroHt) {
-        documentosFiltrados = documentosFiltrados.filter(doc => 
-            doc.numeroHt && doc.numeroHt.toLowerCase().includes(nroHt)
-        );
+        documentosFiltrados = documentosFiltrados.filter(item => {
+            const doc = item.documento;
+            return doc.numeroHt && doc.numeroHt.toLowerCase().includes(nroHt);
+        });
     }
     
     // Filtrar por usuario asignado
     if (usuario) {
-        documentosFiltrados = documentosFiltrados.filter(doc => 
-            doc.usuarioRegistro && doc.usuarioRegistro.idUsuario === parseInt(usuario)
+        documentosFiltrados = documentosFiltrados.filter(item => 
+            item.idUsuarioAsignado === parseInt(usuario)
         );
     }
     
     // Ordenar por fecha (más recientes primero)
-    documentosFiltrados.sort((a, b) => new Date(b.fechaIngreso) - new Date(a.fechaIngreso));
+    documentosFiltrados.sort((a, b) => new Date(b.documento.fechaIngreso) - new Date(a.documento.fechaIngreso));
     
     mostrarDocumentos(documentosFiltrados);
 }

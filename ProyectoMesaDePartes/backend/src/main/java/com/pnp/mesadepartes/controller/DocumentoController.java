@@ -107,6 +107,39 @@ public class DocumentoController {
         return ResponseEntity.ok(documentos);
     }
 
+    @GetMapping("/bitacora")
+    public ResponseEntity<List<Map<String, Object>>> getDocumentosBitacora() {
+        System.out.println("📋 Obteniendo documentos con información de asignación");
+        List<Documento> documentos = documentoRepository.findAll();
+        
+        List<Map<String, Object>> resultado = documentos.stream().map(doc -> {
+            Map<String, Object> docInfo = new HashMap<>();
+            docInfo.put("documento", doc);
+            
+            // Buscar el trámite asociado para obtener el usuario asignado
+            List<Tramite> tramites = tramiteRepository.findByDocumento(doc);
+            if (!tramites.isEmpty()) {
+                Tramite tramite = tramites.get(0);
+                Usuario asignado = tramite.getUsuarioAsignado();
+                if (asignado != null) {
+                    docInfo.put("usuarioAsignado", asignado.getNombre() + " " + asignado.getApellido());
+                    docInfo.put("idUsuarioAsignado", asignado.getIdUsuario());
+                } else {
+                    docInfo.put("usuarioAsignado", "Sin asignar");
+                    docInfo.put("idUsuarioAsignado", null);
+                }
+            } else {
+                docInfo.put("usuarioAsignado", "Sin asignar");
+                docInfo.put("idUsuarioAsignado", null);
+            }
+            
+            return docInfo;
+        }).toList();
+        
+        System.out.println("✅ Total de documentos procesados: " + resultado.size());
+        return ResponseEntity.ok(resultado);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Documento> getDocumentoById(@PathVariable Long id) {
         return documentoRepository.findById(id)
