@@ -1,0 +1,106 @@
+/* Estilos para la Bitácora */
+.container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.container h2 {
+    color: #003366;
+    margin-bottom: 0.5rem;
+}
+
+.container > p {
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+/* Tabla de Bitácora */
+.bitacora-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.bitacora-table thead {
+    background: linear-gradient(135deg, #003366, #005599);
+}
+
+.bitacora-table th {
+    padding: 15px 20px;
+    text-align: left;
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.bitacora-table tbody tr {
+    border-bottom: 1px solid #e0e0e0;
+    transition: background-color 0.2s ease;
+}
+
+.bitacora-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.bitacora-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.bitacora-table td {
+    padding: 15px 20px;
+    font-size: 0.9rem;
+    color: #333;
+    vertical-align: top;
+}
+
+.bitacora-table td strong {
+    color: #003366;
+    font-weight: 600;
+}
+
+/* Enlaces de archivos */
+.bitacora-table a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.bitacora-table a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* Mensajes de estado */
+.bitacora-table td[colspan] {
+    text-align: center;
+    padding: 30px;
+    color: #999;
+    font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .bitacora-table {
+        font-size: 0.85rem;
+    }
+    
+    .bitacora-table th,
+    .bitacora-table td {
+        padding: 12px 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .bitacora-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}

@@ -1,0 +1,136 @@
+body {
+    display: block;
+}
+
+.login-container {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    min-height: 80vh;
+    margin: 5vh auto;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.login-branding {
+    width: 50%;
+    background: linear-gradient(135deg, #00642e, #005025);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.login-branding img {
+    width: 150px;
+    height: 150px;
+    margin-bottom: 20px;
+    content: url('../images/logo_pnp.png');
+    border-radius: 50%;
+    background-color: white;
+    padding: 10px;
+}
+
+.login-branding h2 {
+    font-size: 2.5rem;
+    margin-top: 0;
+    font-weight: 700;
+    color: white;
+    border: none;
+    padding-bottom: 0;
+}
+
+.login-branding p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.login-form-container {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    box-sizing: border-box;
+}
+
+#loginForm {
+    width: 100%;
+    max-width: 400px;
+}
+
+#loginForm h1 {
+    text-align: center;
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-weight: 700;
+    border: none;
+    padding-bottom: 0;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+#errorMessage {
+    color: #d93025;
+    text-align: center;
+    font-size: 14px;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    min-height: 1.2em;
+    display: none;
+}
+
+.login-button {
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+}
+
+.forgot-password {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #00642e;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 800px) {
+    .login-container {
+        flex-direction: column;
+        min-height: 100vh;
+        max-width: none;
+        box-shadow: none;
+        border-radius: 0;
+        margin: 0;
+    }
+    .login-branding {
+        display: none;
+    }
+
+    .login-form-container {
+        width: 100%;
+        padding: 40px 20px;
+        flex-grow: 1;
+        justify-content: flex-start;
+    }
+
+    #loginForm {
+        box-shadow: none;
+        padding: 0;
+        max-width: none;
+    }
+}
