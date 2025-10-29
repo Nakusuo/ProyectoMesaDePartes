@@ -76,7 +76,7 @@ async function cargarUsuariosParaAsignar() {
 }
 
 async function cargarAreas() {
-  console.log('=== Iniciando carga de áreas ===');
+  console.log('=== Iniciando carga de áreas (solo DEPARTAMENTO_PNP) ===');
   console.log('URL:', `${API_URL}/areas`);
   
   try {
@@ -89,14 +89,18 @@ async function cargarAreas() {
     const areas = await response.json();
     console.log('Áreas recibidas:', areas.length, areas);
     
+    // Filtrar solo departamentos PNP (excluir áreas de trabajo del sistema)
+    const departamentosPNP = areas.filter(area => area.tipo === 'DEPARTAMENTO_PNP');
+    console.log('Departamentos PNP filtrados:', departamentosPNP.length);
+    
     remitenteSelect.innerHTML = '<option value="">Seleccione un área</option>';
     
-    areas.forEach(area => {
+    departamentosPNP.forEach(area => {
       const textoCompleto = area.sigla ? `${area.sigla} - ${area.nombre}` : area.nombre;
       remitenteSelect.innerHTML += `<option value="${textoCompleto}">${textoCompleto}</option>`;
     });
     
-    console.log('✅ Áreas cargadas correctamente');
+    console.log('✅ Departamentos PNP cargados correctamente');
 
   } catch (error) {
     console.error('❌ ERROR al cargar áreas:', error);

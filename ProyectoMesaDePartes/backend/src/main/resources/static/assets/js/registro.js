@@ -15,8 +15,11 @@ async function cargarAreas() {
         const areas = await response.json();
         const areaSelect = document.getElementById('area');
         
+        // Filtrar solo áreas de trabajo del sistema (para asignar usuarios)
+        const areasTrabajo = areas.filter(area => area.tipo === 'AREA_TRABAJO');
+        
         areaSelect.innerHTML = '<option value="">-- Opcional --</option>';
-        areas.forEach(area => {
+        areasTrabajo.forEach(area => {
             areaSelect.innerHTML += `<option value="${area.idArea}">${area.nombre} (${area.sigla})</option>`;
         });
     } catch (error) {

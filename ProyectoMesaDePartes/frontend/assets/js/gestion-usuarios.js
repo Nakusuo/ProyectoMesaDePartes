@@ -48,7 +48,7 @@ async function cargarUsuarios() {
   }
 }
 
-// Carga las Áreas en el <select> del modal
+// Carga las Áreas en el <select> del modal (solo áreas de trabajo)
 async function cargarAreas() {
   try {
     const response = await fetch(`${API_URL}/areas`, {
@@ -57,8 +57,11 @@ async function cargarAreas() {
     if (!response.ok) throw new Error('Error al cargar áreas');
     
     const areas = await response.json();
+    // Filtrar solo áreas de trabajo para asignación de usuarios
+    const areasTrabajo = areas.filter(area => area.tipo === 'AREA_TRABAJO');
+    
     areaSelect.innerHTML = '<option value="">Seleccione un área</option>'; // Limpiar
-    areas.forEach(area => {
+    areasTrabajo.forEach(area => {
       areaSelect.innerHTML += `<option value="${area.idArea}">${area.nombre} (${area.sigla})</option>`;
     });
 
