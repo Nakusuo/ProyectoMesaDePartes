@@ -197,7 +197,7 @@ async function handleSubmitRegistro(event) {
 
     const docGuardado = await response.json();
 
-    alert(`Documento registrado con éxito.\nCódigo: ${docGuardado.codigo}`);
+    alert(`Documento registrado con éxito.\nNúmero de Registro: ${docGuardado.numeroRegistro}`);
     registroForm.reset();
 
   } catch (error) {

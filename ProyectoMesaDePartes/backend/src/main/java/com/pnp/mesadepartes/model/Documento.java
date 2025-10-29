@@ -33,14 +33,15 @@ public class Documento {
     @Column(name = "ID_documento")
     private Long idDocumento;
 
-    @Column(unique = true, nullable = false, length = 50)
-    private String codigo;
+    @Column(name = "numero_registro", nullable = false, unique = true)
+    private Integer numeroRegistro;
 
-    @Column(nullable = false, length = 200)
-    private String titulo;
+    @Column(name = "fecha_documento", nullable = false)
+    private LocalDateTime fechaDocumento;
 
     @Lob
-    private String descripcion;
+    @Column(nullable = false)
+    private String asunto;
 
     @Column(name = "numero_documento", length = 100)
     private String numeroDocumento;
@@ -51,12 +52,6 @@ public class Documento {
 
     @Column(nullable = false, length = 200)
     private String remitente;
-
-    @Column(length = 200)
-    private String destinatario;
-
-    @Column(name = "fecha_ingreso", nullable = false)
-    private LocalDateTime fechaIngreso;
 
     @Column(name = "archivo_url", length = 255)
     private String archivoUrl;

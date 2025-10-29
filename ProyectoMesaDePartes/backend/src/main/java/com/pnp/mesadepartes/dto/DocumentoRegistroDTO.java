@@ -4,8 +4,10 @@ import lombok.Data;
 
 @Data
 public class DocumentoRegistroDTO {
-    private String titulo;
-    private String descripcion;
+    // Campos que se combinan en "asunto" en la BD
+    private String titulo;       // Se combinará con descripcion
+    private String descripcion;  // Se combinará con titulo
+    
     private String remitente;
     private String numeroDocumento;
     private Long idTipoDocumento;

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Mesa de Partes PNP</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+<body>
+    <div class="main-content" id="mainContent">
+        <div class="dashboard-container">
+            <header class="dashboard-header">
+                <h1>📊 Dashboard - Mesa de Partes</h1>
+                <p class="dashboard-subtitle">Resumen general del sistema</p>
+            </header>
+
+            <!-- Tarjetas de Estadísticas -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>📝 Total Documentos</h3>
+                    <p id="totalDocumentos">0</p>
+                    <small>Documentos registrados</small>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>🔄 En Proceso</h3>
+                    <p id="enProceso">0</p>
+                    <small>Documentos en trámite</small>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>✅ Finalizados</h3>
+                    <p id="finalizados">0</p>
+                    <small>Documentos completados</small>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>👥 Usuarios Activos</h3>
+                    <p id="usuariosActivos">0</p>
+                    <small>Personal registrado</small>
+                </div>
+            </div>
+
+            <!-- Documentos Recientes -->
+            <div class="recent-documents">
+                <h2>📋 Documentos Recientes</h2>
+                <div class="table-container">
+                    <table class="documents-table">
+                        <thead>
+                            <tr>
+                                <th>N° Registro</th>
+                                <th>Fecha</th>
+                                <th>Tipo</th>
+                                <th>Remitente</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentDocumentsBody">
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 20px;">
+                                    Cargando documentos...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Gráficos -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3>📊 Documentos por Estado</h3>
+                    <canvas id="estadosChart"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <h3>📈 Documentos por Mes</h3>
+                    <canvas id="mesesChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="assets/js/dashboard.js"></script>
+</body>
+</html>

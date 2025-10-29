@@ -16,8 +16,8 @@ async function handleLogin(event) {
         return;
     }
 
-    if (password.length < 6) {
-        mostrarError('La contraseña debe tener al menos 6 caracteres.');
+    if (password.length < 5) {
+        mostrarError('La contraseña debe tener al menos 5 caracteres.');
         return;
     }
 

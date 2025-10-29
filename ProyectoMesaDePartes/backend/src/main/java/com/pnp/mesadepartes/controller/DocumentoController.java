@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,6 +26,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/documentos")
 public class DocumentoController {
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired private DocumentoRepository documentoRepository;
     @Autowired private TipoDocumentoRepository tipoDocumentoRepository;
@@ -48,18 +54,28 @@ public class DocumentoController {
                     .orElseThrow(() -> new RuntimeException("Error: Tipo de documento no encontrado."));
             System.out.println("Tipo documento: " + tipoDoc.getNombre());
 
-            // Generar código secuencial basado en el total de documentos
-            long totalDocumentos = documentoRepository.count();
-            String codigo = String.format("DOC-%06d", totalDocumentos + 1);
-            System.out.println("Código generado: " + codigo);
+            // Generar número de registro automático (obtener el máximo + 1)
+            Integer ultimoNumeroRegistro = documentoRepository.findAll()
+                    .stream()
+                    .map(Documento::getNumeroRegistro)
+                    .max(Integer::compare)
+                    .orElse(0);
+            
+            Integer nuevoNumeroRegistro = ultimoNumeroRegistro + 1;
+            System.out.println("Número de registro generado: " + nuevoNumeroRegistro);
+
+            // Combinar titulo y descripcion en asunto
+            String asunto = dto.getTitulo();
+            if (dto.getDescripcion() != null && !dto.getDescripcion().trim().isEmpty()) {
+                asunto = dto.getTitulo() + "\n\n" + dto.getDescripcion();
+            }
 
             Documento doc = new Documento();
-            doc.setCodigo(codigo);
-            doc.setTitulo(dto.getTitulo());
-            doc.setDescripcion(dto.getDescripcion());
+            doc.setNumeroRegistro(nuevoNumeroRegistro);
+            doc.setFechaDocumento(LocalDateTime.now());
+            doc.setAsunto(asunto);
             doc.setRemitente(dto.getRemitente());
             doc.setNumeroDocumento(dto.getNumeroDocumento());
-            doc.setFechaIngreso(LocalDateTime.now());
             doc.setEstado(EstadoDocumento.Registrado);
             doc.setTipoDocumento(tipoDoc);
             doc.setUsuarioRegistro(usuarioRegistrador);
@@ -114,9 +130,9 @@ public class DocumentoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/buscar/{codigo}")
-    public ResponseEntity<?> buscarDocumentoPorCodigo(@PathVariable String codigo) {
-        Optional<Documento> optDoc = documentoRepository.findByCodigo(codigo);
+    @GetMapping("/buscar/{numeroRegistro}")
+    public ResponseEntity<?> buscarDocumentoPorNumeroRegistro(@PathVariable Integer numeroRegistro) {
+        Optional<Documento> optDoc = documentoRepository.findByNumeroRegistro(numeroRegistro);
         if (!optDoc.isPresent()) {
             return ResponseEntity.notFound().build();
         }
@@ -144,7 +160,8 @@ public class DocumentoController {
                 return ResponseEntity.badRequest().body(Map.of("error", "El archivo está vacío"));
             }
 
-            if (!file.getContentType().equals("application/pdf")) {
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.equals("application/pdf")) {
                 return ResponseEntity.badRequest().body(Map.of("error", "Solo se permiten archivos PDF"));
             }
 
@@ -174,6 +191,32 @@ public class DocumentoController {
             System.err.println("Error al subir archivo: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(500).body(Map.of("error", "Error al subir el archivo: " + e.getMessage()));
+        }
+    }
+    
+    // Endpoint temporal para arreglar la estructura de la tabla (REMOVER EN PRODUCCIÓN)
+    @GetMapping("/admin/fix-table")
+    @Transactional
+    public ResponseEntity<?> fixTableStructure() {
+        try {
+            // Eliminar columnas antiguas que no existen en el modelo
+            entityManager.createNativeQuery("ALTER TABLE documentos DROP COLUMN IF EXISTS codigo").executeUpdate();
+            entityManager.createNativeQuery("ALTER TABLE documentos DROP COLUMN IF EXISTS titulo").executeUpdate();
+            entityManager.createNativeQuery("ALTER TABLE documentos DROP COLUMN IF EXISTS descripcion").executeUpdate();
+            entityManager.createNativeQuery("ALTER TABLE documentos DROP COLUMN IF EXISTS fecha_ingreso").executeUpdate();
+            entityManager.createNativeQuery("ALTER TABLE documentos DROP COLUMN IF EXISTS destinatario").executeUpdate();
+            
+            return ResponseEntity.ok(Map.of(
+                "message", "Tabla documentos actualizada correctamente",
+                "status", "success"
+            ));
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of(
+                "message", "Error al actualizar la tabla",
+                "error", e.getMessage(),
+                "status", "error"
+            ));
         }
     }
 }

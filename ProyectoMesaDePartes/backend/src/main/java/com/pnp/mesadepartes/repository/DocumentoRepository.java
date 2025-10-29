@@ -9,5 +9,5 @@ import com.pnp.mesadepartes.model.Documento;
 
 @Repository
 public interface DocumentoRepository extends JpaRepository<Documento, Long> {
-    Optional<Documento> findByCodigo(String codigo);
+    Optional<Documento> findByNumeroRegistro(Integer numeroRegistro);
 }

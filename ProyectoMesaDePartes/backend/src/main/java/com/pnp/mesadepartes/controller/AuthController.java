@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -149,5 +150,29 @@ public class AuthController {
         usuarioRepository.save(usuario);
 
         return ResponseEntity.ok(new MessageResponse("Usuario registrado exitosamente!"));
+    }
+    
+    // Endpoint temporal para generar hash BCrypt (REMOVER EN PRODUCCIÓN)
+    @GetMapping("/hash/{password}")
+    public ResponseEntity<?> generateHash(@PathVariable String password) {
+        String hash = encoder.encode(password);
+        return ResponseEntity.ok(new MessageResponse("Hash BCrypt: " + hash));
+    }
+    
+    // Endpoint temporal para actualizar contraseña de nakusu (REMOVER EN PRODUCCIÓN)
+    @GetMapping("/fix-password")
+    public ResponseEntity<?> fixNakusuPassword() {
+        try {
+            Usuario nakusu = usuarioRepository.findByUsername("nakusu")
+                .orElseThrow(() -> new RuntimeException("Usuario nakusu no encontrado"));
+            
+            // Hash BCrypt para "12345"
+            nakusu.setPasswordHash("$2a$10$7WNDKoScxff/XSULu5IKKOUZfpEUGuDTK10UEaTPGXEDj1KHGIcrG");
+            usuarioRepository.save(nakusu);
+            
+            return ResponseEntity.ok(new MessageResponse("Contraseña de nakusu actualizada exitosamente a BCrypt!"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: " + e.getMessage()));
+        }
     }
 }
