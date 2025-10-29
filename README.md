@@ -2278,10 +2278,10 @@ Desarrollado con ❤️ por el equipo DIRTIC
 
 </div
 cd ../frontend
-python -m http.server 5500
+python -m http.server 8080
 ```
 
-El frontend estará disponible en: `http://localhost:5500`
+El frontend estará disponible en: `http://localhost:8080`
 
 ### 📂 Paso 5: Crear Directorio de Uploads
 
@@ -2297,7 +2297,7 @@ mkdir uploads\documentos
 
 ### 🔐 Inicio de Sesión
 
-1. Abrir `http://localhost:5500/login.html`
+1. Abrir `http://localhost:8080/login.html`
 2. Credenciales de prueba:
    - **Usuario**: `nakusu`
    - **Contraseña**: `123456`
@@ -2532,7 +2532,7 @@ mkdir uploads\documentos
 ### 🛡️ Implementación
 
 - **BCrypt Hashing**: Todas las contraseñas almacenadas con hash BCrypt (strength 10)
-- **CORS Configurado**: Permite acceso desde `localhost:5500`
+- **CORS Configurado**: Permite acceso desde `localhost:8080`
 - **Autenticación Simplificada**: Sistema interno sin JWT (por decisión de diseño)
 - **Validación de Archivos**: Solo PDF, máximo 10MB
 - **Sanitización de Inputs**: Validación en frontend y backend
