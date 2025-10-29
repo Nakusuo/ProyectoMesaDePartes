@@ -939,11 +939,874 @@ async function registrarDocumento() {
    ↓
 14. Frontend muestra mensaje de éxito y redirecciona
 ```
-- **Estados con badges**: Registrado, En Revisión, Aprobado, Rechazado, Archivado
-- **Acceso directo** a archivos PDF desde la bitácora
-- **Información completa**: usuario, fecha, tipo, remitente
 
-### 🎨 Interfaz de Usuario
+---
+
+## 🔍 Cómo Funciona el Proyecto - Guía Detallada
+
+### 📁 Estructura y Propósito de Cada Carpeta
+
+#### 🔧 **config/** - Configuraciones del Sistema
+
+**Ubicación:** `backend/src/main/java/com/pnp/mesadepartes/config/`
+
+##### `SecurityConfig.java`
+**¿Qué hace?** Configura la seguridad de toda la aplicación.
+
+**Funciones principales:**
+- ✅ **Protege endpoints**: Define qué URLs requieren autenticación
+- ✅ **Configura JWT**: Integra el filtro de tokens JWT
+- ✅ **CORS**: Permite peticiones desde el frontend
+- ✅ **BCrypt**: Configura el encoder de contraseñas con 10 rounds
+
+**Código clave:**
+```java
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) {
+    http
+        .csrf(csrf -> csrf.disable())  // Desactiva CSRF (usamos JWT)
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/auth/**").permitAll()  // Login público
+            .anyRequest().authenticated()  // Todo lo demás requiere token
+        )
+        .addFilterBefore(jwtAuthenticationFilter, ...);  // Añade filtro JWT
+}
+```
+
+**Lo que valida:**
+- Token JWT válido en cada petición
+- Contraseñas con BCrypt al hacer login
+- Permisos de acceso a endpoints
+
+##### `FileUploadConfig.java`
+**¿Qué hace?** Configura la subida y almacenamiento de archivos PDF.
+
+**Funciones principales:**
+- 📁 **Directorio de uploads**: `backend/uploads/documentos/`
+- 📏 **Tamaño máximo**: 10MB por archivo
+- 📄 **Tipos permitidos**: Solo PDF
+- 🔒 **Seguridad**: Nombres únicos con timestamp
+
+---
+
+#### 🎮 **controller/** - Puntos de Entrada de la API
+
+**Ubicación:** `backend/src/main/java/com/pnp/mesadepartes/controller/`
+
+Los **Controllers** son la puerta de entrada de tu aplicación. Reciben las peticiones HTTP del frontend.
+
+##### `AuthController.java`
+**¿Qué hace?** Maneja todo lo relacionado con autenticación.
+
+**Endpoints:**
+- `POST /api/auth/login` → Login con username/password
+- `GET /api/auth/me` → Obtiene datos del usuario actual
+
+**Flujo de login:**
+```
+1. Frontend envía username + password
+2. Controller valida con BCrypt
+3. Si es correcto, JwtUtils genera token
+4. Devuelve token + datos del usuario
+5. Frontend guarda token en localStorage
+```
+
+**Ejemplo de uso:**
+```java
+@PostMapping("/login")
+public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
+    // Valida credenciales con BCrypt
+    Authentication authentication = authenticationManager.authenticate(...);
+    
+    // Genera token JWT
+    String jwt = jwtUtils.generateJwtToken(authentication);
+    
+    // Devuelve token + info del usuario
+    return ResponseEntity.ok(new UserInfoResponse(jwt, userDetails));
+}
+```
+
+##### `DocumentoController.java`
+**¿Qué hace?** Gestiona todo el ciclo de vida de los documentos.
+
+**Endpoints:**
+- `POST /api/documentos/registrar` → Registra nuevo documento
+- `POST /api/documentos/upload` → Sube archivo PDF
+- `GET /api/documentos` → Lista todos los documentos
+- `GET /api/documentos/{id}` → Obtiene documento específico
+- `GET /api/documentos/bitacora` → Lista con usuarios asignados
+- `GET /api/documentos/asignados/{userId}` → Documentos de un usuario
+
+**Lo que hace al registrar:**
+1. Valida datos de entrada
+2. Busca usuario registrador, asignado y tipo de documento
+3. Genera código secuencial (DOC-000001, DOC-000002...)
+4. Guarda documento en BD
+5. Crea hoja de trámite si existe numeroHt
+6. Crea trámite con usuario asignado
+7. Devuelve documento creado al frontend
+
+##### `UsuarioController.java`
+**¿Qué hace?** CRUD completo de usuarios.
+
+**Endpoints:**
+- `GET /api/usuarios` → Lista todos
+- `GET /api/usuarios/{id}` → Obtiene uno
+- `POST /api/usuarios` → Crea nuevo
+- `PUT /api/usuarios/{id}` → Actualiza
+- `DELETE /api/usuarios/{id}` → Desactiva (soft delete)
+
+##### `AreaController.java`
+**¿Qué hace?** Gestiona áreas (departamentos PNP y áreas de trabajo).
+
+**Endpoints:**
+- `GET /api/areas` → Lista todas las áreas
+- `POST /api/areas` → Crea nueva área
+- `PUT /api/areas/{id}` → Actualiza área
+- `DELETE /api/areas/{id}` → Elimina área
+
+**Importante:** Devuelve áreas con campo `tipo`:
+- `DEPARTAMENTO_PNP` → Para documentos (DIRTIC, DIRANDRO, etc.)
+- `AREA_TRABAJO` → Para usuarios (Sistemas, Desarrollo, etc.)
+
+---
+
+#### 🗄️ **model/** - Entidades de Base de Datos
+
+**Ubicación:** `backend/src/main/java/com/pnp/mesadepartes/model/`
+
+Los **Models** representan las tablas de tu base de datos.
+
+##### `Documento.java`
+**¿Qué es?** La entidad principal del sistema.
+
+**Campos importantes:**
+```java
+@Entity
+@Table(name = "documentos")
+public class Documento {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idDocumento;
+    
+    @Column(unique = true, nullable = false)
+    private String codigo;  // DOC-000001
+    
+    private String titulo;
+    private String descripcion;
+    private String numeroDocumento;
+    
+    @Enumerated(EnumType.STRING)
+    private EstadoDocumento estado;  // Registrado, En Proceso, etc.
+    
+    private String remitente;  // DIRTIC, DIRANDRO, etc.
+    private LocalDateTime fechaIngreso;
+    private String archivoUrl;  // /uploads/documentos/1234567890-doc.pdf
+    
+    @ManyToOne
+    @JoinColumn(name = "ID_usuario_registro")
+    private Usuario usuarioRegistro;  // Quién lo registró
+    
+    @ManyToOne
+    @JoinColumn(name = "ID_tipo_documento")
+    private TipoDocumento tipoDocumento;  // Oficio, Memorándum, etc.
+}
+```
+
+##### `Usuario.java`
+**¿Qué es?** Representa a los usuarios del sistema.
+
+**Campos importantes:**
+```java
+@Entity
+@Table(name = "usuarios")
+public class Usuario {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idUsuario;
+    
+    @Column(unique = true, nullable = false)
+    private String username;
+    
+    @Column(nullable = false)
+    private String passwordHash;  // Contraseña con BCrypt
+    
+    private String nombre;
+    private String apellido;
+    private String email;
+    private String telefono;
+    
+    @Enumerated(EnumType.STRING)
+    private TipoContrato tipoContrato;  // CAS, LOCADOR, PNP
+    
+    private Boolean activo = true;  // Para soft delete
+    
+    @ManyToOne
+    @JoinColumn(name = "ID_area")
+    private Area area;  // Área de trabajo del usuario
+    
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "usuario_roles",
+        joinColumns = @JoinColumn(name = "ID_usuario"),
+        inverseJoinColumns = @JoinColumn(name = "ID_rol"))
+    private Set<Rol> roles;  // Administrador, Mesa de Partes, etc.
+}
+```
+
+##### `Area.java`
+**¿Qué es?** Departamentos PNP y áreas de trabajo.
+
+**Campos importantes:**
+```java
+@Entity
+@Table(name = "areas")
+public class Area {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idArea;
+    
+    private String nombre;
+    private String sigla;
+    
+    @Enumerated(EnumType.STRING)
+    private TipoArea tipo;  // DEPARTAMENTO_PNP o AREA_TRABAJO
+    
+    public enum TipoArea {
+        DEPARTAMENTO_PNP,  // Para documentos: DIRTIC, DIRANDRO
+        AREA_TRABAJO       // Para usuarios: Sistemas, Desarrollo
+    }
+}
+```
+
+##### `Tramite.java`
+**¿Qué es?** Registra la asignación de documentos a usuarios.
+
+**Campos importantes:**
+```java
+@Entity
+@Table(name = "tramites")
+public class Tramite {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idTramite;
+    
+    @ManyToOne
+    @JoinColumn(name = "ID_documento")
+    private Documento documento;
+    
+    @ManyToOne
+    @JoinColumn(name = "ID_usuario_creador")
+    private Usuario usuarioCreador;  // Quién creó el trámite
+    
+    @ManyToOne
+    @JoinColumn(name = "ID_usuario_asignado")
+    private Usuario usuarioAsignado;  // A quién se le asignó
+}
+```
+
+**¿Por qué es importante?** Esta tabla conecta documentos con usuarios, permitiendo saber a quién está asignado cada documento.
+
+---
+
+#### 💾 **repository/** - Acceso a Datos
+
+**Ubicación:** `backend/src/main/java/com/pnp/mesadepartes/repository/`
+
+Los **Repositories** son interfaces que extienden `JpaRepository` y te dan acceso automático a la base de datos.
+
+##### `DocumentoRepository.java`
+**¿Qué hace?** Operaciones CRUD + consultas personalizadas para documentos.
+
+```java
+public interface DocumentoRepository extends JpaRepository<Documento, Long> {
+    // Spring Data genera automáticamente:
+    // - save(documento)
+    // - findById(id)
+    // - findAll()
+    // - deleteById(id)
+    
+    // Consultas personalizadas:
+    List<Documento> findByEstado(EstadoDocumento estado);
+    List<Documento> findByUsuarioRegistro(Usuario usuario);
+}
+```
+
+##### `UsuarioRepository.java`
+**¿Qué hace?** Operaciones para usuarios + búsqueda por username.
+
+```java
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+    // Consulta personalizada para login
+    Optional<Usuario> findByUsername(String username);
+    
+    // Consulta para verificar si existe
+    Boolean existsByUsername(String username);
+}
+```
+
+##### `TramiteRepository.java`
+**¿Qué hace?** Consultas para trámites y asignaciones.
+
+```java
+public interface TramiteRepository extends JpaRepository<Tramite, Long> {
+    // Busca trámites de un documento
+    List<Tramite> findByDocumento(Documento documento);
+    
+    // Busca trámites asignados a un usuario
+    List<Tramite> findByUsuarioAsignado_IdUsuario(Long idUsuario);
+}
+```
+
+**Uso en el código:**
+```java
+// En DocumentoController
+List<Tramite> tramites = tramiteRepository.findByDocumento(documento);
+Usuario asignado = tramites.get(0).getUsuarioAsignado();
+```
+
+---
+
+#### 🔐 **security/** - Seguridad y Autenticación
+
+**Ubicación:** `backend/src/main/java/com/pnp/mesadepartes/security/`
+
+##### `jwt/JwtUtils.java`
+**¿Qué hace?** Genera y valida tokens JWT.
+
+**Funciones:**
+- `generateJwtToken()` → Crea token JWT válido por 24 horas
+- `getUserNameFromJwtToken()` → Extrae username del token
+- `validateJwtToken()` → Verifica si el token es válido
+
+**Ejemplo:**
+```java
+// Generar token al hacer login
+String token = jwtUtils.generateJwtToken(authentication);
+
+// Validar token en cada petición
+boolean isValid = jwtUtils.validateJwtToken(token);
+
+// Extraer username del token
+String username = jwtUtils.getUserNameFromJwtToken(token);
+```
+
+##### `jwt/JwtAuthenticationFilter.java`
+**¿Qué hace?** Intercepta TODAS las peticiones HTTP y valida el token.
+
+**Flujo:**
+```
+1. Petición HTTP llega → interceptada por el filtro
+2. Extrae token del header Authorization: Bearer <token>
+3. Valida token con JwtUtils
+4. Si es válido, carga datos del usuario
+5. Si no es válido, rechaza la petición (401 Unauthorized)
+6. Si es válido, continúa al Controller
+```
+
+##### `services/UserDetailsServiceImpl.java`
+**¿Qué hace?** Carga datos del usuario desde la BD para autenticación.
+
+```java
+@Override
+public UserDetails loadUserByUsername(String username) {
+    Usuario usuario = usuarioRepository.findByUsername(username)
+        .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+    
+    // Convierte Usuario a UserDetails (Spring Security)
+    return UserDetailsImpl.build(usuario);
+}
+```
+
+---
+
+#### 📦 **dto/** - Objetos de Transferencia
+
+**Ubicación:** `backend/src/main/java/com/pnp/mesadepartes/dto/`
+
+Los **DTOs** son objetos simples para transferir datos entre frontend y backend.
+
+##### `DocumentoRegistroDTO.java`
+**¿Para qué?** Recibe datos del formulario de registro de documentos.
+
+```java
+public class DocumentoRegistroDTO {
+    private String titulo;
+    private String descripcion;
+    private Long idTipoDocumento;
+    private String numeroDocumento;
+    private String numeroHt;
+    private String remitente;
+    private Long idUsuarioAsignado;
+    private String archivoUrl;
+}
+```
+
+**¿Por qué usar DTO?**
+- ✅ No expone toda la entidad Documento
+- ✅ Solo los campos necesarios del frontend
+- ✅ Evita lazy loading issues
+- ✅ Validaciones específicas con @NotNull, @Size, etc.
+
+##### `LoginRequest.java`
+**¿Para qué?** Recibe credenciales de login.
+
+```java
+public class LoginRequest {
+    @NotBlank
+    private String username;
+    
+    @NotBlank
+    private String password;
+}
+```
+
+##### `UserInfoResponse.java`
+**¿Para qué?** Devuelve datos del usuario después del login.
+
+```java
+public class UserInfoResponse {
+    private String token;  // JWT
+    private String type = "Bearer";
+    private Long id;
+    private String username;
+    private String nombre;
+    private String apellido;
+    private List<String> roles;
+}
+```
+
+---
+
+### 🎨 Frontend - Interfaz de Usuario
+
+**Ubicación:** `backend/src/main/resources/static/` (servido por Spring Boot)
+
+#### 📄 **HTML Files** - Páginas del Sistema
+
+##### `index.html`
+**¿Qué hace?** Página de entrada que detecta sesión.
+
+**Lógica:**
+```javascript
+const token = localStorage.getItem('token');
+if (token && userInfo) {
+    window.location.href = 'dashboard.html';  // Ya logueado
+} else {
+    window.location.href = 'login.html';  // Ir a login
+}
+```
+
+##### `login.html`
+**¿Qué hace?** Formulario de autenticación.
+
+**Elementos:**
+- Input para username
+- Input para password (type="password")
+- Botón "Iniciar Sesión"
+- Mensaje de error si falla
+
+##### `dashboard.html`
+**¿Qué hace?** Panel principal con métricas y gráficas.
+
+**Muestra:**
+- 📊 Total de documentos
+- 📈 Documentos por estado (gráfica de torta)
+- 📊 Documentos por mes (gráfica de barras)
+- 📋 Lista de documentos recientes
+
+##### `registro.html` (registrar-interno.js)
+**¿Qué hace?** Formulario para registrar documentos.
+
+**Campos:**
+- Título (obligatorio)
+- Tipo de documento (dropdown)
+- Remitente (dropdown con DEPARTAMENTOS PNP)
+- Usuario asignado (dropdown)
+- Número de documento
+- Número HT
+- Descripción
+- Archivo PDF (upload)
+
+##### `bitacora.html`
+**¿Qué hace?** Tabla con todos los documentos y filtros.
+
+**Muestra:**
+- Tabla con: Fecha, Usuario Asignado, Código, Remitente, Tipo, Estado
+- Filtros por: Estado, Área, Tipo de Documento, Rango de fechas
+- Paginación (si hay muchos registros)
+
+##### `gestion-usuarios.html`
+**¿Qué hace?** CRUD de usuarios (solo Administrador).
+
+**Funciones:**
+- Listar todos los usuarios
+- Crear nuevo usuario
+- Editar usuario existente
+- Desactivar usuario (soft delete)
+
+---
+
+#### 🎨 **assets/css/** - Estilos
+
+##### `style.css`
+**¿Qué hace?** Estilos globales de la aplicación.
+
+**Define:**
+- Variables CSS para colores PNP:
+  ```css
+  :root {
+      --pnp-green: #00642e;
+      --pnp-green-dark: #004d24;
+      --pnp-yellow: #fbbf24;
+  }
+  ```
+- Reset de estilos base
+- Tipografía general
+- Clases de utilidad
+
+##### `sidebar.css`
+**¿Qué hace?** Estilos del menú lateral.
+
+**Elementos:**
+- Logo circular PNP
+- Menú de navegación
+- Hover effects
+- Active state
+- Responsive collapse
+
+##### `dashboard.css`
+**¿Qué hace?** Estilos del dashboard.
+
+**Elementos:**
+- Cards de métricas
+- Gráficas con Chart.js
+- Layout en grid
+- Tabla de documentos recientes
+
+##### `bitacora.css`
+**¿Qué hace?** Estilos de la bitácora.
+
+**Elementos:**
+- Tabla responsive
+- Filtros superiores
+- Badges de estado
+- Paginación
+
+---
+
+#### ⚙️ **assets/js/** - Lógica del Frontend
+
+##### `config.js`
+**¿Qué hace?** Configuración global del frontend.
+
+```javascript
+const API_URL = 'http://localhost:8080/api';
+const DEFAULT_DASHBOARD = 'dashboard.html';
+const MAX_FILE_SIZE = 10 * 1024 * 1024;  // 10MB
+```
+
+##### `auth.js`
+**¿Qué hace?** Funciones de autenticación.
+
+**Funciones:**
+```javascript
+// Verifica si hay sesión activa
+function checkAuth() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = 'login.html';
+    }
+}
+
+// Cierra sesión
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userInfo');
+    window.location.href = 'login.html';
+}
+
+// Headers con token para fetch
+function getAuthHeaders() {
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+    };
+}
+```
+
+##### `permissions.js`
+**¿Qué hace?** Control de acceso basado en roles (RBAC).
+
+**Define:**
+```javascript
+const ROLES = {
+    ADMIN: 'Administrador',
+    MESA_PARTES: 'Mesa de Partes',
+    TRABAJADOR: 'Trabajador',
+    JEFATURA: 'Jefatura'
+};
+
+const PERMISSIONS = {
+    VER_DASHBOARD: [ROLES.ADMIN, ROLES.MESA_PARTES, ROLES.TRABAJADOR, ROLES.JEFATURA],
+    VER_REGISTRO: [ROLES.ADMIN, ROLES.MESA_PARTES],
+    VER_BITACORA: [ROLES.ADMIN, ROLES.MESA_PARTES, ROLES.JEFATURA],
+    VER_USUARIOS: [ROLES.ADMIN],
+    VER_SOLO_ASIGNADOS: [ROLES.TRABAJADOR]
+};
+
+class PermissionsManager {
+    hasPermission(permission) {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        const userRole = userInfo.roles[0];
+        return PERMISSIONS[permission].includes(userRole);
+    }
+}
+```
+
+##### `sidebar.js`
+**¿Qué hace?** Gestiona el menú lateral dinámico.
+
+**Funciones:**
+```javascript
+// Filtra menú según permisos
+function filterMenuByPermissions() {
+    const permissionsManager = new PermissionsManager();
+    
+    // Oculta opciones según rol
+    if (!permissionsManager.hasPermission('VER_REGISTRO')) {
+        document.getElementById('menu-registro').style.display = 'none';
+    }
+    
+    if (!permissionsManager.hasPermission('VER_USUARIOS')) {
+        document.getElementById('menu-usuarios').style.display = 'none';
+    }
+}
+```
+
+##### `dashboard.js`
+**¿Qué hace?** Carga métricas y gráficas del dashboard.
+
+**Funciones:**
+```javascript
+// Carga estadísticas
+async function cargarMetricas() {
+    const response = await fetch(`${API_URL}/documentos`, {
+        headers: getAuthHeaders()
+    });
+    const documentos = await response.json();
+    
+    // Calcula métricas
+    const total = documentos.length;
+    const registrados = documentos.filter(d => d.estado === 'Registrado').length;
+    const enProceso = documentos.filter(d => d.estado === 'En Proceso').length;
+    
+    // Actualiza cards
+    document.getElementById('total-docs').textContent = total;
+    document.getElementById('registrados').textContent = registrados;
+    document.getElementById('en-proceso').textContent = enProceso;
+}
+
+// Crea gráfica con Chart.js
+function cargarGraficas() {
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Registrado', 'En Proceso', 'Finalizado'],
+            datasets: [{
+                data: [10, 5, 3],
+                backgroundColor: ['#00642e', '#fbbf24', '#059669']
+            }]
+        }
+    });
+}
+```
+
+##### `registro.js` / `registrar-interno.js`
+**¿Qué hace?** Maneja el formulario de registro de documentos.
+
+**Funciones:**
+```javascript
+// Carga dropdowns
+async function cargarAreas() {
+    const response = await fetch(`${API_URL}/areas`);
+    const areas = await response.json();
+    
+    // Filtra solo departamentos PNP
+    const departamentosPNP = areas.filter(area => area.tipo === 'DEPARTAMENTO_PNP');
+    
+    // Llena dropdown
+    departamentosPNP.forEach(area => {
+        remitenteSelect.innerHTML += `<option value="${area.sigla}">${area.sigla} - ${area.nombre}</option>`;
+    });
+}
+
+// Registra documento
+async function handleSubmit(event) {
+    event.preventDefault();
+    
+    // Construye datos
+    const data = {
+        titulo: document.getElementById('titulo').value,
+        idTipoDocumento: parseInt(document.getElementById('tipo-documento').value),
+        remitente: document.getElementById('remitente').value,
+        idUsuarioAsignado: parseInt(document.getElementById('usuario-asignado').value)
+    };
+    
+    // Envía al backend
+    const response = await fetch(`${API_URL}/documentos/registrar`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data)
+    });
+    
+    if (response.ok) {
+        alert('Documento registrado exitosamente');
+        window.location.href = 'dashboard.html';
+    }
+}
+```
+
+##### `bitacora.js`
+**¿Qué hace?** Muestra tabla de documentos con filtros.
+
+**Funciones:**
+```javascript
+// Carga documentos con usuario asignado
+async function cargarDocumentos() {
+    const response = await fetch(`${API_URL}/documentos/bitacora`, {
+        headers: getAuthHeaders()
+    });
+    const documentos = await response.json();
+    
+    // Construye tabla
+    tableBody.innerHTML = documentos.map(item => {
+        const doc = item.documento;
+        const usuarioAsignado = item.usuarioAsignado || 'Sin asignar';
+        
+        return `<tr>
+            <td>${formatDate(doc.fechaIngreso)}</td>
+            <td><strong>${usuarioAsignado}</strong></td>
+            <td>${doc.codigo}</td>
+            <td>${doc.remitente}</td>
+            <td>${doc.tipoDocumento.nombre}</td>
+            <td><span class="badge ${getBadgeClass(doc.estado)}">${doc.estado}</span></td>
+        </tr>`;
+    }).join('');
+}
+
+// Filtra documentos
+function filtrarDocumentos() {
+    const estadoFiltro = document.getElementById('filtro-estado').value;
+    const documentosFiltrados = documentos.filter(doc => {
+        if (estadoFiltro && doc.documento.estado !== estadoFiltro) return false;
+        return true;
+    });
+    mostrarDocumentos(documentosFiltrados);
+}
+```
+
+##### `gestion-usuarios.js`
+**¿Qué hace?** CRUD de usuarios.
+
+**Funciones:**
+```javascript
+// Lista usuarios
+async function cargarUsuarios() {
+    const response = await fetch(`${API_URL}/usuarios`, {
+        headers: getAuthHeaders()
+    });
+    const usuarios = await response.json();
+    
+    // Construye tabla
+    usuarios.forEach(usuario => {
+        const row = `<tr>
+            <td>${usuario.username}</td>
+            <td>${usuario.nombre} ${usuario.apellido}</td>
+            <td>${usuario.area?.nombre || 'Sin área'}</td>
+            <td>${usuario.roles.map(r => r.nombre).join(', ')}</td>
+            <td>
+                <button onclick="editarUsuario(${usuario.idUsuario})">Editar</button>
+                <button onclick="desactivarUsuario(${usuario.idUsuario})">Desactivar</button>
+            </td>
+        </tr>`;
+        tableBody.innerHTML += row;
+    });
+}
+```
+
+---
+
+### 🔄 Flujo Completo de una Petición
+
+```
+1. Usuario hace click en "Registrar Documento"
+   ↓
+2. Frontend (registro.html) muestra formulario
+   ↓
+3. Usuario llena campos y hace submit
+   ↓
+4. JavaScript (registro.js) intercepta submit
+   ↓
+5. Valida campos en cliente
+   ↓
+6. Construye objeto JSON con datos
+   ↓
+7. Fetch POST a http://localhost:8080/api/documentos/registrar
+   ↓
+8. JwtAuthenticationFilter intercepta petición
+   ↓
+9. Valida token JWT del header Authorization
+   ↓
+10. Si token válido, permite acceso al Controller
+    ↓
+11. DocumentoController.registrarDocumento() recibe DTO
+    ↓
+12. Controller busca entidades relacionadas en BD
+    ↓
+13. Controller genera código secuencial
+    ↓
+14. DocumentoRepository.save() guarda en BD
+    ↓
+15. TramiteRepository.save() crea trámite
+    ↓
+16. Controller devuelve ResponseEntity con documento
+    ↓
+17. Frontend recibe JSON response
+    ↓
+18. JavaScript muestra mensaje de éxito
+    ↓
+19. Redirecciona a dashboard.html
+```
+
+---
+
+### 🔑 Puntos Clave para Entender el Proyecto
+
+1. **Spring Boot sirve el frontend**: No hay servidor separado, Spring Boot sirve los archivos HTML/CSS/JS desde `src/main/resources/static/`
+
+2. **JWT en cada petición**: Después del login, TODAS las peticiones incluyen `Authorization: Bearer <token>` en el header
+
+3. **Dos tipos de áreas**: La tabla `areas` tiene un campo `tipo`:
+   - `DEPARTAMENTO_PNP`: Para remitentes de documentos
+   - `AREA_TRABAJO`: Para asignación de usuarios
+
+4. **BCrypt para contraseñas**: Las contraseñas NUNCA se guardan en texto plano, siempre con hash BCrypt de 10 rounds
+
+5. **Trámites = Asignaciones**: La tabla `tramites` conecta documentos con usuarios asignados
+
+6. **Permisos en frontend**: El archivo `permissions.js` oculta/muestra menús según el rol del usuario
+
+7. **Códigos secuenciales**: Los códigos de documentos se generan automáticamente contando los documentos existentes + 1
+
+8. **Soft delete**: Los usuarios no se eliminan físicamente, solo se marca `activo = false`
+
+9. **Fetch API**: Todo el frontend usa `fetch()` con async/await, sin jQuery ni axios
+
+10. **Chart.js para gráficas**: El dashboard usa Chart.js 4.4.0 para visualizaciones
+
+---
+
+## 🎨 Interfaz de Usuario
 
 - **Diseño moderno y profesional** con colores institucionales PNP
 - **Responsive design** adaptable a dispositivos móviles
