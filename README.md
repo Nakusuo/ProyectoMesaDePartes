@@ -308,19 +308,19 @@ public class DocumentoController {
 
 ## 📊 Estado del Proyecto
 
-### Progreso General: **78%** ✅
+### Progreso General: **55%** 🔄
 
 | Módulo | Completado | Estado | Observaciones |
 |--------|-----------|--------|---------------|
-| **Autenticación y Seguridad** | 95% | ✅ Funcional | JWT + BCrypt implementado, refresh token pendiente |
-| **Gestión de Usuarios** | 90% | ✅ Funcional | CRUD completo, falta edición de contraseña |
-| **Gestión de Documentos** | 85% | ✅ Funcional | Registro y listado completo, edición básica |
-| **Sistema de Áreas** | 100% | ✅ Completo | Separación DEPARTAMENTO_PNP/AREA_TRABAJO |
-| **Bitácora y Seguimiento** | 80% | ✅ Funcional | Vista y filtros, falta exportación PDF |
-| **Dashboard y Métricas** | 75% | 🔄 En desarrollo | Gráficas básicas, faltan KPIs avanzados |
-| **Gestión de Trámites** | 70% | 🔄 En desarrollo | Asignación básica, falta flujo de estados |
-| **Salida de Documentos** | 40% | ⚠️ Parcial | Modelo creado, falta interfaz completa |
-| **Reportes y Exportación** | 30% | ⏳ Pendiente | Solo exportación básica |
+| **Autenticación y Seguridad** | 70% | 🔄 En desarrollo | JWT básico implementado, falta refresh token y validaciones avanzadas |
+| **Gestión de Usuarios** | 65% | 🔄 En desarrollo | CRUD básico, falta edición de contraseña y validaciones |
+| **Gestión de Documentos** | 60% | 🔄 En desarrollo | Registro básico funcional, falta edición y validaciones completas |
+| **Sistema de Áreas** | 80% | ✅ Funcional | Separación DEPARTAMENTO_PNP/AREA_TRABAJO implementada |
+| **Bitácora y Seguimiento** | 50% | 🔄 En desarrollo | Vista básica, faltan filtros avanzados y exportación PDF |
+| **Dashboard y Métricas** | 45% | 🔄 En desarrollo | Gráficas básicas, faltan KPIs y análisis avanzados |
+| **Gestión de Trámites** | 40% | ⚠️ Parcial | Asignación básica, falta flujo completo de estados |
+| **Salida de Documentos** | 25% | ⚠️ Parcial | Modelo creado, interfaz y lógica incompletas |
+| **Reportes y Exportación** | 20% | ⏳ Pendiente | Funcionalidad mínima, falta implementación completa |
 | **Notificaciones** | 0% | ⏳ Pendiente | Sistema de alertas por implementar |
 
 ### Funcionalidades Implementadas ✅
@@ -365,18 +365,28 @@ public class DocumentoController {
 #### Alta Prioridad
 - ⏳ **Flujo completo de estados**: Implementar transiciones Registrado → En Proceso → Finalizado
 - ⏳ **Edición de documentos**: Formulario de modificación post-registro
+- ⏳ **Eliminación de documentos**: Soft delete con validaciones
 - ⏳ **Búsqueda avanzada**: Filtros combinados con autocompletado
 - ⏳ **Validaciones backend**: @Valid en DTOs con mensajes personalizados
+- ⏳ **Validaciones frontend**: Validación de campos en tiempo real
 - ⏳ **Logs de auditoría**: Registro de todas las acciones CRUD
 - ⏳ **Paginación**: PageRequest en consultas grandes (>100 registros)
+- ⏳ **Manejo de errores**: Mensajes de error más descriptivos
+- ⏳ **Seguridad mejorada**: Validación de permisos en backend
+- ⏳ **Gestión de sesiones**: Control de sesiones activas y expiración
 
 #### Media Prioridad
 - ⏳ **Salida de documentos**: Interfaz completa con cargo de entrega
+- ⏳ **Gestión de hojas de trámite**: CRUD completo y relaciones
+- ⏳ **Gestión de tipos de documento**: Administración desde interfaz
 - ⏳ **Reportes PDF**: Generación con iText o JasperReports
 - ⏳ **Exportación Excel**: Apache POI para reportes tabulares
 - ⏳ **Dashboard avanzado**: KPIs con cálculos estadísticos
+- ⏳ **Filtros avanzados en bitácora**: Por múltiples criterios simultáneos
 - ⏳ **Notificaciones**: Sistema de alertas en tiempo real (WebSockets)
 - ⏳ **Historial de cambios**: Versionado de documentos
+- ⏳ **Carga masiva**: Importación de documentos desde Excel/CSV
+- ⏳ **Recuperación de contraseña**: Sistema de reset por email
 
 #### Baja Prioridad (Mejoras Futuras)
 - ⏳ **Refresh tokens**: Renovación automática de JWT
@@ -385,18 +395,22 @@ public class DocumentoController {
 - ⏳ **OCR**: Extracción de texto de PDFs escaneados
 - ⏳ **App móvil**: React Native para consultas móviles
 - ⏳ **Tests automatizados**: JUnit + Mockito (cobertura 80%)
+- ⏳ **Modo oscuro**: Theme switcher para interfaz
+- ⏳ **Backup automático**: Sistema de respaldos programados
+- ⏳ **Integración con SUNAT**: Validación de RUC/DNI
+- ⏳ **Analíticas avanzadas**: Estadísticas con Machine Learning
 
 ### Calidad del Código
 
 | Métrica | Valor | Estado |
 |---------|-------|--------|
 | **Líneas de código** | ~5,200 | 📊 |
-| **Cobertura de tests** | 15% | ⚠️ Bajo |
-| **Deuda técnica** | Baja | ✅ |
+| **Cobertura de tests** | 10% | ⚠️ Bajo |
+| **Deuda técnica** | Media | 🔄 Por refactorizar |
 | **Complejidad ciclomática** | Media (8-12) | ✅ |
-| **Duplicación de código** | <5% | ✅ |
-| **Principios SOLID** | 90% | ✅ |
-| **Documentación** | 60% | 🔄 |
+| **Duplicación de código** | ~8% | 🔄 Aceptable |
+| **Principios SOLID** | 70% | 🔄 En mejora |
+| **Documentación** | 65% | 🔄 En progreso |
 
 ---
 
