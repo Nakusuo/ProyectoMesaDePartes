@@ -99,8 +99,17 @@
     </div>
 
     <!-- Scripts -->
+    <script src="assets/js/permissions.js"></script>
     <script src="assets/js/sidebar.js"></script>
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/gestion-usuarios.js"></script>
+    <script>
+        // Verificar permisos al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.permissionsManager) {
+                window.permissionsManager.redirectIfUnauthorized('gestion-usuarios.html');
+            }
+        });
+    </script>
 </body>
 </html>

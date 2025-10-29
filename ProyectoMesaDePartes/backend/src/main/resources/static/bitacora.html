@@ -32,6 +32,35 @@
           <p style="color: var(--text-secondary);">Registro de acciones realizadas en el sistema de Mesa de Partes.</p>
         </div>
 
+        <!-- Filtros de búsqueda -->
+        <div style="background: var(--card-bg); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--border-color);">
+          <h3 style="margin: 0 0 15px 0; color: var(--pnp-green); font-size: 16px;">🔍 Filtros de Búsqueda</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <div>
+              <label style="display: block; margin-bottom: 5px; font-size: 14px; color: var(--text-secondary);">Palabra Clave</label>
+              <input type="text" id="filtro-palabra" placeholder="Buscar..." style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;">
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 5px; font-size: 14px; color: var(--text-secondary);">N° Documento</label>
+              <input type="text" id="filtro-nro-doc" placeholder="DOC-000001" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;">
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 5px; font-size: 14px; color: var(--text-secondary);">N° HT</label>
+              <input type="text" id="filtro-nro-ht" placeholder="HT-0001" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;">
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 5px; font-size: 14px; color: var(--text-secondary);">Personal Asignado</label>
+              <select id="filtro-usuario" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;">
+                <option value="">Todos</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-top: 15px; display: flex; gap: 10px;">
+            <button id="btn-aplicar-filtros" class="btn btn-primary btn-sm">Aplicar Filtros</button>
+            <button id="btn-limpiar-filtros" class="btn btn-secondary btn-sm">Limpiar</button>
+          </div>
+        </div>
+
         <table>
           <thead>
             <tr>
@@ -56,13 +85,18 @@
     </div>
   </main>
 
-  <!-- Sidebar Script (debe cargarse primero) -->
+  <!-- Scripts -->
+  <script src="assets/js/permissions.js"></script>
   <script src="assets/js/sidebar.js"></script>
-  
-  <!-- Módulo de Autenticación -->
   <script src="assets/js/auth.js"></script>
-  
-  <!-- Lógica Específica de esta página -->
   <script src="assets/js/bitacora.js"></script>
+  <script>
+    // Verificar permisos al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+      if (window.permissionsManager) {
+        window.permissionsManager.redirectIfUnauthorized('bitacora.html');
+      }
+    });
+  </script>
 </body>
 </html>

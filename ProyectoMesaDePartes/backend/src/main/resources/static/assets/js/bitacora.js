@@ -1,11 +1,41 @@
 // Configuración
 const API_URL = 'http://localhost:8080/api';
 
-// Cargar documentos al iniciar
-document.addEventListener('DOMContentLoaded', () => {
+// Variables globales
+let documentosOriginales = [];
+let usuariosDisponibles = [];
+
+// Cargar documentos y usuarios al iniciar
+document.addEventListener('DOMContentLoaded', async () => {
     console.log('🔵 Bitácora cargada');
-    cargarDocumentos();
+    await cargarUsuarios();
+    await cargarDocumentos();
+    inicializarEventos();
 });
+
+// Función para cargar usuarios disponibles
+async function cargarUsuarios() {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_URL}/usuarios`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            usuariosDisponibles = await response.json();
+            const select = document.getElementById('filtro-usuario');
+            select.innerHTML = '<option value="">Todos</option>' + 
+                usuariosDisponibles.map(u => 
+                    `<option value="${u.idUsuario}">${u.nombre} ${u.apellido}</option>`
+                ).join('');
+        }
+    } catch (error) {
+        console.error('Error al cargar usuarios:', error);
+    }
+}
 
 // Función para cargar todos los documentos
 async function cargarDocumentos() {
@@ -14,13 +44,20 @@ async function cargarDocumentos() {
     try {
         console.log('📡 Obteniendo documentos de:', `${API_URL}/documentos`);
         
-        const response = await fetch(`${API_URL}/documentos`);
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_URL}/documentos`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
         
         if (!response.ok) {
             throw new Error(`Error HTTP: ${response.status}`);
         }
         
         const documentos = await response.json();
+        documentosOriginales = documentos;
         console.log('✅ Documentos recibidos:', documentos.length);
         
         if (documentos.length === 0) {
@@ -31,29 +68,7 @@ async function cargarDocumentos() {
         // Ordenar por fecha de ingreso (más recientes primero)
         documentos.sort((a, b) => new Date(b.fechaIngreso) - new Date(a.fechaIngreso));
         
-        // Generar filas de la tabla
-        tableBody.innerHTML = documentos.map(doc => {
-            const fecha = formatearFecha(doc.fechaIngreso);
-            const usuario = doc.usuario ? doc.usuario.nombre : 'Sin asignar';
-            const tipo = doc.tipoDocumento ? doc.tipoDocumento.nombre : 'N/A';
-            const estado = obtenerEstadoBadge(doc.estado);
-            
-            return `
-                <tr>
-                    <td>${fecha}</td>
-                    <td><strong>${usuario}</strong></td>
-                    <td>Registro de documento</td>
-                    <td>${tipo}</td>
-                    <td>
-                        <strong>Código:</strong> ${doc.codigo}<br>
-                        <strong>Título:</strong> ${doc.titulo || 'Sin título'}<br>
-                        <strong>Remitente:</strong> ${doc.remitente || 'N/A'}<br>
-                        <strong>Estado:</strong> ${estado}
-                        ${doc.archivoUrl ? '<br>📎 <a href="http://localhost:8080/' + doc.archivoUrl + '" target="_blank">Ver PDF</a>' : ''}
-                    </td>
-                </tr>
-            `;
-        }).join('');
+        mostrarDocumentos(documentos);
         
     } catch (error) {
         console.error('❌ ERROR al cargar documentos:', error);
@@ -65,6 +80,110 @@ async function cargarDocumentos() {
             </tr>
         `;
     }
+}
+
+// Función para mostrar documentos en la tabla
+function mostrarDocumentos(documentos) {
+    const tableBody = document.getElementById('bitacora-table-body');
+    
+    if (documentos.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">No se encontraron documentos</td></tr>';
+        return;
+    }
+    
+    tableBody.innerHTML = documentos.map(doc => {
+        const fecha = formatearFecha(doc.fechaIngreso);
+        const usuario = doc.usuario ? doc.usuario.nombre : 'Sin asignar';
+        const tipo = doc.tipoDocumento ? doc.tipoDocumento.nombre : 'N/A';
+        const estado = obtenerEstadoBadge(doc.estado);
+        
+        return `
+            <tr>
+                <td>${fecha}</td>
+                <td><strong>${usuario}</strong></td>
+                <td>Registro de documento</td>
+                <td>${tipo}</td>
+                <td>
+                    <strong>Código:</strong> ${doc.codigo}<br>
+                    <strong>Título:</strong> ${doc.titulo || 'Sin título'}<br>
+                    <strong>Remitente:</strong> ${doc.remitente || 'N/A'}<br>
+                    <strong>Estado:</strong> ${estado}
+                    ${doc.archivoUrl ? '<br>📎 <a href="http://localhost:8080/' + doc.archivoUrl + '" target="_blank">Ver PDF</a>' : ''}
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Función para inicializar eventos de filtros
+function inicializarEventos() {
+    document.getElementById('btn-aplicar-filtros').addEventListener('click', aplicarFiltros);
+    document.getElementById('btn-limpiar-filtros').addEventListener('click', limpiarFiltros);
+    
+    // Aplicar filtros al presionar Enter en los inputs
+    document.querySelectorAll('#filtro-palabra, #filtro-nro-doc, #filtro-nro-ht').forEach(input => {
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                aplicarFiltros();
+            }
+        });
+    });
+}
+
+// Función para aplicar filtros
+function aplicarFiltros() {
+    const palabra = document.getElementById('filtro-palabra').value.toLowerCase();
+    const nroDoc = document.getElementById('filtro-nro-doc').value.toLowerCase();
+    const nroHt = document.getElementById('filtro-nro-ht').value.toLowerCase();
+    const usuario = document.getElementById('filtro-usuario').value;
+    
+    let documentosFiltrados = documentosOriginales;
+    
+    // Filtrar por palabra clave (busca en título, descripción, remitente, código)
+    if (palabra) {
+        documentosFiltrados = documentosFiltrados.filter(doc => 
+            (doc.titulo && doc.titulo.toLowerCase().includes(palabra)) ||
+            (doc.descripcion && doc.descripcion.toLowerCase().includes(palabra)) ||
+            (doc.remitente && doc.remitente.toLowerCase().includes(palabra)) ||
+            (doc.codigo && doc.codigo.toLowerCase().includes(palabra))
+        );
+    }
+    
+    // Filtrar por número de documento
+    if (nroDoc) {
+        documentosFiltrados = documentosFiltrados.filter(doc => 
+            doc.codigo && doc.codigo.toLowerCase().includes(nroDoc)
+        );
+    }
+    
+    // Filtrar por número de HT
+    if (nroHt) {
+        documentosFiltrados = documentosFiltrados.filter(doc => 
+            doc.numeroHt && doc.numeroHt.toLowerCase().includes(nroHt)
+        );
+    }
+    
+    // Filtrar por usuario asignado
+    if (usuario) {
+        documentosFiltrados = documentosFiltrados.filter(doc => 
+            doc.usuarioRegistro && doc.usuarioRegistro.idUsuario === parseInt(usuario)
+        );
+    }
+    
+    // Ordenar por fecha (más recientes primero)
+    documentosFiltrados.sort((a, b) => new Date(b.fechaIngreso) - new Date(a.fechaIngreso));
+    
+    mostrarDocumentos(documentosFiltrados);
+}
+
+// Función para limpiar filtros
+function limpiarFiltros() {
+    document.getElementById('filtro-palabra').value = '';
+    document.getElementById('filtro-nro-doc').value = '';
+    document.getElementById('filtro-nro-ht').value = '';
+    document.getElementById('filtro-usuario').value = '';
+    
+    mostrarDocumentos(documentosOriginales);
 }
 
 // Función para formatear fecha

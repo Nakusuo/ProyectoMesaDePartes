@@ -13,5 +13,6 @@ import com.pnp.mesadepartes.model.Usuario;
 @Repository
 public interface TramiteRepository extends JpaRepository<Tramite, Long> {
     List<Tramite> findByUsuarioAsignado(Usuario usuario);
-    List<Tramite> findByDocumento(Documento documento); 
+    List<Tramite> findByDocumento(Documento documento);
+    List<Tramite> findByUsuarioAsignado_IdUsuario(Long idUsuario);
 }

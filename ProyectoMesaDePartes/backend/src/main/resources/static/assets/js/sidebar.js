@@ -9,9 +9,38 @@ class SidebarManager {
 
     async init() {
         await this.loadSidebar();
+        this.filterMenuByPermissions();
         this.attachEventListeners();
         this.setActivePage();
         this.loadUserInfo();
+    }
+
+    filterMenuByPermissions() {
+        // Esperar a que permissionsManager esté disponible
+        if (!window.permissionsManager) {
+            console.warn('PermissionsManager no disponible');
+            return;
+        }
+
+        const pm = window.permissionsManager;
+        
+        // Obtener todos los enlaces de navegación
+        const navLinks = document.querySelectorAll('.sidebar-nav a');
+        
+        navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            
+            // Ocultar enlaces según permisos
+            if (href === 'registro.html' && !pm.hasPermission('VER_REGISTRO')) {
+                link.style.display = 'none';
+            }
+            if (href === 'bitacora.html' && !pm.hasPermission('VER_BITACORA')) {
+                link.style.display = 'none';
+            }
+            if (href === 'gestion-usuarios.html' && !pm.hasPermission('VER_USUARIOS')) {
+                link.style.display = 'none';
+            }
+        });
     }
 
     async loadSidebar() {

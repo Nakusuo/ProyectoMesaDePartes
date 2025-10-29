@@ -114,6 +114,23 @@ public class DocumentoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/asignados/{userId}")
+    public ResponseEntity<List<Documento>> getDocumentosAsignados(@PathVariable Long userId) {
+        System.out.println("📋 Obteniendo documentos asignados al usuario ID: " + userId);
+        
+        // Buscar trámites donde el usuario es el asignado
+        List<Tramite> tramites = tramiteRepository.findByUsuarioAsignado_IdUsuario(userId);
+        
+        // Extraer los documentos de los trámites
+        List<Documento> documentos = tramites.stream()
+                .map(Tramite::getDocumento)
+                .distinct()
+                .toList();
+        
+        System.out.println("✅ Total de documentos asignados: " + documentos.size());
+        return ResponseEntity.ok(documentos);
+    }
+
     @GetMapping("/buscar/{codigo}")
     public ResponseEntity<?> buscarDocumentoPorCodigo(@PathVariable String codigo) {
         Optional<Documento> optDoc = documentoRepository.findByCodigo(codigo);

@@ -46,7 +46,19 @@ async function cargarDashboard() {
 // Cargar métricas principales
 async function cargarMetricas(token) {
     try {
-        const responseDocumentos = await fetch(`${API_URL}/documentos`, {
+        // Verificar permisos
+        const pm = window.permissionsManager;
+        let url = `${API_URL}/documentos`;
+        
+        // Si es trabajador, filtrar por usuario asignado
+        if (pm && pm.shouldFilterDocumentsByUser()) {
+            const userId = pm.getUserId();
+            if (userId) {
+                url = `${API_URL}/documentos/asignados/${userId}`;
+            }
+        }
+        
+        const responseDocumentos = await fetch(url, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -92,7 +104,19 @@ async function cargarMetricas(token) {
 // Cargar datos para las gráficas
 async function cargarGraficas(token) {
     try {
-        const response = await fetch(`${API_URL}/documentos`, {
+        // Verificar permisos
+        const pm = window.permissionsManager;
+        let url = `${API_URL}/documentos`;
+        
+        // Si es trabajador, filtrar por usuario asignado
+        if (pm && pm.shouldFilterDocumentsByUser()) {
+            const userId = pm.getUserId();
+            if (userId) {
+                url = `${API_URL}/documentos/asignados/${userId}`;
+            }
+        }
+        
+        const response = await fetch(url, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -291,7 +315,19 @@ function crearGraficaTiempo(documentos) {
 // Cargar documentos recientes
 async function cargarDocumentosRecientes(token) {
     try {
-        const response = await fetch(`${API_URL}/documentos`, {
+        // Verificar permisos
+        const pm = window.permissionsManager;
+        let url = `${API_URL}/documentos`;
+        
+        // Si es trabajador, filtrar por usuario asignado
+        if (pm && pm.shouldFilterDocumentsByUser()) {
+            const userId = pm.getUserId();
+            if (userId) {
+                url = `${API_URL}/documentos/asignados/${userId}`;
+            }
+        }
+        
+        const response = await fetch(url, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'

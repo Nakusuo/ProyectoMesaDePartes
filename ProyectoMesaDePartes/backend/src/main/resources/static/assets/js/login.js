@@ -42,15 +42,21 @@ async function handleLogin(event) {
         }
 
         if (data.idUsuario && data.username && data.roles && data.token) {
+            // Guardar token
             localStorage.setItem(APP_CONFIG.STORAGE_KEYS.TOKEN, data.token);
             
+            // Guardar datos del usuario (formato legacy)
             localStorage.setItem(APP_CONFIG.STORAGE_KEYS.USER, JSON.stringify({
                 id: data.idUsuario,
                 username: data.username,
                 email: data.email,
                 roles: data.roles
             }));
+            
+            // Guardar userInfo completo (para permissions.js)
+            localStorage.setItem('userInfo', JSON.stringify(data));
 
+            // Redirigir siempre al dashboard
             window.location.href = APP_CONFIG.DEFAULT_DASHBOARD;
 
         } else {
