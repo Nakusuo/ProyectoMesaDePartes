@@ -5,6 +5,47 @@
   margin-bottom: 24px;
 }
 
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 24px;
+  color: var(--pnp-green);
+}
+
+#btn-nuevo-usuario {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background-color: var(--pnp-green);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+#btn-nuevo-usuario:hover {
+  background-color: var(--pnp-green-dark);
+}
+
+#btn-nuevo-usuario span {
+  font-size: 20px;
+  font-weight: 700;
+}
+
 .user-table {
   width: 100%;
   border-collapse: collapse;
@@ -90,16 +131,26 @@
 }
 
 #user-form {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.form-group:nth-of-type(3),
-.form-group:nth-of-type(4),
-.form-group:nth-of-type(5),
-.form-group-checkbox {
-  grid-column: 1 / -1;
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group small {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
 }
 
 .form-group label,
@@ -114,6 +165,7 @@
 .form-group input[type="text"],
 .form-group input[type="email"],
 .form-group input[type="password"],
+.form-group input[type="tel"],
 .form-group select {
   width: 100%;
   padding: 10px 12px;
@@ -121,11 +173,6 @@
   border-radius: 6px;
   font-size: 15px;
   transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.form-group select[multiple] {
-    height: auto;
-    min-height: 80px;
 }
 
 .form-group input:focus,
@@ -146,11 +193,10 @@
 }
 
 .modal-actions {
-  grid-column: 1 / -1;
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 24px;
+  margin-top: 8px;
 }
 
 @keyframes modal-fade-in {

@@ -1,10 +1,4 @@
-// --- 1. Verificación de Seguridad ---
-// Llamamos a checkAuth() del archivo auth.js
-// Solo los 'Administrador' pueden ver esta página.
-checkAuth('Administrador'); 
-
-
-// --- 2. Variables Globales y Constantes ---
+// --- 1. Variables Globales y Constantes ---
 const API_URL = 'http://localhost:8080/api'; // URL base de tu backend
 const token = getToken(); // Obtenemos el token de auth.js
 
@@ -15,7 +9,6 @@ const modalTitle = document.getElementById('modal-title');
 const userForm = document.getElementById('user-form');
 const btnNuevoUsuario = document.getElementById('btn-nuevo-usuario');
 const btnCancelar = document.getElementById('btn-cancelar');
-const btnLogout = document.getElementById('btn-logout');
 
 // Elementos del Formulario
 const userIdField = document.getElementById('user-id');
@@ -23,10 +16,13 @@ const nombreField = document.getElementById('nombre');
 const apellidoField = document.getElementById('apellido');
 const usernameField = document.getElementById('username');
 const emailField = document.getElementById('email');
+const telefonoField = document.getElementById('telefono');
 const passwordField = document.getElementById('password');
+const tipoContratoSelect = document.getElementById('tipo-contrato');
 const areaSelect = document.getElementById('area-select');
 const rolesSelect = document.getElementById('roles-select');
 const activoField = document.getElementById('activo');
+const passwordHint = document.getElementById('password-hint');
 
 
 // --- 3. Funciones de Carga de Datos (Fetch) ---
@@ -74,15 +70,13 @@ async function cargarAreas() {
 // Carga los Roles en el <select> del modal
 async function cargarRoles() {
   try {
-    // ¡OJO! Este endpoint /api/roles aún no lo hemos creado en el backend.
-    // Dará error hasta que lo creemos.
     const response = await fetch(`${API_URL}/roles`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (!response.ok) throw new Error('Error al cargar roles');
     
     const roles = await response.json();
-    rolesSelect.innerHTML = '<option value="">Seleccione un rol</option>'; // Limpiar
+    rolesSelect.innerHTML = '<option value="">Seleccione un rol</option>';
     roles.forEach(rol => {
       rolesSelect.innerHTML += `<option value="${rol.idRol}">${rol.nombre}</option>`;
     });
@@ -149,21 +143,32 @@ function abrirModal(modo, usuario = null) {
     nombreField.value = usuario.nombre;
     apellidoField.value = usuario.apellido;
     usernameField.value = usuario.username;
-    emailField.value = usuario.email;
+    emailField.value = usuario.email || '';
+    telefonoField.value = usuario.telefono || '';
+    tipoContratoSelect.value = usuario.tipoContrato || 'CAS';
     activoField.checked = usuario.activo;
     
     // Seleccionar el área correcta
-    areaSelect.value = usuario.area ? usuario.area.idArea : '';
+    if (usuario.area) {
+      areaSelect.value = usuario.area.idArea;
+    }
     
     // Seleccionar el rol correcto (asumimos 1 rol por ahora)
-    rolesSelect.value = (usuario.roles && usuario.roles.length > 0) ? usuario.roles[0].idRol : '';
+    if (usuario.roles && usuario.roles.length > 0) {
+      rolesSelect.value = usuario.roles[0].idRol;
+    }
 
     passwordField.placeholder = "Dejar en blanco para no cambiar";
+    passwordField.required = false;
+    passwordHint.style.display = 'block';
 
   } else {
     modalTitle.textContent = 'Nuevo Usuario';
-    userIdField.value = ''; // ID vacío para "Nuevo"
+    userIdField.value = '';
     passwordField.placeholder = "Ingrese contraseña";
+    passwordField.required = true;
+    passwordHint.style.display = 'none';
+    activoField.checked = true;
   }
   
   modal.style.display = 'flex';
@@ -178,39 +183,45 @@ function cerrarModal() {
 // --- 5. Lógica de Guardado (Formulario) ---
 
 async function guardarUsuario(event) {
-  event.preventDefault(); // Evita que la página se recargue
+  event.preventDefault();
 
   const id = userIdField.value;
   const esNuevo = id === '';
 
-  // 1. Obtenemos los datos del formulario
-  // (¡OJO! El backend espera los OBJETOS completos de Area y Rol)
-  const datosUsuario = {
-    nombre: nombreField.value,
-    apellido: apellidoField.value,
-    username: usernameField.value,
-    email: emailField.value,
-    passwordHash: passwordField.value, // El backend se encargará de encriptarlo
-    activo: activoField.checked,
-    tipoContrato: 'CAS', // Valor por defecto, puedes añadir un select si quieres
-    
-    // Obtenemos los IDs de los selects
-    area: { idArea: parseInt(areaSelect.value) },
-    roles: [ { idRol: parseInt(rolesSelect.value) } ] // Enviamos una lista de roles
-  };
-
-  // 2. Si es una edición y no se puso contraseña, la quitamos
-  if (!esNuevo && datosUsuario.passwordHash === '') {
-    delete datosUsuario.passwordHash;
+  // Validar que se haya seleccionado un área y un rol
+  if (!areaSelect.value || !rolesSelect.value) {
+    alert('Por favor seleccione un área y un rol');
+    return;
   }
 
-  // 3. Definimos el método (POST o PUT) y la URL
+  // Validar contraseña para usuario nuevo
+  if (esNuevo && !passwordField.value) {
+    alert('La contraseña es obligatoria para usuarios nuevos');
+    return;
+  }
+
+  // Construir objeto de datos
+  const datosUsuario = {
+    nombre: nombreField.value.trim(),
+    apellido: apellidoField.value.trim(),
+    username: usernameField.value.trim(),
+    email: emailField.value.trim(),
+    telefono: telefonoField.value.trim() || null,
+    tipoContrato: tipoContratoSelect.value,
+    activo: activoField.checked,
+    area: { idArea: parseInt(areaSelect.value) },
+    roles: [{ idRol: parseInt(rolesSelect.value) }]
+  };
+
+  // Solo incluir contraseña si se ingresó
+  if (passwordField.value) {
+    datosUsuario.passwordHash = passwordField.value;
+  }
+
   const method = esNuevo ? 'POST' : 'PUT';
   const url = esNuevo ? `${API_URL}/usuarios` : `${API_URL}/usuarios/${id}`;
 
   try {
-    // ¡OJO! Estos endpoints (POST y PUT /api/usuarios) no los hemos creado en el backend.
-    // Dará error 404 o 405 hasta que los creemos.
     const response = await fetch(url, {
       method: method,
       headers: {
@@ -221,14 +232,20 @@ async function guardarUsuario(event) {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Error al guardar usuario');
+      const errorText = await response.text();
+      let errorMessage = 'Error al guardar usuario';
+      try {
+        const errorData = JSON.parse(errorText);
+        errorMessage = errorData.message || errorMessage;
+      } catch (e) {
+        errorMessage = errorText || errorMessage;
+      }
+      throw new Error(errorMessage);
     }
 
-    // 4. Si todo salió bien
     cerrarModal();
-    cargarUsuarios(); // Recargamos la tabla
-    alert('Usuario guardado con éxito');
+    cargarUsuarios();
+    alert(esNuevo ? 'Usuario creado exitosamente' : 'Usuario actualizado exitosamente');
 
   } catch (error) {
     console.error('Error guardando:', error);
@@ -241,15 +258,40 @@ async function guardarUsuario(event) {
 
 // Se ejecuta cuando el DOM está listo
 document.addEventListener('DOMContentLoaded', () => {
-  // Carga inicial
+  // Verificación de seguridad - Solo Administradores
+  const userInfoStr = localStorage.getItem('userInfo');
+  if (!userInfoStr) {
+    alert('Sesión no válida. Por favor inicie sesión.');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const userInfo = JSON.parse(userInfoStr);
+  if (!userInfo.roles || !userInfo.roles.includes('Administrador')) {
+    alert('Acceso denegado. Solo administradores pueden acceder a esta página.');
+    window.location.href = 'dashboard.html';
+    return;
+  }
+
+  // Verificar que los elementos existen
+    if (!btnNuevoUsuario || !btnCancelar || !modal || !userForm || !tableBody) {
+    console.error('Error: No se encontraron todos los elementos necesarios del DOM');
+    return;
+  }  // Carga inicial
   cargarUsuarios();
   cargarAreas();
   cargarRoles();
 
   // Listeners de los botones
-  btnLogout.addEventListener('click', logout);
   btnNuevoUsuario.addEventListener('click', () => abrirModal('nuevo'));
   btnCancelar.addEventListener('click', cerrarModal);
+  
+  // Cerrar modal al hacer click fuera
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) {
+      cerrarModal();
+    }
+  });
   
   // Listener del formulario
   userForm.addEventListener('submit', guardarUsuario);
@@ -259,9 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (event.target.classList.contains('btn-editar')) {
       const id = event.target.getAttribute('data-id');
       
-      // Necesitamos cargar el usuario individual para tener todos sus datos
       try {
-        // ¡OJO! Este endpoint (GET /api/usuarios/{id}) tampoco lo hemos creado.
         const response = await fetch(`${API_URL}/usuarios/${id}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });

@@ -1,4 +1,4 @@
-# 📋 Sistema Mesa de Partes Digital - PNP
+# Sistema Mesa de Partes Digital - PNP
 
 <div align="center">
 
@@ -10,24 +10,49 @@
 
 **Sistema de Gestión Documental para la Policía Nacional del Perú**
 
-[Características](#-características-principales) • [Arquitectura](#-arquitectura-técnica) • [Estado del Proyecto](#-estado-del-proyecto) • [Instalación](#-instalación-y-configuración) • [API](#-documentación-de-la-api)
+**Versión 2.0** - Octubre 2025
+
+[Características](#características-principales) • [Arquitectura](#arquitectura-técnica) • [Instalación](#instalación-y-configuración) • [API](#documentación-de-la-api) • [Changelog](#changelog-v20---octubre-2025)
 
 </div>
 
 ---
 
-## 📖 Descripción General
+## Novedades v2.0
+
+### Workflow de Estados Completo
+6 estados de documento implementados: Asignado, Recibido, En_Proceso, Observado, Finalizado, Salida
+
+### Sistema de Notificaciones Toast
+Notificaciones animadas con CSS3 - 5 tipos: Success, Error, Warning, Info, Loading
+
+### Página "Mis Documentos"
+Vista dedicada para trabajadores con filtros avanzados y actualización de estados en tiempo real
+
+### UI/UX Mejorado
+Selects personalizados, file inputs modernos, modales estilizados con animaciones
+
+### Corrección de Bugs
+- Error 500 en dashboard de trabajadores
+- Botones de actualización no funcionales
+- Estados de documento incorrectos
+- Error de compilación en registro
+
+---
+
+## Descripción General
 
 Sistema integral de Mesa de Partes Digital desarrollado para la **Policía Nacional del Perú (PNP)**, diseñado para optimizar la gestión, registro y seguimiento de documentos administrativos internos. Implementa un patrón de arquitectura **MVC (Model-View-Controller)** con separación clara de responsabilidades y principios SOLID.
 
-### 🎯 Objetivos del Sistema
+### Objetivos del Sistema
 
-- ✅ **Digitalizar** el proceso de recepción y registro de documentos
-- ✅ **Automatizar** la asignación de códigos y trámites mediante generación secuencial
-- ✅ **Centralizar** el almacenamiento de archivos PDF con validaciones robustas
-- ✅ **Facilitar** el seguimiento de documentos mediante bitácora en tiempo real
-- ✅ **Implementar** control de acceso basado en roles (RBAC)
-- ✅ **Garantizar** la seguridad mediante JWT + BCrypt con algoritmo Blowfish
+- **Digitalizar** el proceso de recepción y registro de documentos
+- **Automatizar** la asignación de códigos y trámites mediante generación secuencial
+- **Centralizar** el almacenamiento de archivos PDF con validaciones robustas
+- **Facilitar** el seguimiento de documentos mediante bitácora en tiempo real
+- **Implementar** control de acceso basado en roles (RBAC)
+- **Garantizar** la seguridad mediante JWT + BCrypt con algoritmo Blowfish
+- **Optimizar UX** con notificaciones toast animadas y diseño responsive
 
 ---
 
@@ -118,7 +143,7 @@ Sistema integral de Mesa de Partes Digital desarrollado para la **Policía Nacio
 
 ## 🚀 Características Principales
 
-### 📄 Gestión de Documentos
+### Gestión de Documentos
 
 - **Registro completo** con validación de campos obligatorios
 - **Códigos secuenciales** automáticos (DOC-000001, DOC-000002, ...)
@@ -126,9 +151,12 @@ Sistema integral de Mesa de Partes Digital desarrollado para la **Policía Nacio
 - **Almacenamiento seguro** en `backend/uploads/documentos/`
 - **Asignación automática** de hojas de trámite (HT)
 - **10 tipos** de documento preconfigurados (Oficio, Memorándum, Informe, etc.)
-- **Estados del documento**: Registrado → En Proceso → Observado/Finalizado → Salida
+- **Workflow de estados**: Asignado → Recibido → En_Proceso → Observado/Finalizado → Salida
+- **Página "Mis Documentos"** para trabajadores con filtros avanzados
+- **Actualización de estados** mediante modal con validaciones
+- **Notificaciones toast** animadas para todas las operaciones
 
-### 👥 Gestión de Usuarios
+### Gestión de Usuarios
 
 - **Autenticación JWT** con tokens Bearer en headers HTTP
 - **4 Roles diferenciados**:
@@ -149,12 +177,25 @@ Sistema dual de áreas implementado con ENUM `tipo`:
   - Usados para asignación de usuarios al sistema
   - Filtrados en formularios de registro y gestión de usuarios
 
-### 📊 Bitácora y Seguimiento
+### Bitácora y Seguimiento
 
 - **Registro histórico** de todos los documentos con información de asignación
 - **Filtros dinámicos**: Por estado, área, tipo de documento, fechas
 - **Vista detallada**: Usuario asignado mediante JOIN con tabla `tramites`
 - **Endpoint especializado**: `/api/documentos/bitacora` con datos enriquecidos
+- **Badges visuales** con emojis para cada estado de documento
+- **Actualización en tiempo real** al cambiar estados
+
+### Sistema de Notificaciones
+
+- **Toast notifications** con animaciones CSS3
+- **5 tipos** de notificaciones: Success, Error, Warning, Info, Loading
+- **Auto-dismiss** configurable por duración
+- **Barra de progreso** animada
+- **Responsive design** para móviles
+- **Reemplazo automático** de alert() nativo
+- **Gradientes de colores** según tipo de mensaje
+- **Hover effects** con scale y sombra
 
 ---
 
@@ -308,20 +349,21 @@ public class DocumentoController {
 
 ## 📊 Estado del Proyecto
 
-### Progreso General: **55%** 🔄
+### Progreso General: **68%**
 
 | Módulo | Completado | Estado | Observaciones |
 |--------|-----------|--------|---------------|
-| **Autenticación y Seguridad** | 70% | 🔄 En desarrollo | Sistema básico implementado, faltan validaciones avanzadas |
-| **Gestión de Usuarios** | 65% | 🔄 En desarrollo | CRUD básico, falta edición de contraseña y validaciones |
-| **Gestión de Documentos** | 60% | 🔄 En desarrollo | Registro básico funcional, falta edición y validaciones completas |
-| **Sistema de Áreas** | 80% | ✅ Funcional | Separación DEPARTAMENTO_PNP/AREA_TRABAJO implementada |
-| **Bitácora y Seguimiento** | 50% | 🔄 En desarrollo | Vista básica, faltan filtros avanzados y exportación PDF |
-| **Dashboard y Métricas** | 45% | 🔄 En desarrollo | Gráficas básicas, faltan KPIs y análisis avanzados |
-| **Gestión de Trámites** | 40% | ⚠️ Parcial | Asignación básica, falta flujo completo de estados |
-| **Salida de Documentos** | 25% | ⚠️ Parcial | Modelo creado, interfaz y lógica incompletas |
-| **Reportes y Exportación** | 20% | ⏳ Pendiente | Funcionalidad mínima, falta implementación completa |
-| **Notificaciones** | 0% | ⏳ Pendiente | Sistema de alertas por implementar |
+| **Autenticación y Seguridad** | 75% | Funcional | JWT implementado, faltan validaciones avanzadas |
+| **Gestión de Usuarios** | 70% | Funcional | CRUD completo, falta edición de contraseña |
+| **Gestión de Documentos** | 75% | Funcional | Registro y actualización funcional, workflow completo |
+| **Sistema de Áreas** | 85% | Funcional | Separación DEPARTAMENTO_PNP/AREA_TRABAJO implementada |
+| **Bitácora y Seguimiento** | 60% | En desarrollo | Vista funcional, faltan filtros avanzados |
+| **Dashboard y Métricas** | 50% | En desarrollo | Gráficas básicas implementadas |
+| **Gestión de Trámites** | 65% | Funcional | Workflow de 6 estados implementado |
+| **Notificaciones Toast** | 95% | Funcional | Sistema completo con animaciones CSS3 |
+| **Página Mis Documentos** | 85% | Funcional | Vista filtrada y actualización de estados |
+| **Salida de Documentos** | 25% | Pendiente | Modelo creado, interfaz pendiente |
+| **Reportes y Exportación** | 20% | Pendiente | Funcionalidad mínima |
 
 ### Funcionalidades Implementadas ✅
 
@@ -2609,27 +2651,38 @@ ProyectoMesaDePartes/
 │
 ├── 📂 frontend/
 │   ├── 🌐 login.html
-│   ├── 🌐 registro.html ⭐
-│   ├── 🌐 bitacora.html ⭐
+│   ├── 🌐 registro.html (Registro de documentos)
+│   ├── 🌐 registro-usuario.html (Registro de usuarios)
+│   ├── 🌐 documentos.html (Mis Documentos - Nuevo)
+│   ├── 🌐 bitacora.html
 │   ├── 🌐 gestion-usuarios.html
 │   └── 📂 assets/
 │       ├── 📂 css/
 │       │   ├── style.css
 │       │   ├── login.css
-│       │   ├── registro.css ⭐
-│       │   └── bitacora.css ⭐
+│       │   ├── registro.css
+│       │   ├── bitacora.css
+│       │   ├── dashboard.css
+│       │   ├── gestion-usuarios.css
+│       │   └── toast.css (Nuevo - Notificaciones animadas)
 │       └── 📂 js/
 │           ├── auth.js
+│           ├── config.js
 │           ├── login.js
-│           ├── registrar-interno.js ⭐
-│           ├── bitacora.js ⭐
-│           └── gestion-usuarios.js
+│           ├── registrar-interno.js
+│           ├── registro.js (Registro de usuarios)
+│           ├── documentos.js (Nuevo - Gestión de documentos)
+│           ├── bitacora.js
+│           ├── dashboard.js
+│           ├── gestion-usuarios.js
+│           ├── permissions.js
+│           └── toast.js (Nuevo - Sistema de notificaciones)
 │
 └── 📂 SQL/
-    ├── mesa_de_partes_bd.sql ⭐
+    ├── mesa_partes_db_completa_actualizada.sql (Nuevo - Con nuevos estados)
+    ├── mesa_partes_bd.sql (Versión anterior)
+    ├── actualizar_estados_documentos_seguro.sql
     └── actualizar_passwords_bcrypt.sql
-
-⭐ = Archivos clave del sistema
 ```
 
 ---
@@ -2775,18 +2828,138 @@ mkdir -p uploads/documentos
 
 ---
 
-## 📈 Mejoras Futuras
+## Changelog v2.0 - Octubre 2025
 
-- [ ] **Notificaciones en tiempo real** (WebSocket)
-- [ ] **Generación de reportes PDF** (JasperReports)
-- [ ] **Búsqueda avanzada** con filtros
-- [ ] **Dashboard con estadísticas** (gráficos)
-- [ ] **Auditoría completa** de acciones
-- [ ] **Backup automático** programado
+### Nuevos Estados de Documentos
+
+Se implementó un workflow completo de estados para mejorar el seguimiento de documentos:
+
+**Estados Anteriores:**
+- Registrado, En Proceso, Observado, Finalizado, Salida
+
+**Estados Actualizados:**
+1. **Asignado** - Estado inicial cuando el documento es registrado y asignado a un trabajador
+2. **Recibido** - El trabajador confirmó que recibió el documento
+3. **En_Proceso** - El trabajador está procesando el documento activamente
+4. **Observado** - El documento tiene observaciones o requiere correcciones
+5. **Finalizado** - El trámite está completo con informe
+6. **Salida** - El documento ha salido del sistema
+
+**Archivos modificados:**
+- `EstadoDocumento.java` - ENUM actualizado
+- `Documento.java` - Columna con nuevo ENUM y default 'Asignado'
+- `DocumentoController.java` - Manejo de nuevos estados
+- `documentos.js` - Badges con emojis para cada estado
+
+### Sistema de Notificaciones Toast
+
+Implementación completa de notificaciones animadas para mejorar la experiencia de usuario:
+
+**Características:**
+- 5 tipos de notificaciones: Success, Error, Warning, Info, Loading
+- Animaciones CSS con cubic-bezier easing
+- Gradientes de colores según el tipo de mensaje
+- Barra de progreso animada
+- Auto-dismiss configurable
+- Responsive design para móviles
+- Reemplazo automático de alert() nativo
+
+**Archivos nuevos:**
+- `frontend/assets/css/toast.css` (268 líneas)
+- `frontend/assets/js/toast.js` (115 líneas)
+
+**Archivos actualizados:**
+- `login.html` - Incluye toast system
+- `registro-usuario.html` - Incluye toast system
+- `documentos.html` - Incluye toast system
+- `registro.html` - Incluye toast system
+
+### Sección "Mis Documentos" para Trabajadores
+
+Nueva página especializada para que los trabajadores gestionen sus documentos asignados:
+
+**Características:**
+- Vista filtrada de documentos asignados al usuario logueado
+- Modal para actualizar estados con validaciones
+- Filtros por estado, área y tipo de documento
+- Descarga de archivos adjuntos
+- Actualización de estados en tiempo real
+- Botones de acción con permisos verificados
+
+**Archivos:**
+- `documentos.html` - Nueva página
+- `documentos.js` - Lógica completa
+- `DocumentoController.java` - Endpoint filtrado por usuario
+
+### Mejoras de UI/UX
+
+**Selects personalizados:**
+- Arrows personalizadas con gradiente PNP
+- Hover effects con transiciones suaves
+- Focus states con border animado
+
+**File inputs modernos:**
+- Botón con gradiente verde PNP
+- Indicador de archivo seleccionado
+- Validación de tipo y tamaño
+- Feedback visual al seleccionar
+
+**Modales estilizados:**
+- Header con gradiente PNP verde
+- Animaciones de entrada/salida
+- Responsive design
+- Botones con estados hover/active
+
+### Base de Datos Actualizada
+
+**Script SQL completo:**
+- `mesa_partes_db_completa_actualizada.sql`
+- Nuevos ENUM de estados
+- 10 documentos de ejemplo con estados variados
+- Trámites asignados a usuarios
+- 34 Departamentos PNP completos
+- 7 usuarios precargados (contraseña: 123456)
+
+### Correcciones de Bugs
+
+**Error 500 en Dashboard de Trabajadores:**
+- Causa: Serialización circular de Jackson con relaciones bidireccionales
+- Solución: Conversión de entidades a Map<String, Object> en el controller
+
+**Botón "Actualizar" no funcional:**
+- Causa: Funciones JavaScript no en scope global
+- Solución: Uso de `window.functionName` para acceso global
+
+**Estado "En Proceso" no aceptado:**
+- Causa: ENUM con guión bajo (En_Proceso) vs espacio
+- Solución: Normalización en frontend y backend
+
+**Error de compilación en DocumentoController:**
+- Causa: Referencia a `EstadoDocumento.Registrado` (eliminado)
+- Solución: Cambio a `EstadoDocumento.Asignado`
+
+### Archivos de Documentación
+
+**Nuevos archivos:**
+- `NOTIFICACIONES_TOAST.md` - Guía completa del sistema de notificaciones
+- `CAMBIOS_REALIZADOS.md` - Log detallado de modificaciones
 
 ---
 
-## 👥 Contribuidores
+## Mejoras Futuras Planificadas
+
+- [ ] Registro de Salida de Documentos (Admin/Mesa de Partes)
+- [ ] Integración de cambios de estado con bitácora automática
+- [ ] Tabla de observaciones/informes separada
+- [ ] Notificaciones en tiempo real (WebSocket)
+- [ ] Generación de reportes PDF (JasperReports)
+- [ ] Dashboard con estadísticas avanzadas
+- [ ] Auditoría completa de acciones de usuario
+- [ ] Backup automático programado
+
+---
+
+## Contribuidores
 
 ### 💻 Equipo de Desarrollo
 

@@ -79,6 +79,44 @@ body {
     margin-bottom: 20px;
 }
 
+.input-group label {
+    display: block;
+    font-weight: 600;
+    color: #348f2c;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.input-group select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    background-color: #fff;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23348f2c' d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.input-group select:hover {
+    border-color: #a0aec0;
+    background-color: #f7fafc;
+}
+
+.input-group select:focus {
+    outline: none;
+    border-color: #348f2c;
+    box-shadow: 0 0 0 3px rgba(52, 143, 44, 0.15);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23007bff' d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+}
+
 #errorMessage {
     color: #d93025;
     text-align: center;

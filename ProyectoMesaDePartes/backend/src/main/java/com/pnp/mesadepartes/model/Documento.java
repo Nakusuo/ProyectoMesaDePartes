@@ -46,8 +46,8 @@ public class Documento {
     private String numeroDocumento;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('Registrado','En Proceso','Observado','Finalizado','Salida') DEFAULT 'Registrado'")
-    private EstadoDocumento estado = EstadoDocumento.Registrado;
+    @Column(columnDefinition = "ENUM('Asignado','Recibido','En_Proceso','Observado','Finalizado','Salida') DEFAULT 'Asignado'")
+    private EstadoDocumento estado = EstadoDocumento.Asignado;
 
     @Column(nullable = false, length = 200)
     private String remitente;

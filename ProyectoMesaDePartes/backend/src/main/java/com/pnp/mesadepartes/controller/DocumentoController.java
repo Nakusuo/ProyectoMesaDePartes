@@ -33,25 +33,18 @@ public class DocumentoController {
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarDocumento(@RequestBody DocumentoRegistroDTO dto) {
         try {
-            System.out.println("=== Iniciando registro de documento ===");
-            System.out.println("DTO recibido: " + dto);
-
             Usuario usuarioRegistrador = usuarioRepository.findById(1L)
                     .orElseThrow(() -> new RuntimeException("Error: Usuario registrador no encontrado."));
-            System.out.println("Usuario registrador: " + usuarioRegistrador.getNombre());
 
             Usuario usuarioAsignado = usuarioRepository.findById(dto.getIdUsuarioAsignado())
                     .orElseThrow(() -> new RuntimeException("Error: Usuario asignado no encontrado."));
-            System.out.println("Usuario asignado: " + usuarioAsignado.getNombre());
 
             TipoDocumento tipoDoc = tipoDocumentoRepository.findById(dto.getIdTipoDocumento())
                     .orElseThrow(() -> new RuntimeException("Error: Tipo de documento no encontrado."));
-            System.out.println("Tipo documento: " + tipoDoc.getNombre());
 
             // Generar código secuencial basado en el total de documentos
             long totalDocumentos = documentoRepository.count();
             String codigo = String.format("DOC-%06d", totalDocumentos + 1);
-            System.out.println("Código generado: " + codigo);
 
             Documento doc = new Documento();
             doc.setCodigo(codigo);
@@ -60,36 +53,29 @@ public class DocumentoController {
             doc.setRemitente(dto.getRemitente());
             doc.setNumeroDocumento(dto.getNumeroDocumento());
             doc.setFechaIngreso(LocalDateTime.now());
-            doc.setEstado(EstadoDocumento.Registrado);
+            doc.setEstado(EstadoDocumento.Asignado);
             doc.setTipoDocumento(tipoDoc);
             doc.setUsuarioRegistro(usuarioRegistrador);
             doc.setArchivoUrl(dto.getArchivoUrl());
 
-            System.out.println("Guardando documento...");
             Documento docGuardado = documentoRepository.save(doc);
-            System.out.println("Documento guardado con ID: " + docGuardado.getIdDocumento());
 
             if (dto.getNumeroHt() != null && !dto.getNumeroHt().isEmpty()) {
-                System.out.println("Guardando hoja de trámite...");
                 HojaTramite ht = new HojaTramite();
                 ht.setNumeroHt(dto.getNumeroHt());
                 ht.setDocumento(docGuardado);
                 hojaTramiteRepository.save(ht);
             }
 
-            System.out.println("Creando trámite...");
             Tramite tramite = new Tramite();
             tramite.setDocumento(docGuardado);
             tramite.setUsuarioCreador(usuarioRegistrador);
             tramite.setUsuarioAsignado(usuarioAsignado);
             tramiteRepository.save(tramite);
 
-            System.out.println("=== Registro completado exitosamente ===");
             return ResponseEntity.ok(docGuardado);
 
         } catch (Exception e) {
-            System.err.println("ERROR al registrar documento: " + e.getMessage());
-            e.printStackTrace();
             
             HashMap<String, String> errorResponse = new HashMap<>();
             errorResponse.put("message", e.getMessage());
@@ -109,7 +95,6 @@ public class DocumentoController {
 
     @GetMapping("/bitacora")
     public ResponseEntity<List<Map<String, Object>>> getDocumentosBitacora() {
-        System.out.println("📋 Obteniendo documentos con información de asignación");
         List<Documento> documentos = documentoRepository.findAll();
         
         List<Map<String, Object>> resultado = documentos.stream().map(doc -> {
@@ -148,20 +133,45 @@ public class DocumentoController {
     }
 
     @GetMapping("/asignados/{userId}")
-    public ResponseEntity<List<Documento>> getDocumentosAsignados(@PathVariable Long userId) {
-        System.out.println("📋 Obteniendo documentos asignados al usuario ID: " + userId);
-        
-        // Buscar trámites donde el usuario es el asignado
-        List<Tramite> tramites = tramiteRepository.findByUsuarioAsignado_IdUsuario(userId);
-        
-        // Extraer los documentos de los trámites
-        List<Documento> documentos = tramites.stream()
-                .map(Tramite::getDocumento)
-                .distinct()
-                .toList();
-        
-        System.out.println("✅ Total de documentos asignados: " + documentos.size());
-        return ResponseEntity.ok(documentos);
+    public ResponseEntity<?> getDocumentosAsignados(@PathVariable Long userId) {
+        try {
+            // Buscar trámites donde el usuario es el asignado
+            List<Tramite> tramites = tramiteRepository.findByUsuarioAsignado_IdUsuario(userId);
+            
+            // Extraer los documentos de los trámites y convertir a mapas simples
+            List<Map<String, Object>> documentos = tramites.stream()
+                    .map(Tramite::getDocumento)
+                    .distinct()
+                    .map(doc -> {
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("idDocumento", doc.getIdDocumento());
+                        map.put("codigo", doc.getCodigo());
+                        map.put("titulo", doc.getTitulo());
+                        map.put("descripcion", doc.getDescripcion());
+                        map.put("numeroDocumento", doc.getNumeroDocumento());
+                        map.put("estado", doc.getEstado());
+                        map.put("remitente", doc.getRemitente());
+                        map.put("destinatario", doc.getDestinatario());
+                        map.put("fechaIngreso", doc.getFechaIngreso());
+                        map.put("archivoUrl", doc.getArchivoUrl());
+                        
+                        // Agregar tipo documento de forma segura
+                        if (doc.getTipoDocumento() != null) {
+                            Map<String, Object> tipo = new HashMap<>();
+                            tipo.put("idTipoDocumento", doc.getTipoDocumento().getIdTipoDocumento());
+                            tipo.put("nombre", doc.getTipoDocumento().getNombre());
+                            map.put("tipoDocumento", tipo);
+                        }
+                        
+                        return map;
+                    })
+                    .toList();
+            
+            return ResponseEntity.ok(documentos);
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Map.of("error", "Error al obtener documentos asignados: " + e.getMessage()));
+        }
     }
 
     @GetMapping("/buscar/{codigo}")
@@ -221,9 +231,54 @@ public class DocumentoController {
             return ResponseEntity.ok(response);
 
         } catch (IOException e) {
-            System.err.println("Error al subir archivo: " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.status(500).body(Map.of("error", "Error al subir el archivo: " + e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}/estado")
+    public ResponseEntity<?> actualizarEstado(@PathVariable Long id, @RequestBody Map<String, String> request) {
+        try {
+            Optional<Documento> optDocumento = documentoRepository.findById(id);
+            
+            if (!optDocumento.isPresent()) {
+                return ResponseEntity.status(404).body(Map.of("error", "Documento no encontrado"));
+            }
+            
+            Documento documento = optDocumento.get();
+            String nuevoEstado = request.get("estado");
+            String observaciones = request.get("observaciones");
+            
+            // Validar que el estado sea válido
+            try {
+                // Convertir espacios a guiones bajos para coincidir con el ENUM
+                EstadoDocumento estado = EstadoDocumento.valueOf(nuevoEstado.replace(" ", "_"));
+                documento.setEstado(estado);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Estado no válido: " + nuevoEstado + ". Estados permitidos: Asignado, Recibido, En_Proceso, Observado, Finalizado, Salida"));
+            }
+            
+            // Si hay observaciones, guardarlas en la descripción (por ahora)
+            // TODO: Crear tabla separada para observaciones/informes
+            if (observaciones != null && !observaciones.trim().isEmpty()) {
+                String descripcionActual = documento.getDescripcion() != null ? documento.getDescripcion() : "";
+                documento.setDescripcion(descripcionActual + "\n\n[INFORME - " + LocalDateTime.now() + "]\n" + observaciones);
+            }
+            
+            documentoRepository.save(documento);
+            
+            // Devolver documento actualizado como Map (evitar serialización circular)
+            Map<String, Object> response = new HashMap<>();
+            response.put("idDocumento", documento.getIdDocumento());
+            response.put("codigo", documento.getCodigo());
+            response.put("titulo", documento.getTitulo());
+            response.put("estado", documento.getEstado().name());
+            response.put("message", "Estado actualizado correctamente");
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Map.of("error", "Error al actualizar estado: " + e.getMessage()));
         }
     }
 }

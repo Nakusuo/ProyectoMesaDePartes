@@ -1,7 +1,16 @@
+-- =====================================================
+-- BASE DE DATOS MESA DE PARTES PNP - VERSIÓN COMPLETA Y ACTUALIZADA
+-- Fecha: 31 de Octubre de 2025
+-- Incluye: Nuevos estados de documentos (Asignado, Recibido, En_Proceso, etc.)
+-- =====================================================
+
 DROP DATABASE IF EXISTS mesa_partes_db;
 CREATE DATABASE mesa_partes_db;
 USE mesa_partes_db;
 
+-- =====================================================
+-- TABLA: ÁREAS (Departamentos PNP y Áreas de Trabajo)
+-- =====================================================
 CREATE TABLE areas (
     ID_area INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(150) NOT NULL,
@@ -9,11 +18,17 @@ CREATE TABLE areas (
     tipo ENUM('DEPARTAMENTO_PNP','AREA_TRABAJO') DEFAULT 'DEPARTAMENTO_PNP' COMMENT 'DEPARTAMENTO_PNP: Áreas oficiales de la PNP (para documentos), AREA_TRABAJO: Áreas de trabajo del sistema (para usuarios)'
 );
 
+-- =====================================================
+-- TABLA: ROLES
+-- =====================================================
 CREATE TABLE roles (
     ID_rol INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50) UNIQUE NOT NULL
 );
 
+-- =====================================================
+-- TABLA: USUARIOS
+-- =====================================================
 CREATE TABLE usuarios (
     ID_usuario INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     tipo_contrato ENUM('CAS','LOCADOR','PNP') NOT NULL,
@@ -30,6 +45,9 @@ CREATE TABLE usuarios (
     FOREIGN KEY (ID_area) REFERENCES areas(ID_area)
 );
 
+-- =====================================================
+-- TABLA: RELACIÓN USUARIOS-ROLES
+-- =====================================================
 CREATE TABLE usuario_roles (
     ID_usuario_rol INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     ID_usuario INT UNSIGNED NOT NULL,
@@ -38,18 +56,24 @@ CREATE TABLE usuario_roles (
     FOREIGN KEY (ID_rol) REFERENCES roles(ID_rol)
 );
 
+-- =====================================================
+-- TABLA: TIPOS DE DOCUMENTO
+-- =====================================================
 CREATE TABLE tipos_documento (
     ID_tipo_documento INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL UNIQUE
 );
 
+-- =====================================================
+-- TABLA: DOCUMENTOS (CON NUEVOS ESTADOS)
+-- =====================================================
 CREATE TABLE documentos (
     ID_documento INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     codigo VARCHAR(50) NOT NULL UNIQUE,
     titulo VARCHAR(200) NOT NULL,
     descripcion TEXT,
     numero_documento VARCHAR(100),
-    estado ENUM('Registrado','En Proceso','Observado','Finalizado','Salida') DEFAULT 'Registrado',
+    estado ENUM('Asignado','Recibido','En_Proceso','Observado','Finalizado','Salida') DEFAULT 'Asignado' COMMENT 'Asignado: Registrado y asignado | Recibido: Usuario lo vio | En_Proceso: Procesando | Observado: Con observaciones | Finalizado: Completo con informe | Salida: Salió del sistema',
     remitente VARCHAR(200) NOT NULL,
     destinatario VARCHAR(200),
     fecha_ingreso DATETIME NOT NULL,
@@ -62,6 +86,9 @@ CREATE TABLE documentos (
     FOREIGN KEY (ID_tipo_documento) REFERENCES tipos_documento(ID_tipo_documento)
 );
 
+-- =====================================================
+-- TABLA: HOJAS DE TRÁMITE
+-- =====================================================
 CREATE TABLE hojas_tramite (
     ID_hoja_tramite INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     numero_ht VARCHAR(50),
@@ -69,6 +96,9 @@ CREATE TABLE hojas_tramite (
     FOREIGN KEY (ID_documento) REFERENCES documentos(ID_documento)
 );
 
+-- =====================================================
+-- TABLA: TRÁMITES (ASIGNACIÓN DE DOCUMENTOS)
+-- =====================================================
 CREATE TABLE tramites (
     ID_tramite INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     ID_documento INT UNSIGNED,
@@ -79,6 +109,9 @@ CREATE TABLE tramites (
     FOREIGN KEY (ID_usuario_asignado) REFERENCES usuarios(ID_usuario)
 );
 
+-- =====================================================
+-- TABLA: SALIDAS DE DOCUMENTOS
+-- =====================================================
 CREATE TABLE salidas_documento (
     ID_salida_documento INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     ID_documento INT UNSIGNED NOT NULL,
@@ -153,7 +186,8 @@ INSERT INTO roles (nombre) VALUES
 ('Jefatura');
 
 -- =====================================================
--- INSERTAR USUARIOS (asignados a ÁREAS DE TRABAJO)
+-- INSERTAR USUARIOS (Contraseña: 123456 para todos)
+-- Hash BCrypt: $2a$10$EnIgaJ1aZKFViIgwOju9suKSSni1MJ7MlHOWwGKL2hu0nHDIeil8m
 -- =====================================================
 INSERT INTO usuarios (tipo_contrato, nombre, apellido, telefono, username, password_hash, ID_area) VALUES
 ('LOCADOR','Marius','De Paz Salazar','987654321','mdepaz','$2a$10$EnIgaJ1aZKFViIgwOju9suKSSni1MJ7MlHOWwGKL2hu0nHDIeil8m',2), -- Sistemas
@@ -193,57 +227,41 @@ INSERT INTO tipos_documento (nombre) VALUES
 
 -- =====================================================
 -- INSERTAR DOCUMENTOS DE EJEMPLO
+-- Ahora los documentos se crean con estado 'Asignado' por defecto
 -- =====================================================
--- Primero insertamos los documentos
-INSERT INTO documentos (codigo, titulo, descripcion, ID_tipo_documento, numero_documento, remitente, fecha_ingreso, ID_usuario_registro)
+INSERT INTO documentos (codigo, titulo, descripcion, ID_tipo_documento, numero_documento, remitente, fecha_ingreso, ID_usuario_registro, estado)
 VALUES
-('DOC-000001', 'Solicitud de combustible', 'Solicitud de suministro de combustible para operaciones', 1, 'OF-2025-256', 'DIRANDRO - Dirección de Antidrogas', '2025-09-01 08:00:00', 3),
-('DOC-000002', 'Resultados de pericia', 'Envío de resultados de pericia criminalística', 2, 'COR-2025-123', 'DIRCRI - Dirección de Criminalística', '2025-09-05 09:30:00', 3),
-('DOC-000003', 'Pedido de información adicional', 'Solicitud de información complementaria para investigación', 3, 'MEM-2025-456', 'DIRNIC - Dirección Nacional de Investigación Criminal', '2025-09-10 10:15:00', 3),
-('DOC-000004', 'Informe de operaciones aéreas', 'Reporte mensual de operaciones de aviación policial', 4, 'INF-2025-789', 'DIRAVPOL - Dirección de Aviación Policial', '2025-09-12 14:00:00', 3),
-('DOC-000005', 'Solicitud de materiales educativos', 'Pedido de material didáctico para capacitaciones', 1, 'OF-2025-987', 'DIREED - Dirección de Educación y Doctrina Policial', '2025-09-15 11:45:00', 3),
-('DOC-000006', 'Informe de incidentes de seguridad', 'Reporte mensual de incidentes de ciberseguridad', 4, 'INF-2025-321', 'DIRTIC - Dirección de Tecnología de la Información', '2025-09-20 16:30:00', 3),
-('DOC-000007', 'Solicitud de renovación de licencias', 'Pedido de renovación de licencias de software', 6, 'SOL-2025-654', 'DIRTIC - Dirección de Tecnología de la Información', '2025-09-25 10:00:00', 3),
-('DOC-000008', 'Solicitud de personal adicional', 'Requerimiento de 3 efectivos para refuerzo', 1, 'OF-2025-145', 'DIRNOS - Dirección Nacional de Orden y Seguridad', '2025-10-01 09:00:00', 3),
-('DOC-000009', 'Informe de operativo antidroga', 'Reporte de operativo realizado en la selva central', 4, 'INF-2025-555', 'DIRANDRO - Dirección de Antidrogas', '2025-10-05 15:20:00', 3),
-('DOC-000010', 'Solicitud de mantenimiento vehicular', 'Mantenimiento preventivo de unidades móviles', 6, 'SOL-2025-789', 'DIRADM - Dirección de Administración', '2025-10-10 11:30:00', 3);
+('DOC-000001', 'Solicitud de combustible', 'Solicitud de suministro de combustible para operaciones', 1, 'OF-2025-256', 'DIRANDRO - Dirección de Antidrogas', '2025-09-01 08:00:00', 3, 'Asignado'),
+('DOC-000002', 'Resultados de pericia', 'Envío de resultados de pericia criminalística', 2, 'COR-2025-123', 'DIRCRI - Dirección de Criminalística', '2025-09-05 09:30:00', 3, 'Recibido'),
+('DOC-000003', 'Pedido de información adicional', 'Solicitud de información complementaria para investigación', 3, 'MEM-2025-456', 'DIRNIC - Dirección Nacional de Investigación Criminal', '2025-09-10 10:15:00', 3, 'En_Proceso'),
+('DOC-000004', 'Informe de operaciones aéreas', 'Reporte mensual de operaciones de aviación policial', 4, 'INF-2025-789', 'DIRAVPOL - Dirección de Aviación Policial', '2025-09-12 14:00:00', 3, 'Finalizado'),
+('DOC-000005', 'Solicitud de materiales educativos', 'Pedido de material didáctico para capacitaciones', 1, 'OF-2025-987', 'DIREED - Dirección de Educación y Doctrina Policial', '2025-09-15 11:45:00', 3, 'Asignado'),
+('DOC-000006', 'Informe de incidentes de seguridad', 'Reporte mensual de incidentes de ciberseguridad', 4, 'INF-2025-321', 'DIRTIC - Dirección de Tecnología de la Información', '2025-09-20 16:30:00', 3, 'En_Proceso'),
+('DOC-000007', 'Solicitud de renovación de licencias', 'Pedido de renovación de licencias de software', 6, 'SOL-2025-654', 'DIRTIC - Dirección de Tecnología de la Información', '2025-09-25 10:00:00', 3, 'Observado'),
+('DOC-000008', 'Solicitud de personal adicional', 'Requerimiento de 3 efectivos para refuerzo', 1, 'OF-2025-145', 'DIRNOS - Dirección Nacional de Orden y Seguridad', '2025-10-01 09:00:00', 3, 'Asignado'),
+('DOC-000009', 'Informe de operativo antidroga', 'Reporte de operativo realizado en la selva central', 4, 'INF-2025-555', 'DIRANDRO - Dirección de Antidrogas', '2025-10-05 15:20:00', 3, 'Recibido'),
+('DOC-000010', 'Solicitud de mantenimiento vehicular', 'Mantenimiento preventivo de unidades móviles', 6, 'SOL-2025-789', 'DIRADM - Dirección de Administración', '2025-10-10 11:30:00', 3, 'Salida');
 
--- Ahora insertamos los trámites con usuarios asignados
--- Esto es lo que hace que aparezca "a quién se le asignó" en la bitácora
-
+-- =====================================================
+-- INSERTAR TRÁMITES (ASIGNACIÓN DE DOCUMENTOS A USUARIOS)
+-- Esto es importante para que los trabajadores vean sus documentos
+-- =====================================================
 INSERT INTO tramites (ID_documento, ID_usuario_creador, ID_usuario_asignado)
 VALUES
--- DOC-000001: Asignado a Edwin Cisneros (Desarrollo)
-(1, 3, 2),
+(1, 3, 2),  -- DOC-000001: Asignado a Edwin Cisneros (Desarrollo)
+(2, 3, 1),  -- DOC-000002: Asignado a Marius De Paz (Sistemas)
+(3, 3, 4),  -- DOC-000003: Asignado a Jonathan Chiclla (Redes)
+(4, 3, 5),  -- DOC-000004: Asignado a Gersson Huamán (Soporte Técnico - Jefatura)
+(5, 3, 6),  -- DOC-000005: Asignado a Oliver Suárez (Sistemas)
+(6, 3, 2),  -- DOC-000006: Asignado a Edwin Cisneros (Desarrollo)
+(7, 3, 1),  -- DOC-000007: Asignado a Marius De Paz (Sistemas)
+(8, 3, 4),  -- DOC-000008: Asignado a Jonathan Chiclla (Redes)
+(9, 3, 6),  -- DOC-000009: Asignado a Oliver Suárez (Sistemas)
+(10, 3, 2); -- DOC-000010: Asignado a Edwin Cisneros (Desarrollo)
 
--- DOC-000002: Asignado a Marius De Paz (Sistemas)
-(2, 3, 1),
-
--- DOC-000003: Asignado a Jonathan Chiclla (Redes)
-(3, 3, 4),
-
--- DOC-000004: Asignado a Gersson Huamán (Soporte Técnico - Jefatura)
-(4, 3, 5),
-
--- DOC-000005: Asignado a Oliver Suárez (Sistemas)
-(5, 3, 6),
-
--- DOC-000006: Asignado a Edwin Cisneros (Desarrollo)
-(6, 3, 2),
-
--- DOC-000007: Asignado a Marius De Paz (Sistemas)
-(7, 3, 1),
-
--- DOC-000008: Asignado a Jonathan Chiclla (Redes)
-(8, 3, 4),
-
--- DOC-000009: Asignado a Oliver Suárez (Sistemas)
-(9, 3, 6),
-
--- DOC-000010: Asignado a Edwin Cisneros (Desarrollo)
-(10, 3, 2);
-
--- Opcionalmente, insertamos hojas de trámite para algunos documentos
+-- =====================================================
+-- INSERTAR HOJAS DE TRÁMITE (OPCIONAL)
+-- =====================================================
 INSERT INTO hojas_tramite (numero_ht, ID_documento)
 VALUES
 ('HT-2025-001', 1),
@@ -252,43 +270,55 @@ VALUES
 ('HT-2025-004', 6),
 ('HT-2025-005', 7);
 
--- Verificar los datos insertados
+-- =====================================================
+-- MENSAJES DE CONFIRMACIÓN Y VERIFICACIÓN
+-- =====================================================
+SELECT '✅ Base de datos creada exitosamente' AS mensaje;
+SELECT '' AS separador;
+
+SELECT '🔐 CREDENCIALES DE ACCESO' AS titulo;
+SELECT 'Todos los usuarios tienen la contraseña: 123456' AS info;
+SELECT '' AS separador;
+
+SELECT '📋 ESTADOS DE DOCUMENTOS (NUEVOS)' AS titulo;
+SELECT 'Asignado: Documento registrado y asignado (estado inicial)' AS estado_1;
+SELECT 'Recibido: El trabajador confirmó que lo recibió' AS estado_2;
+SELECT 'En_Proceso: El trabajador está procesando el documento' AS estado_3;
+SELECT 'Observado: El documento tiene observaciones' AS estado_4;
+SELECT 'Finalizado: Trámite completo con informe' AS estado_5;
+SELECT 'Salida: El documento salió del sistema' AS estado_6;
+SELECT '' AS separador;
+
+SELECT '👥 USUARIOS Y SUS ROLES' AS titulo;
 SELECT 
-    d.codigo,
-    d.titulo,
-    d.remitente,
-    d.estado,
-    CONCAT(u.nombre, ' ', u.apellido) AS usuario_asignado,
-    a.nombre AS area_asignada,
-    d.fecha_ingreso
+    u.username AS Usuario,
+    CONCAT(u.nombre, ' ', u.apellido) AS Nombre_Completo,
+    a.nombre AS Area_de_Trabajo,
+    r.nombre AS Rol,
+    '123456' AS Password
+FROM usuarios u
+LEFT JOIN areas a ON u.ID_area = a.ID_area
+LEFT JOIN usuario_roles ur ON u.ID_usuario = ur.ID_usuario
+LEFT JOIN roles r ON ur.ID_rol = r.ID_rol
+ORDER BY u.ID_usuario;
+
+SELECT '' AS separador;
+
+SELECT '📄 DOCUMENTOS Y ASIGNACIONES' AS titulo;
+SELECT 
+    d.codigo AS Codigo,
+    d.titulo AS Titulo,
+    d.estado AS Estado,
+    CONCAT(u.nombre, ' ', u.apellido) AS Asignado_a,
+    a.nombre AS Area,
+    DATE_FORMAT(d.fecha_ingreso, '%d/%m/%Y %H:%i') AS Fecha_Ingreso
 FROM documentos d
 INNER JOIN tramites t ON d.ID_documento = t.ID_documento
 INNER JOIN usuarios u ON t.ID_usuario_asignado = u.ID_usuario
 LEFT JOIN areas a ON u.ID_area = a.ID_area
 ORDER BY d.fecha_ingreso DESC;
 
--- Mensaje de confirmación
-SELECT '✅ Documentos y trámites insertados correctamente' AS mensaje;
-SELECT 'Los documentos ahora tienen usuarios asignados' AS info;
-SELECT 'Verifica en la bitácora del frontend' AS siguiente_paso;
-
-
--- =====================================================
--- MENSAJE DE CONFIRMACIÓN
--- =====================================================
-SELECT 'Base de datos creada exitosamente.' AS mensaje;
-SELECT '✅ Todos los usuarios tienen la contraseña: 123456' AS info;
 SELECT '' AS separador;
-SELECT '📋 ÁREAS DE TRABAJO DEL SISTEMA (para usuarios):' AS titulo;
-SELECT nombre, sigla FROM areas WHERE tipo = 'AREA_TRABAJO';
-SELECT '' AS separador;
-SELECT '🏢 DEPARTAMENTOS PNP (para documentos):' AS titulo;
-SELECT COUNT(*) as total FROM areas WHERE tipo = 'DEPARTAMENTO_PNP';
-SELECT '' AS separador;
-SELECT '👥 USUARIOS Y SUS ÁREAS DE TRABAJO:' AS titulo;
-SELECT u.username, u.nombre, u.apellido, a.nombre as area, r.nombre as rol
-FROM usuarios u
-LEFT JOIN areas a ON u.ID_area = a.ID_area
-LEFT JOIN usuario_roles ur ON u.ID_usuario = ur.ID_usuario
-LEFT JOIN roles r ON ur.ID_rol = r.ID_rol
-ORDER BY u.ID_usuario;
+SELECT '🎉 ¡TODO LISTO! Puedes iniciar sesión en http://localhost:8080/login.html' AS mensaje_final;
+SELECT '💡 Prueba con: nakusu / 123456 (Administrador)' AS tip_1;
+SELECT '💡 O con: mdepaz / 123456 (Trabajador)' AS tip_2;
