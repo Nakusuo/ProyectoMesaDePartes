@@ -6,6 +6,10 @@ import com.pnp.mesadepartes.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -99,35 +103,60 @@ public class DocumentoController {
     }
 
     @GetMapping("/bitacora")
-    public ResponseEntity<List<Map<String, Object>>> getDocumentosBitacora() {
-        List<Documento> documentos = documentoRepository.findAll();
+    public ResponseEntity<?> getDocumentosBitacora(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "fechaIngreso") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir) {
         
-        List<Map<String, Object>> resultado = documentos.stream().map(doc -> {
-            Map<String, Object> docInfo = new HashMap<>();
-            docInfo.put("documento", doc);
+        try {
+            // Crear el objeto Pageable con ordenamiento
+            Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+            Pageable pageable = PageRequest.of(page, size, sort);
             
-            // Buscar el trámite asociado para obtener el usuario asignado
-            List<Tramite> tramites = tramiteRepository.findByDocumento(doc);
-            if (!tramites.isEmpty()) {
-                Tramite tramite = tramites.get(0);
-                Usuario asignado = tramite.getUsuarioAsignado();
-                if (asignado != null) {
-                    docInfo.put("usuarioAsignado", asignado.getNombre() + " " + asignado.getApellido());
-                    docInfo.put("idUsuarioAsignado", asignado.getIdUsuario());
+            // Obtener página de documentos
+            Page<Documento> documentosPage = documentoRepository.findAll(pageable);
+            
+            // Convertir a lista de mapas con información del usuario asignado
+            List<Map<String, Object>> resultado = documentosPage.getContent().stream().map(doc -> {
+                Map<String, Object> docInfo = new HashMap<>();
+                docInfo.put("documento", doc);
+                
+                // Buscar el trámite asociado para obtener el usuario asignado
+                List<Tramite> tramites = tramiteRepository.findByDocumento(doc);
+                if (!tramites.isEmpty()) {
+                    Tramite tramite = tramites.get(0);
+                    Usuario asignado = tramite.getUsuarioAsignado();
+                    if (asignado != null) {
+                        docInfo.put("usuarioAsignado", asignado.getNombre() + " " + asignado.getApellido());
+                        docInfo.put("idUsuarioAsignado", asignado.getIdUsuario());
+                    } else {
+                        docInfo.put("usuarioAsignado", "Sin asignar");
+                        docInfo.put("idUsuarioAsignado", null);
+                    }
                 } else {
                     docInfo.put("usuarioAsignado", "Sin asignar");
                     docInfo.put("idUsuarioAsignado", null);
                 }
-            } else {
-                docInfo.put("usuarioAsignado", "Sin asignar");
-                docInfo.put("idUsuarioAsignado", null);
-            }
+                
+                return docInfo;
+            }).toList();
             
-            return docInfo;
-        }).toList();
-        
-        System.out.println("✅ Total de documentos procesados: " + resultado.size());
-        return ResponseEntity.ok(resultado);
+            // Crear respuesta con datos de paginación
+            Map<String, Object> response = new HashMap<>();
+            response.put("content", resultado);
+            response.put("currentPage", documentosPage.getNumber());
+            response.put("totalItems", documentosPage.getTotalElements());
+            response.put("totalPages", documentosPage.getTotalPages());
+            response.put("hasNext", documentosPage.hasNext());
+            response.put("hasPrevious", documentosPage.hasPrevious());
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Map.of("error", "Error al obtener bitácora: " + e.getMessage()));
+        }
     }
 
     @GetMapping("/{id}")
@@ -200,6 +229,15 @@ public class DocumentoController {
         respuesta.put("asignadoA", asignadoA);
 
         return ResponseEntity.ok(respuesta);
+    }
+    
+    @GetMapping("/buscar")
+    public ResponseEntity<?> buscarDocumentoPorNumeroRegistro(@RequestParam String numeroRegistro) {
+        Optional<Documento> optDoc = documentoRepository.findByCodigo(numeroRegistro);
+        if (!optDoc.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(optDoc.get());
     }
 
     @PostMapping("/upload")
@@ -327,7 +365,6 @@ public class DocumentoController {
             if (dto.getTitulo() != null) documento.setTitulo(dto.getTitulo());
             if (dto.getDescripcion() != null) documento.setDescripcion(dto.getDescripcion());
             if (dto.getRemitente() != null) documento.setRemitente(dto.getRemitente());
-            if (dto.getDestinatario() != null) documento.setDestinatario(dto.getDestinatario());
             if (dto.getNumeroDocumento() != null) documento.setNumeroDocumento(dto.getNumeroDocumento());
             
             // Actualizar tipo de documento si se proporciona

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salida de Documentos - Mesa de Partes Digital PNP</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/sidebar.css">
+  <link rel="stylesheet" href="assets/css/salida-documento.css">
+  <link rel="stylesheet" href="assets/css/toast.css">
+</head>
+<body>
+  <div class="app-container">
+    <div id="sidebar-container"></div>
+
+    <div class="main-content">
+      <div class="top-bar">
+        <div class="page-title">
+          <h1>Salida de Documentos</h1>
+          <p class="subtitle">Registrar la salida de documentos finalizados</p>
+        </div>
+      </div>
+
+      <div class="content-wrapper">
+        <!-- SALIDA DE DOCUMENTOS (Solo documentos FINALIZADOS) -->
+        <div class="card documentos-finalizados-section">
+          <h2>✅ Documentos Finalizados - Registrar Salida</h2>
+          <p class="subtitle">Solo se muestran documentos con estado <strong>"FINALIZADO"</strong></p>
+          
+          <!-- Filtro de búsqueda -->
+          <div class="search-filter">
+            <input 
+              type="text" 
+              id="filtroDocumentos" 
+              placeholder="🔍 Buscar por código, asunto o remitente..."
+              class="form-control">
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Tipo</th>
+                  <th>Asunto</th>
+                  <th>Remitente</th>
+                  <th>Fecha Registro</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="documentosFinalizadosBody">
+                <tr>
+                  <td colspan="6" class="text-center">Cargando documentos finalizados...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pagination-container" id="paginationDocumentos" style="display: none;">
+            <!-- La paginación se generará dinámicamente -->
+          </div>
+        </div>
+
+        <!-- Información del documento seleccionado -->
+        <div class="card documento-info" id="documentoInfo" style="display: none;">
+          <h2>Información del Documento</h2>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Número de Registro:</label>
+              <span id="infoNumero"></span>
+            </div>
+            <div class="info-item">
+              <label>Tipo de Documento:</label>
+              <span id="infoTipo"></span>
+            </div>
+            <div class="info-item">
+              <label>Asunto:</label>
+              <span id="infoAsunto"></span>
+            </div>
+            <div class="info-item">
+              <label>Remitente:</label>
+              <span id="infoRemitente"></span>
+            </div>
+            <div class="info-item">
+              <label>Fecha de Registro:</label>
+              <span id="infoFechaRegistro"></span>
+            </div>
+            <div class="info-item">
+              <label>Estado:</label>
+              <span id="infoEstado" class="badge"></span>
+            </div>
+            <div class="info-item">
+              <label>Área Destino:</label>
+              <span id="infoAreaDestino"></span>
+            </div>
+            <div class="info-item">
+              <label>Folios:</label>
+              <span id="infoFolios"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formulario de registro de salida -->
+        <div class="card salida-form" id="salidaForm" style="display: none;">
+          <h2>Registrar Salida</h2>
+          <form id="formSalida">
+            <input type="hidden" id="documentoId">
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="destinatario">Destinatario *</label>
+                <input 
+                  type="text" 
+                  id="destinatario" 
+                  class="form-control"
+                  placeholder="Nombre completo del destinatario"
+                  required>
+              </div>
+              
+              <div class="form-group">
+                <label for="cargoDestinatario">Cargo del Destinatario *</label>
+                <input 
+                  type="text" 
+                  id="cargoDestinatario" 
+                  class="form-control"
+                  placeholder="Cargo o función"
+                  required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="areaSalida">Área de Salida *</label>
+                <select id="areaSalida" class="form-control" required>
+                  <option value="">Seleccione un área</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="fechaSalida">Fecha de Salida *</label>
+                <input 
+                  type="datetime-local" 
+                  id="fechaSalida" 
+                  class="form-control"
+                  required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="observaciones">Observaciones</label>
+              <textarea 
+                id="observaciones" 
+                class="form-control"
+                rows="3"
+                placeholder="Observaciones adicionales (opcional)"></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary" onclick="cancelarSalida()">
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn-primary">
+                📤 Registrar Salida
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Historial de salidas del documento -->
+        <div class="card historial-section" id="historialSection" style="display: none;">
+          <h2>Historial de Salidas</h2>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Destinatario</th>
+                  <th>Cargo</th>
+                  <th>Área</th>
+                  <th>Registrado Por</th>
+                  <th>Observaciones</th>
+                </tr>
+              </thead>
+              <tbody id="historialBody">
+                <!-- Se llenará dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/permissions.js?v=3"></script>
+  <script src="assets/js/sidebar.js?v=3"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/salida-documento.js"></script>
+</body>
+</html>

@@ -4,6 +4,9 @@ const API_URL = 'http://localhost:8080/api';
 // Variables globales
 let documentosOriginales = [];
 let usuariosDisponibles = [];
+let paginaActual = 0;
+let tamanioPagina = 10;
+let totalPaginas = 0;
 
 // Cargar documentos y usuarios al iniciar
 document.addEventListener('DOMContentLoaded', async () => {
@@ -37,15 +40,15 @@ async function cargarUsuarios() {
     }
 }
 
-// Función para cargar todos los documentos
-async function cargarDocumentos() {
+// Función para cargar todos los documentos con paginación
+async function cargarDocumentos(pagina = 0, tamanio = 10) {
     const tableBody = document.getElementById('bitacora-table-body');
     
     try {
-        console.log('📡 Obteniendo documentos de bitácora:', `${API_URL}/documentos/bitacora`);
+        console.log('📡 Obteniendo documentos de bitácora - Página:', pagina);
         
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_URL}/documentos/bitacora`, {
+        const response = await fetch(`${API_URL}/documentos/bitacora?page=${pagina}&size=${tamanio}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -56,19 +59,22 @@ async function cargarDocumentos() {
             throw new Error(`Error HTTP: ${response.status}`);
         }
         
-        const documentos = await response.json();
-        documentosOriginales = documentos;
-        console.log('✅ Documentos recibidos:', documentos.length);
+        const data = await response.json();
+        paginaActual = data.currentPage;
+        totalPaginas = data.totalPages;
+        documentosOriginales = data.content;
         
-        if (documentos.length === 0) {
+        console.log('✅ Documentos recibidos:', documentosOriginales.length);
+        console.log('📊 Página actual:', paginaActual, 'de', totalPaginas);
+        
+        if (documentosOriginales.length === 0) {
             tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">No hay documentos registrados</td></tr>';
+            actualizarControlesPaginacion(data);
             return;
         }
         
-        // Ordenar por fecha de ingreso (más recientes primero)
-        documentos.sort((a, b) => new Date(b.documento.fechaIngreso) - new Date(a.documento.fechaIngreso));
-        
-        mostrarDocumentos(documentos);
+        mostrarDocumentos(documentosOriginales);
+        actualizarControlesPaginacion(data);
         
     } catch (error) {
         console.error('❌ ERROR al cargar documentos:', error);
@@ -80,6 +86,121 @@ async function cargarDocumentos() {
             </tr>
         `;
     }
+}
+
+// Actualizar controles de paginación
+function actualizarControlesPaginacion(data) {
+    // Generar botones de página numerados
+    let pageButtons = '';
+    const maxVisiblePages = 7; // Mostrar máximo 7 botones de página
+    
+    if (data.totalPages <= maxVisiblePages) {
+        // Si hay pocas páginas, mostrar todas
+        for (let i = 0; i < data.totalPages; i++) {
+            const isActive = i === data.currentPage ? 'active' : '';
+            pageButtons += `
+                <button class="page-number ${isActive}" onclick="cambiarPagina(${i})">
+                    ${i + 1}
+                </button>
+            `;
+        }
+    } else {
+        // Lógica de paginación con puntos suspensivos
+        const currentPage = data.currentPage;
+        const totalPages = data.totalPages;
+        
+        // Primera página
+        pageButtons += `
+            <button class="page-number ${currentPage === 0 ? 'active' : ''}" onclick="cambiarPagina(0)">
+                1
+            </button>
+        `;
+        
+        // Puntos suspensivos iniciales
+        if (currentPage > 3) {
+            pageButtons += `<span class="pagination-ellipsis">...</span>`;
+        }
+        
+        // Páginas del medio
+        let startPage = Math.max(1, currentPage - 1);
+        let endPage = Math.min(totalPages - 2, currentPage + 1);
+        
+        for (let i = startPage; i <= endPage; i++) {
+            const isActive = i === currentPage ? 'active' : '';
+            pageButtons += `
+                <button class="page-number ${isActive}" onclick="cambiarPagina(${i})">
+                    ${i + 1}
+                </button>
+            `;
+        }
+        
+        // Puntos suspensivos finales
+        if (currentPage < totalPages - 4) {
+            pageButtons += `<span class="pagination-ellipsis">...</span>`;
+        }
+        
+        // Última página
+        if (totalPages > 1) {
+            pageButtons += `
+                <button class="page-number ${currentPage === totalPages - 1 ? 'active' : ''}" onclick="cambiarPagina(${totalPages - 1})">
+                    ${totalPages}
+                </button>
+            `;
+        }
+    }
+    
+    let paginationHtml = `
+        <div class="pagination-controls">
+            <div class="pagination-info">
+                Mostrando ${data.content.length} de ${data.totalItems} documentos 
+                (Página ${data.currentPage + 1} de ${data.totalPages})
+            </div>
+            <div class="pagination-buttons">
+                <button onclick="cambiarPagina(${data.currentPage - 1})" 
+                        class="page-nav-btn"
+                        ${!data.hasPrevious ? 'disabled' : ''}>
+                    ⬅️ Anterior
+                </button>
+                
+                ${pageButtons}
+                
+                <button onclick="cambiarPagina(${data.currentPage + 1})" 
+                        class="page-nav-btn"
+                        ${!data.hasNext ? 'disabled' : ''}>
+                    Siguiente ➡️
+                </button>
+            </div>
+            <div class="page-size-selector">
+                <label>Mostrar:</label>
+                <select onchange="cambiarTamanioPagina(this.value)" id="sizeSelector">
+                    <option value="10" ${tamanioPagina === 10 ? 'selected' : ''}>10</option>
+                    <option value="25" ${tamanioPagina === 25 ? 'selected' : ''}>25</option>
+                    <option value="50" ${tamanioPagina === 50 ? 'selected' : ''}>50</option>
+                    <option value="100" ${tamanioPagina === 100 ? 'selected' : ''}>100</option>
+                </select>
+                <span>documentos</span>
+            </div>
+        </div>
+    `;
+    
+    // Agregar o actualizar controles
+    let paginationContainer = document.querySelector('.pagination-controls');
+    if (paginationContainer) {
+        paginationContainer.outerHTML = paginationHtml;
+    } else {
+        document.querySelector('.card').insertAdjacentHTML('beforeend', paginationHtml);
+    }
+}
+
+// Cambiar página
+function cambiarPagina(nuevaPagina) {
+    cargarDocumentos(nuevaPagina, tamanioPagina);
+}
+
+// Cambiar tamaño de página
+function cambiarTamanioPagina(nuevoTamanio) {
+    tamanioPagina = parseInt(nuevoTamanio);
+    cargarDocumentos(0, tamanioPagina); // Volver a página 1
 }
 
 // Función para mostrar documentos en la tabla

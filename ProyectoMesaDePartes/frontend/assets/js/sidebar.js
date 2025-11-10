@@ -24,21 +24,34 @@ class SidebarManager {
 
         const pm = window.permissionsManager;
         
+        // Obtener todos los elementos de menú con data-permission
+        const navItems = document.querySelectorAll('.nav-item[data-permission]');
+        
+        navItems.forEach(item => {
+            const permission = item.getAttribute('data-permission');
+            if (permission && !pm.hasPermission(permission)) {
+                item.style.display = 'none';
+            }
+        });
+        
         // Obtener todos los enlaces de navegación
         const navLinks = document.querySelectorAll('.sidebar-nav a');
         
         navLinks.forEach(link => {
             const href = link.getAttribute('href');
             
-            // Ocultar enlaces según permisos
+            // Ocultar enlaces según permisos de páginas específicas
             if (href === 'registro.html' && !pm.hasPermission('VER_REGISTRO')) {
-                link.style.display = 'none';
+                link.parentElement.style.display = 'none';
             }
             if (href === 'bitacora.html' && !pm.hasPermission('VER_BITACORA')) {
-                link.style.display = 'none';
+                link.parentElement.style.display = 'none';
             }
             if (href === 'gestion-usuarios.html' && !pm.hasPermission('VER_USUARIOS')) {
-                link.style.display = 'none';
+                link.parentElement.style.display = 'none';
+            }
+            if (href === 'salida-documento.html' && !pm.hasPermission('VER_SALIDAS')) {
+                link.parentElement.style.display = 'none';
             }
         });
     }

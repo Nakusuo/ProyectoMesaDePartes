@@ -43,3 +43,6 @@ function getAuthHeaders() {
     
     return headers;
 }
+
+// Variable global para compatibilidad con otros archivos
+const API_BASE_URL = APP_CONFIG.API_BASE_URL;

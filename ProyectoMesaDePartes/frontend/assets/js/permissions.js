@@ -12,6 +12,7 @@ const PERMISSIONS = {
     VER_REGISTRO: [ROLES.ADMIN, ROLES.MESA_PARTES],
     VER_BITACORA: [ROLES.ADMIN, ROLES.MESA_PARTES, ROLES.JEFATURA],
     VER_USUARIOS: [ROLES.ADMIN],
+    VER_SALIDAS: [ROLES.ADMIN, ROLES.MESA_PARTES, ROLES.JEFATURA],
     
     // Documentos
     VER_TODOS_DOCUMENTOS: [ROLES.ADMIN, ROLES.MESA_PARTES, ROLES.JEFATURA],
@@ -20,6 +21,7 @@ const PERMISSIONS = {
     MODIFICAR_DOCUMENTO: [ROLES.ADMIN, ROLES.MESA_PARTES],
     ELIMINAR_DOCUMENTO: [ROLES.ADMIN],
     ASIGNAR_DOCUMENTO: [ROLES.ADMIN, ROLES.JEFATURA],
+    REGISTRAR_SALIDA: [ROLES.ADMIN, ROLES.MESA_PARTES, ROLES.JEFATURA],
     
     // Usuarios
     CREAR_USUARIO: [ROLES.ADMIN],
@@ -71,7 +73,8 @@ class PermissionsManager {
             'dashboard.html': 'VER_DASHBOARD',
             'registro.html': 'VER_REGISTRO',
             'bitacora.html': 'VER_BITACORA',
-            'gestion-usuarios.html': 'VER_USUARIOS'
+            'gestion-usuarios.html': 'VER_USUARIOS',
+            'salida-documento.html': 'VER_SALIDAS'
         };
 
         const permission = pagePermissions[page];
