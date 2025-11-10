@@ -74,7 +74,7 @@ function mostrarDocumentos(documentos) {
         const tipo = doc.tipoDocumento?.nombre || 'N/A';
         const estadoBadge = obtenerEstadoBadge(doc.estado);
         const archivoBtn = doc.archivoUrl 
-            ? `<a href="http://localhost:8080${doc.archivoUrl}" target="_blank" class="btn btn-sm btn-secondary">📎 Ver PDF</a>` 
+            ? `<button onclick="verPDF('${doc.archivoUrl}')" class="btn btn-sm btn-secondary">📎 Ver PDF</button>` 
             : '<span style="color: #999;">Sin archivo</span>';
         
         return `

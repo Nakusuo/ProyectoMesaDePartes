@@ -1,5 +1,7 @@
 // Dashboard.js - Cargar datos reales desde la API
-const API_URL = window.API_URL || 'http://localhost:8080/api';
+const API_URL = window.APP_CONFIG?.API_BASE_URL || 'http://localhost:8080/api';
+
+console.log('🔗 API_URL configurada:', API_URL);
 
 // Variables para las gráficas
 let chartPorTipo = null;
@@ -28,24 +30,37 @@ function mostrarFechaActual() {
 // Cargar todos los datos del dashboard
 async function cargarDashboard() {
     try {
+        console.log('🚀 Iniciando carga de dashboard...');
+        
         const token = localStorage.getItem('token');
         if (!token) {
+            console.warn('❌ No hay token, redirigiendo a login');
             window.location.href = 'login.html';
             return;
         }
+
+        console.log('✅ Token encontrado');
 
         await cargarMetricas(token);
         await cargarGraficas(token);
         await cargarDocumentosRecientes(token);
         
+        console.log('✅ Dashboard cargado completamente');
+        
     } catch (error) {
-        console.error('Error al cargar dashboard:', error);
+        console.error('❌ Error al cargar dashboard:', error);
+        // Mostrar mensaje de error al usuario
+        if (window.showToast) {
+            showToast('Error al cargar el dashboard', 'error', 'Error');
+        }
     }
 }
 
 // Cargar métricas principales
 async function cargarMetricas(token) {
     try {
+        console.log('📊 Cargando métricas...');
+        
         // Verificar permisos
         const pm = window.permissionsManager;
         let url = `${API_URL}/documentos`;
@@ -55,8 +70,11 @@ async function cargarMetricas(token) {
             const userId = pm.getUserId();
             if (userId) {
                 url = `${API_URL}/documentos/asignados/${userId}`;
+                console.log(`👤 Filtrando por usuario ${userId}`);
             }
         }
+        
+        console.log('🔗 Consultando:', url);
         
         const responseDocumentos = await fetch(url, {
             headers: {
@@ -65,24 +83,40 @@ async function cargarMetricas(token) {
             }
         });
 
+        if (!responseDocumentos.ok) {
+            throw new Error(`Error HTTP: ${responseDocumentos.status}`);
+        }
+
         if (responseDocumentos.ok) {
             const documentos = await responseDocumentos.json();
             
+            console.log('📊 Documentos cargados:', documentos.length);
+            console.log('📄 Primer documento:', documentos[0]);
+            
             const total = documentos.length;
-            const enProceso = documentos.filter(d => 
-                d.estadoDocumento?.nombre?.toUpperCase() === 'EN_PROCESO' || 
-                d.estadoDocumento?.nombre?.toUpperCase() === 'PENDIENTE'
-            ).length;
-            const finalizados = documentos.filter(d => 
-                d.estadoDocumento?.nombre?.toUpperCase() === 'FINALIZADO' ||
-                d.estadoDocumento?.nombre?.toUpperCase() === 'ATENDIDO'
-            ).length;
+            
+            // Filtrar documentos en proceso (estado es un string directo del ENUM)
+            const enProceso = documentos.filter(d => {
+                const estado = (d.estado || '').toUpperCase().replace('_', ' ');
+                return estado === 'EN PROCESO' || estado === 'EN_PROCESO' || 
+                       estado === 'ASIGNADO' || estado === 'RECIBIDO';
+            }).length;
+            
+            // Filtrar documentos finalizados
+            const finalizados = documentos.filter(d => {
+                const estado = (d.estado || '').toUpperCase();
+                return estado === 'FINALIZADO' || estado === 'SALIDA';
+            }).length;
+
+            console.log(`📈 Métricas - Total: ${total}, En Proceso: ${enProceso}, Finalizados: ${finalizados}`);
 
             document.getElementById('total-documentos').textContent = total;
             document.getElementById('documentos-proceso').textContent = enProceso;
             document.getElementById('documentos-finalizados').textContent = finalizados;
         }
 
+        console.log('👥 Cargando usuarios...');
+        
         const responseUsuarios = await fetch(`${API_URL}/usuarios`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -92,18 +126,28 @@ async function cargarMetricas(token) {
 
         if (responseUsuarios.ok) {
             const usuarios = await responseUsuarios.json();
-            const usuariosActivos = usuarios.filter(u => u.activo).length;
+            const usuariosActivos = usuarios.filter(u => u.activo || u.activo === undefined).length;
+            console.log(`👥 Usuarios activos: ${usuariosActivos}`);
             document.getElementById('total-usuarios').textContent = usuariosActivos;
         }
 
+        console.log('✅ Métricas cargadas correctamente');
+
     } catch (error) {
-        console.error('Error al cargar métricas:', error);
+        console.error('❌ Error al cargar métricas:', error);
+        // Mostrar valores por defecto
+        document.getElementById('total-documentos').textContent = '0';
+        document.getElementById('documentos-proceso').textContent = '0';
+        document.getElementById('documentos-finalizados').textContent = '0';
+        document.getElementById('total-usuarios').textContent = '0';
     }
 }
 
 // Cargar datos para las gráficas
 async function cargarGraficas(token) {
     try {
+        console.log('📊 Cargando datos para gráficas...');
+        
         // Verificar permisos
         const pm = window.permissionsManager;
         let url = `${API_URL}/documentos`;
@@ -113,8 +157,11 @@ async function cargarGraficas(token) {
             const userId = pm.getUserId();
             if (userId) {
                 url = `${API_URL}/documentos/asignados/${userId}`;
+                console.log(`👤 Filtrando gráficas por usuario ${userId}`);
             }
         }
+        
+        console.log('🔗 Consultando para gráficas:', url);
         
         const response = await fetch(url, {
             headers: {
@@ -124,11 +171,20 @@ async function cargarGraficas(token) {
         });
 
         if (!response.ok) {
-            console.error('Error al cargar documentos para gráficas');
+            console.error('❌ Error al cargar documentos para gráficas:', response.status);
+            mostrarMensajesSinDatos();
             return;
         }
 
         const documentos = await response.json();
+        
+        console.log(`📊 Documentos para gráficas: ${documentos.length}`);
+
+        if (documentos.length === 0) {
+            console.warn('⚠️ No hay documentos para mostrar en gráficas');
+            mostrarMensajesSinDatos();
+            return;
+        }
 
         // Gráfica por tipo de documento
         crearGraficaPorTipo(documentos);
@@ -138,10 +194,34 @@ async function cargarGraficas(token) {
 
         // Gráfica de documentos en el tiempo
         crearGraficaTiempo(documentos);
+        
+        console.log('✅ Gráficas creadas exitosamente');
 
     } catch (error) {
-        console.error('Error al cargar gráficas:', error);
+        console.error('❌ Error al cargar gráficas:', error);
+        mostrarMensajesSinDatos();
     }
+}
+
+// Mostrar mensajes cuando no hay datos
+function mostrarMensajesSinDatos() {
+    const charts = ['chart-por-tipo', 'chart-por-estado', 'chart-tiempo'];
+    
+    charts.forEach(chartId => {
+        const canvas = document.getElementById(chartId);
+        if (canvas) {
+            const parent = canvas.parentElement;
+            const mensaje = document.createElement('div');
+            mensaje.style.cssText = 'text-align: center; padding: 40px; color: var(--text-secondary);';
+            mensaje.innerHTML = `
+                <div style="font-size: 48px; margin-bottom: 16px;">📊</div>
+                <p style="font-weight: 600; margin-bottom: 8px;">No hay datos disponibles</p>
+                <p style="font-size: 14px;">No tienes documentos asignados todavía</p>
+            `;
+            canvas.style.display = 'none';
+            parent.appendChild(mensaje);
+        }
+    });
 }
 
 // Crear gráfica de documentos por tipo
@@ -149,13 +229,31 @@ function crearGraficaPorTipo(documentos) {
     const tipos = {};
     
     documentos.forEach(doc => {
-        const tipo = doc.tipoDocumento?.nombre || 'Sin Tipo';
+        // Intentar obtener el nombre del tipo de varias formas
+        let tipo = 'Sin Tipo';
+        if (doc.tipoDocumento) {
+            if (typeof doc.tipoDocumento === 'string') {
+                tipo = doc.tipoDocumento;
+            } else if (doc.tipoDocumento.nombre) {
+                tipo = doc.tipoDocumento.nombre;
+            } else if (doc.tipoDocumento.descripcion) {
+                tipo = doc.tipoDocumento.descripcion;
+            }
+        }
         tipos[tipo] = (tipos[tipo] || 0) + 1;
     });
 
+    console.log('📊 Tipos de documento:', tipos);
+
     const ctx = document.getElementById('chart-por-tipo');
     if (!ctx) {
-        console.error('Canvas chart-por-tipo no encontrado');
+        console.error('❌ Canvas chart-por-tipo no encontrado');
+        return;
+    }
+
+    // Verificar si hay datos
+    if (Object.keys(tipos).length === 0) {
+        console.warn('⚠️ No hay tipos para mostrar en gráfica');
         return;
     }
 
@@ -163,38 +261,44 @@ function crearGraficaPorTipo(documentos) {
         chartPorTipo.destroy();
     }
 
-    chartPorTipo = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: Object.keys(tipos),
-            datasets: [{
-                data: Object.values(tipos),
-                backgroundColor: [
-                    'rgba(0, 100, 46, 0.8)',
-                    'rgba(251, 191, 36, 0.8)',
-                    'rgba(16, 185, 129, 0.8)',
-                    'rgba(245, 158, 11, 0.8)',
-                    'rgba(0, 140, 64, 0.8)',
-                    'rgba(252, 211, 77, 0.8)'
-                ],
-                borderWidth: 2,
-                borderColor: '#fff'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        padding: 15,
-                        font: { size: 12 }
+    try {
+        ctx.style.display = 'block';
+        chartPorTipo = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(tipos),
+                datasets: [{
+                    data: Object.values(tipos),
+                    backgroundColor: [
+                        'rgba(0, 100, 46, 0.8)',
+                        'rgba(251, 191, 36, 0.8)',
+                        'rgba(16, 185, 129, 0.8)',
+                        'rgba(245, 158, 11, 0.8)',
+                        'rgba(0, 140, 64, 0.8)',
+                        'rgba(252, 211, 77, 0.8)'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: { size: 12 }
+                        }
                     }
                 }
             }
-        }
-    });
+        });
+        console.log('✅ Gráfica por tipo creada');
+    } catch (error) {
+        console.error('❌ Error al crear gráfica por tipo:', error);
+    }
 }
 
 // Crear gráfica de documentos por estado
@@ -202,13 +306,29 @@ function crearGraficaPorEstado(documentos) {
     const estados = {};
     
     documentos.forEach(doc => {
-        const estado = doc.estado || 'Sin Estado';
+        // Formatear el estado para mostrarlo mejor
+        let estado = doc.estado || 'Sin Estado';
+        // Reemplazar guiones bajos por espacios
+        estado = estado.replace(/_/g, ' ');
+        // Capitalizar primera letra de cada palabra
+        estado = estado.split(' ').map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        ).join(' ');
+        
         estados[estado] = (estados[estado] || 0) + 1;
     });
 
+    console.log('📊 Estados de documento:', estados);
+
     const ctx = document.getElementById('chart-por-estado');
     if (!ctx) {
-        console.error('Canvas chart-por-estado no encontrado');
+        console.error('❌ Canvas chart-por-estado no encontrado');
+        return;
+    }
+
+    // Verificar si hay datos
+    if (Object.keys(estados).length === 0) {
+        console.warn('⚠️ No hay estados para mostrar en gráfica');
         return;
     }
 
@@ -216,36 +336,57 @@ function crearGraficaPorEstado(documentos) {
         chartPorEstado.destroy();
     }
 
-    chartPorEstado = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: Object.keys(estados),
-            datasets: [{
-                label: 'Cantidad',
-                data: Object.values(estados),
-                backgroundColor: 'rgba(0, 100, 46, 0.8)',
-                borderColor: 'rgba(0, 100, 46, 1)',
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    display: false
-                }
+    try {
+        ctx.style.display = 'block';
+        
+        // Colores por estado
+        const colores = Object.keys(estados).map(estado => {
+            const estadoUpper = estado.toUpperCase();
+            if (estadoUpper.includes('FINALIZADO') || estadoUpper.includes('SALIDA')) {
+                return 'rgba(16, 185, 129, 0.8)'; // Verde success
+            } else if (estadoUpper.includes('PROCESO') || estadoUpper.includes('RECIBIDO')) {
+                return 'rgba(251, 191, 36, 0.8)'; // Amarillo warning
+            } else if (estadoUpper.includes('OBSERVADO')) {
+                return 'rgba(239, 68, 68, 0.8)'; // Rojo danger
+            } else {
+                return 'rgba(0, 100, 46, 0.8)'; // Verde PNP
+            }
+        });
+
+        chartPorEstado = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(estados),
+                datasets: [{
+                    label: 'Cantidad',
+                    data: Object.values(estados),
+                    backgroundColor: colores,
+                    borderColor: colores.map(c => c.replace('0.8', '1')),
+                    borderWidth: 2
+                }]
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
                     }
                 }
             }
-        }
-    });
+        });
+        console.log('✅ Gráfica por estado creada');
+    } catch (error) {
+        console.error('❌ Error al crear gráfica por estado:', error);
+    }
 }
 
 // Crear gráfica de documentos en el tiempo
@@ -357,32 +498,61 @@ async function cargarDocumentosRecientes(token) {
 function mostrarDocumentosRecientes(documentos) {
     const tbody = document.getElementById('documentos-recientes-body');
     
+    if (!tbody) {
+        console.error('Elemento documentos-recientes-body no encontrado');
+        return;
+    }
+    
     if (documentos.length === 0) {
         tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">No hay documentos registrados</td></tr>';
         return;
     }
 
+    console.log('📋 Mostrando documentos recientes:', documentos.length);
+
     tbody.innerHTML = documentos.map(doc => {
         const fecha = doc.fechaIngreso ? 
-            new Date(doc.fechaIngreso).toLocaleDateString('es-PE') : 
+            new Date(doc.fechaIngreso).toLocaleDateString('es-PE', { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit' 
+            }) : 
             'Sin fecha';
         
-        const estado = doc.estado || 'Sin estado';
-        let badgeClass = 'badge-info';
+        // Estado es un string directo del ENUM
+        let estado = doc.estado || 'Sin estado';
+        estado = estado.replace(/_/g, ' ');
         
-        if (estado.toUpperCase().includes('FINALIZADO')) {
+        let badgeClass = 'badge-info';
+        const estadoUpper = estado.toUpperCase();
+        
+        if (estadoUpper.includes('FINALIZADO') || estadoUpper.includes('SALIDA')) {
             badgeClass = 'badge-success';
-        } else if (estado.toUpperCase().includes('PROCESO')) {
+        } else if (estadoUpper.includes('PROCESO') || estadoUpper.includes('RECIBIDO')) {
             badgeClass = 'badge-warning';
-        } else if (estado.toUpperCase().includes('REGISTRADO')) {
+        } else if (estadoUpper.includes('ASIGNADO')) {
             badgeClass = 'badge-info';
+        } else if (estadoUpper.includes('OBSERVADO')) {
+            badgeClass = 'badge-danger';
+        }
+
+        // Obtener nombre del tipo de documento
+        let tipoDocumento = 'Sin tipo';
+        if (doc.tipoDocumento) {
+            if (typeof doc.tipoDocumento === 'string') {
+                tipoDocumento = doc.tipoDocumento;
+            } else if (doc.tipoDocumento.nombre) {
+                tipoDocumento = doc.tipoDocumento.nombre;
+            } else if (doc.tipoDocumento.descripcion) {
+                tipoDocumento = doc.tipoDocumento.descripcion;
+            }
         }
 
         return `
             <tr>
                 <td>${fecha}</td>
-                <td>${doc.titulo || 'Sin título'}</td>
-                <td>${doc.tipoDocumento?.nombre || 'Sin tipo'}</td>
+                <td><strong>${doc.codigo || 'S/C'}</strong> - ${doc.asunto || doc.titulo || 'Sin asunto'}</td>
+                <td>${tipoDocumento}</td>
                 <td>${doc.remitente || 'Sin remitente'}</td>
                 <td><span class="badge ${badgeClass}">${estado}</span></td>
             </tr>

@@ -93,7 +93,12 @@ class PermissionsManager {
     }
 
     shouldFilterDocumentsByUser() {
-        return this.hasPermission('VER_SOLO_ASIGNADOS');
+        // ADMIN, MESA_PARTES y JEFATURA ven todos los documentos
+        if (this.hasPermission('VER_TODOS_DOCUMENTOS')) {
+            return false;
+        }
+        // TRABAJADOR solo ve sus documentos asignados
+        return this.userRole === ROLES.TRABAJADOR;
     }
 
     canModifyDocument() {

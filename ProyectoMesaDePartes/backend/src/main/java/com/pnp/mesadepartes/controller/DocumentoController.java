@@ -327,17 +327,24 @@ public class DocumentoController {
 
     // Endpoint para visualizar PDF
     @GetMapping("/ver-pdf")
-    public ResponseEntity<?> verPdf(@RequestParam String url) {
+    public ResponseEntity<?> verPdf(@RequestParam String archivo) {
         try {
             // Remover el slash inicial si existe
-            String relativePath = url.startsWith("/") ? url.substring(1) : url;
-            Path filePath = Paths.get(relativePath);
+            String relativePath = archivo.startsWith("/") ? archivo.substring(1) : archivo;
+            
+            // Construir ruta completa del archivo
+            Path filePath = Paths.get(relativePath).toAbsolutePath();
+            
+            System.out.println("🔍 Buscando archivo: " + filePath.toString());
             
             if (!Files.exists(filePath)) {
-                return ResponseEntity.status(404).body(Map.of("error", "Archivo no encontrado: " + url));
+                System.err.println("❌ Archivo no encontrado: " + filePath.toString());
+                return ResponseEntity.status(404).body(Map.of("error", "Archivo no encontrado: " + archivo));
             }
             
             Resource resource = new UrlResource(filePath.toUri());
+            
+            System.out.println("✅ Archivo encontrado, sirviendo PDF");
             
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_PDF)
@@ -345,6 +352,7 @@ public class DocumentoController {
                     .body(resource);
                     
         } catch (MalformedURLException e) {
+            System.err.println("❌ Error al leer archivo: " + e.getMessage());
             return ResponseEntity.status(500).body(Map.of("error", "Error al leer el archivo: " + e.getMessage()));
         }
     }

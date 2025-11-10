@@ -51,34 +51,52 @@ async function generarReportePDF() {
  * Abre el PDF de un documento en una nueva pestaña
  * @param {string} archivoUrl - URL del archivo PDF
  */
-function verPDF(archivoUrl) {
+async function verPDF(archivoUrl) {
     if (!archivoUrl) {
         showToast('No hay archivo PDF disponible para este documento', 'warning');
         return;
     }
 
     try {
+        showToast('Cargando PDF...', 'info');
+        
         const token = sessionStorage.getItem('token');
         
-        // Construir URL completa
-        let url;
-        if (archivoUrl.startsWith('http')) {
-            url = archivoUrl;
-        } else {
-            // Si es una ruta relativa, construir URL completa
-            url = `${API_BASE_URL}/api/documentos/ver-pdf?archivo=${encodeURIComponent(archivoUrl)}`;
+        // Construir URL completa con encoding correcto
+        const url = `${API_BASE_URL}/api/documentos/ver-pdf?archivo=${encodeURIComponent(archivoUrl)}`;
+        
+        // Hacer fetch con autorización
+        const response = await fetch(url, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error al cargar PDF: ${response.status}`);
         }
+
+        // Obtener el blob del PDF
+        const blob = await response.blob();
+        
+        // Crear URL temporal para el blob
+        const blobUrl = window.URL.createObjectURL(blob);
         
         // Abrir en nueva pestaña
-        const newWindow = window.open(url, '_blank');
+        const newWindow = window.open(blobUrl, '_blank');
         
         if (!newWindow) {
             showToast('Por favor permite las ventanas emergentes para ver el PDF', 'warning');
+        } else {
+            // Limpiar la URL del blob después de un tiempo
+            setTimeout(() => {
+                window.URL.revokeObjectURL(blobUrl);
+            }, 1000);
         }
         
     } catch (error) {
         console.error('Error al abrir PDF:', error);
-        showToast('Error al abrir el archivo PDF', 'error');
+        showToast('Error al abrir el archivo PDF: ' + error.message, 'error');
     }
 }
 
