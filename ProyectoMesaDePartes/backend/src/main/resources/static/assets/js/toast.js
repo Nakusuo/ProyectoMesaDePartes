@@ -140,3 +140,18 @@ window.alert = function(message) {
         duration: type === 'error' ? 5000 : 4000
     });
 };
+
+// Función auxiliar global para compatibilidad
+function showToast(message, type = 'info', title = null) {
+    if (!window.toast) {
+        console.error('Toast no inicializado');
+        return;
+    }
+    
+    window.toast.show({
+        type: type,
+        title: title || (type === 'success' ? '¡Éxito!' : type === 'error' ? 'Error' : type === 'warning' ? 'Advertencia' : 'Información'),
+        message: message,
+        duration: type === 'error' ? 5000 : 4000
+    });
+}
