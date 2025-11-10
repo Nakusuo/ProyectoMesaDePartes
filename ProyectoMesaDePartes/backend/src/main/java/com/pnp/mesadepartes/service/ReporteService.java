@@ -10,7 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +27,6 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
-import com.itextpdf.layout.element.Cell;
 import com.pnp.mesadepartes.dto.ReporteDTO;
 import com.pnp.mesadepartes.model.Derivacion;
 import com.pnp.mesadepartes.model.Documento;
@@ -257,12 +263,12 @@ public class ReporteService {
         table.setWidth(com.itextpdf.layout.properties.UnitValue.createPercentValue(100));
 
         // Encabezados
-        table.addHeaderCell(new Cell().add(new Paragraph("Código").setBold()));
-        table.addHeaderCell(new Cell().add(new Paragraph("Título").setBold()));
-        table.addHeaderCell(new Cell().add(new Paragraph("Remitente").setBold()));
-        table.addHeaderCell(new Cell().add(new Paragraph("Estado").setBold()));
-        table.addHeaderCell(new Cell().add(new Paragraph("Tipo Doc").setBold()));
-        table.addHeaderCell(new Cell().add(new Paragraph("Fecha Ingreso").setBold()));
+        table.addHeaderCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Código").setBold()));
+        table.addHeaderCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Título").setBold()));
+        table.addHeaderCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Remitente").setBold()));
+        table.addHeaderCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Estado").setBold()));
+        table.addHeaderCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Tipo Doc").setBold()));
+        table.addHeaderCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Fecha Ingreso").setBold()));
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         
@@ -286,12 +292,12 @@ public class ReporteService {
         table.setWidth(com.itextpdf.layout.properties.UnitValue.createPercentValue(100));
 
         // Encabezados
-        table.addHeaderCell(new Cell().add(new Paragraph("Código").setBold()));
-        table.addHeaderCell(new Cell().add(new Paragraph("Título").setBold()));
-        table.addHeaderCell(new Cell().add(new Paragraph("Fecha Ingreso").setBold()));
-        table.addHeaderCell(new Cell().add(new Paragraph("Tiempo (hrs)").setBold()));
-        table.addHeaderCell(new Cell().add(new Paragraph("Derivaciones").setBold()));
-        table.addHeaderCell(new Cell().add(new Paragraph("Estado").setBold()));
+        table.addHeaderCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Código").setBold()));
+        table.addHeaderCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Título").setBold()));
+        table.addHeaderCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Fecha Ingreso").setBold()));
+        table.addHeaderCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Tiempo (hrs)").setBold()));
+        table.addHeaderCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Derivaciones").setBold()));
+        table.addHeaderCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Estado").setBold()));
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         
@@ -332,11 +338,11 @@ public class ReporteService {
         table.setWidth(com.itextpdf.layout.properties.UnitValue.createPercentValue(100));
 
         // Encabezados
-        table.addHeaderCell(new Cell().add(new Paragraph("Área").setBold()));
-        table.addHeaderCell(new Cell().add(new Paragraph("Total").setBold()));
-        table.addHeaderCell(new Cell().add(new Paragraph("Pendientes").setBold()));
-        table.addHeaderCell(new Cell().add(new Paragraph("Recibidos").setBold()));
-        table.addHeaderCell(new Cell().add(new Paragraph("Tiempo Prom (hrs)").setBold()));
+        table.addHeaderCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Área").setBold()));
+        table.addHeaderCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Total").setBold()));
+        table.addHeaderCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Pendientes").setBold()));
+        table.addHeaderCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Recibidos").setBold()));
+        table.addHeaderCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Tiempo Prom (hrs)").setBold()));
 
         for (Map.Entry<String, List<Derivacion>> entry : derivacionesPorArea.entrySet()) {
             String nombreArea = entry.getKey();
