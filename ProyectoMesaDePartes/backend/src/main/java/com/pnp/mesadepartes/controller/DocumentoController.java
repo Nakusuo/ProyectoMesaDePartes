@@ -4,11 +4,16 @@ import com.pnp.mesadepartes.dto.DocumentoRegistroDTO;
 import com.pnp.mesadepartes.model.*;
 import com.pnp.mesadepartes.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -281,4 +286,73 @@ public class DocumentoController {
                     .body(Map.of("error", "Error al actualizar estado: " + e.getMessage()));
         }
     }
+
+    // Endpoint para visualizar PDF
+    @GetMapping("/ver-pdf")
+    public ResponseEntity<?> verPdf(@RequestParam String url) {
+        try {
+            // Remover el slash inicial si existe
+            String relativePath = url.startsWith("/") ? url.substring(1) : url;
+            Path filePath = Paths.get(relativePath);
+            
+            if (!Files.exists(filePath)) {
+                return ResponseEntity.status(404).body(Map.of("error", "Archivo no encontrado: " + url));
+            }
+            
+            Resource resource = new UrlResource(filePath.toUri());
+            
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filePath.getFileName().toString() + "\"")
+                    .body(resource);
+                    
+        } catch (MalformedURLException e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Error al leer el archivo: " + e.getMessage()));
+        }
+    }
+
+    // Endpoint para actualizar documento completo (para jefatura)
+    @PutMapping("/{id}")
+    public ResponseEntity<?> actualizarDocumento(@PathVariable Long id, @RequestBody DocumentoRegistroDTO dto) {
+        try {
+            Optional<Documento> optDocumento = documentoRepository.findById(id);
+            
+            if (!optDocumento.isPresent()) {
+                return ResponseEntity.status(404).body(Map.of("error", "Documento no encontrado"));
+            }
+            
+            Documento documento = optDocumento.get();
+            
+            // Actualizar campos
+            if (dto.getTitulo() != null) documento.setTitulo(dto.getTitulo());
+            if (dto.getDescripcion() != null) documento.setDescripcion(dto.getDescripcion());
+            if (dto.getRemitente() != null) documento.setRemitente(dto.getRemitente());
+            if (dto.getDestinatario() != null) documento.setDestinatario(dto.getDestinatario());
+            if (dto.getNumeroDocumento() != null) documento.setNumeroDocumento(dto.getNumeroDocumento());
+            
+            // Actualizar tipo de documento si se proporciona
+            if (dto.getIdTipoDocumento() != null) {
+                TipoDocumento tipoDoc = tipoDocumentoRepository.findById(dto.getIdTipoDocumento())
+                        .orElseThrow(() -> new RuntimeException("Tipo de documento no encontrado"));
+                documento.setTipoDocumento(tipoDoc);
+            }
+            
+            // Actualizar archivo si se proporciona
+            if (dto.getArchivoUrl() != null) {
+                documento.setArchivoUrl(dto.getArchivoUrl());
+            }
+            
+            documentoRepository.save(documento);
+            
+            return ResponseEntity.ok(Map.of(
+                "message", "Documento actualizado correctamente",
+                "documento", documento
+            ));
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Map.of("error", "Error al actualizar documento: " + e.getMessage()));
+        }
+    }
 }
+
