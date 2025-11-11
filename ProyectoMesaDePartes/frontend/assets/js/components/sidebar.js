@@ -58,7 +58,7 @@ class SidebarManager {
 
     async loadSidebar() {
         try {
-            const response = await fetch('sidebar.html');
+            const response = await fetch('/pages/common/sidebar.html');
             const sidebarHTML = await response.text();
             
             // Insertar el sidebar al inicio del body

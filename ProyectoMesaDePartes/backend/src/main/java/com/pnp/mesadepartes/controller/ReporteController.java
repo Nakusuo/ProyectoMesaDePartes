@@ -19,16 +19,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
 import com.pnp.mesadepartes.dto.ReporteDTO;
 import com.pnp.mesadepartes.model.Documento;
 import com.pnp.mesadepartes.model.Tramite;
@@ -69,6 +68,10 @@ public class ReporteController {
                 headers.setContentDispositionFormData("attachment", filename + ".pdf");
             }
             
+            headers.setCacheControl("no-cache, no-store, must-revalidate");
+            headers.setPragma("no-cache");
+            headers.setExpires(0);
+            
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(reporte);
@@ -77,90 +80,91 @@ public class ReporteController {
             Map<String, String> error = new HashMap<>();
             error.put("error", "Error al generar reporte");
             error.put("message", e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.badRequest().body(error);
         }
     }
     
-    // Nuevo endpoint para generar PDF simple
+    // Endpoint para generar PDF simple con iText 7
     @GetMapping("/pdf")
     public ResponseEntity<byte[]> generarReportePDF() {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            Document document = new Document(PageSize.A4.rotate()); // Horizontal
-            PdfWriter.getInstance(document, baos);
-            
-            document.open();
+            PdfWriter writer = new PdfWriter(baos);
+            PdfDocument pdfDoc = new PdfDocument(writer);
+            Document document = new Document(pdfDoc, com.itextpdf.kernel.geom.PageSize.A4.rotate());
             
             // Título
-            Font titleFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
-            Paragraph title = new Paragraph("REPORTE GENERAL DE DOCUMENTOS - MESA DE PARTES PNP", titleFont);
-            title.setAlignment(Element.ALIGN_CENTER);
-            title.setSpacingAfter(20);
+            Paragraph title = new Paragraph("REPORTE GENERAL DE DOCUMENTOS - MESA DE PARTES PNP")
+                .setFontSize(18)
+                .setBold()
+                .setTextAlignment(TextAlignment.CENTER)
+                .setMarginBottom(20);
             document.add(title);
             
             // Fecha
-            Font dateFont = new Font(Font.FontFamily.HELVETICA, 10, Font.NORMAL);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-            Paragraph fecha = new Paragraph("Fecha de generación: " + LocalDateTime.now().format(formatter), dateFont);
-            fecha.setAlignment(Element.ALIGN_RIGHT);
-            fecha.setSpacingAfter(15);
+            Paragraph fecha = new Paragraph("Fecha de generación: " + LocalDateTime.now().format(formatter))
+                .setFontSize(10)
+                .setTextAlignment(TextAlignment.RIGHT)
+                .setMarginBottom(15);
             document.add(fecha);
             
             // Obtener documentos
             List<Documento> documentos = documentoRepository.findAll();
             
             // Total
-            Font statsFont = new Font(Font.FontFamily.HELVETICA, 11, Font.BOLD);
-            Paragraph stats = new Paragraph("Total de documentos: " + documentos.size(), statsFont);
-            stats.setSpacingAfter(10);
+            Paragraph stats = new Paragraph("Total de documentos: " + documentos.size())
+                .setFontSize(11)
+                .setBold()
+                .setMarginBottom(10);
             document.add(stats);
             
-            // Crear tabla
-            PdfPTable table = new PdfPTable(8);
-            table.setWidthPercentage(100);
-            table.setSpacingBefore(10f);
-            
+            // Crear tabla con 8 columnas
             float[] columnWidths = {1.5f, 2.5f, 3f, 2.5f, 1.5f, 2f, 2f, 2f};
-            table.setWidths(columnWidths);
+            Table table = new Table(UnitValue.createPercentArray(columnWidths));
+            table.setWidth(UnitValue.createPercentValue(100));
             
             // Encabezados
-            Font headerFont = new Font(Font.FontFamily.HELVETICA, 9, Font.BOLD, BaseColor.WHITE);
-            BaseColor headerColor = new BaseColor(0, 100, 46); // Verde PNP
-            
             String[] headers = {"Código", "Nro. Doc", "Título", "Remitente", "Tipo", "Estado", "Fecha Ingreso", "Asignado a"};
             
             for (String header : headers) {
-                PdfPCell cell = new PdfPCell(new Phrase(header, headerFont));
-                cell.setBackgroundColor(headerColor);
-                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                cell.setPadding(8);
-                table.addCell(cell);
+                Cell cell = new Cell()
+                    .add(new Paragraph(header).setFontSize(9).setBold())
+                    .setBackgroundColor(ColorConstants.GREEN)
+                    .setFontColor(ColorConstants.WHITE)
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setPadding(8);
+                table.addHeaderCell(cell);
             }
             
             // Datos
-            Font cellFont = new Font(Font.FontFamily.HELVETICA, 8, Font.NORMAL);
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             
             for (Documento doc : documentos) {
-                table.addCell(new Phrase(doc.getCodigo() != null ? doc.getCodigo() : "-", cellFont));
-                table.addCell(new Phrase(doc.getNumeroDocumento() != null ? doc.getNumeroDocumento() : "-", cellFont));
+                table.addCell(new Cell().add(new Paragraph(
+                    doc.getCodigo() != null ? doc.getCodigo() : "-").setFontSize(8)));
+                
+                table.addCell(new Cell().add(new Paragraph(
+                    doc.getNumeroDocumento() != null ? doc.getNumeroDocumento() : "-").setFontSize(8)));
                 
                 String titulo = doc.getTitulo() != null ? doc.getTitulo() : "-";
                 if (titulo.length() > 40) titulo = titulo.substring(0, 37) + "...";
-                table.addCell(new Phrase(titulo, cellFont));
+                table.addCell(new Cell().add(new Paragraph(titulo).setFontSize(8)));
                 
                 String remitente = doc.getRemitente() != null ? doc.getRemitente() : "-";
                 if (remitente.length() > 35) remitente = remitente.substring(0, 32) + "...";
-                table.addCell(new Phrase(remitente, cellFont));
+                table.addCell(new Cell().add(new Paragraph(remitente).setFontSize(8)));
                 
                 String tipo = doc.getTipoDocumento() != null ? doc.getTipoDocumento().getNombre() : "-";
-                table.addCell(new Phrase(tipo, cellFont));
+                table.addCell(new Cell().add(new Paragraph(tipo).setFontSize(8)));
                 
                 String estado = doc.getEstado() != null ? doc.getEstado().name().replace("_", " ") : "-";
-                table.addCell(new Phrase(estado, cellFont));
+                table.addCell(new Cell().add(new Paragraph(estado).setFontSize(8)));
                 
-                String fechaIngreso = doc.getFechaIngreso() != null ? doc.getFechaIngreso().format(dateFormatter) : "-";
-                table.addCell(new Phrase(fechaIngreso, cellFont));
+                String fechaIngreso = doc.getFechaIngreso() != null ? 
+                    doc.getFechaIngreso().format(dateFormatter) : "-";
+                table.addCell(new Cell().add(new Paragraph(fechaIngreso).setFontSize(8)));
                 
                 List<Tramite> tramites = tramiteRepository.findByDocumento(doc);
                 String asignado = "-";
@@ -168,15 +172,18 @@ public class ReporteController {
                     Usuario user = tramites.get(0).getUsuarioAsignado();
                     asignado = user.getNombre() + " " + user.getApellido();
                 }
-                table.addCell(new Phrase(asignado, cellFont));
+                table.addCell(new Cell().add(new Paragraph(asignado).setFontSize(8)));
             }
             
             document.add(table);
             
             // Pie
-            Paragraph footer = new Paragraph("\nReporte generado por Sistema Mesa de Partes - PNP", 
-                new Font(Font.FontFamily.HELVETICA, 8, Font.ITALIC, BaseColor.GRAY));
-            footer.setAlignment(Element.ALIGN_CENTER);
+            Paragraph footer = new Paragraph("\nReporte generado por Sistema Mesa de Partes - PNP")
+                .setFontSize(8)
+                .setItalic()
+                .setFontColor(ColorConstants.GRAY)
+                .setTextAlignment(TextAlignment.CENTER)
+                .setMarginTop(20);
             document.add(footer);
             
             document.close();
@@ -184,6 +191,9 @@ public class ReporteController {
             HttpHeaders headers2 = new HttpHeaders();
             headers2.setContentType(MediaType.APPLICATION_PDF);
             headers2.setContentDispositionFormData("attachment", "reporte_documentos.pdf");
+            headers2.setCacheControl("no-cache, no-store, must-revalidate");
+            headers2.setPragma("no-cache");
+            headers2.setExpires(0);
             
             return new ResponseEntity<>(baos.toByteArray(), headers2, HttpStatus.OK);
             

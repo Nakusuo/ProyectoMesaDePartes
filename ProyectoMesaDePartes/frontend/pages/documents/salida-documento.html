@@ -1,14 +1,14 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salida de Documentos - Mesa de Partes PNP</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/sidebar.css">
-    <link rel="stylesheet" href="assets/css/registro.css">
-    <link rel="stylesheet" href="assets/css/salida-documento.css">
-    <link rel="stylesheet" href="assets/css/toast.css">
+    <link rel="stylesheet" href="../../assets/css/core/style.css">
+    <link rel="stylesheet" href="../../assets/css/components/sidebar.css">
+    <link rel="stylesheet" href="../../assets/css/pages/auth/registro.css">
+    <link rel="stylesheet" href="../../assets/css/pages/documents/salida-documento.css">
+    <link rel="stylesheet" href="../../assets/css/core/toast.css">
 </head>
 <body>
     <!-- Sidebar -->
@@ -129,16 +129,16 @@
     </div>
 
     <!-- Scripts en orden estricto -->
-    <script src="assets/js/config.js"></script>
-    <script src="assets/js/permissions.js"></script>
-    <script src="assets/js/toast.js"></script>
-    <script src="assets/js/auth.js"></script>
-    <script src="assets/js/sidebar.js"></script>
+    <script src="../../assets/js/core/config.js"></script>
+    <script src="../../assets/js/core/permissions.js"></script>
+    <script src="../../assets/js/components/toast.js"></script>
+    <script src="../../assets/js/core/auth.js"></script>
+    <script src="../../assets/js/components/sidebar.js"></script>
     <script>
         // Esperar a que todos los scripts se carguen antes de ejecutar salida-documento.js
         window.addEventListener('load', function() {
             const script = document.createElement('script');
-            script.src = 'assets/js/salida-documento.js';
+            script.src = '../../assets/js/pages/documents/salida-documento.js';
             document.body.appendChild(script);
         });
     </script>

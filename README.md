@@ -10,9 +10,9 @@
 
 **Sistema de Gestión Documental para la Policía Nacional del Perú**
 
-**Versión 2.0** - Octubre 2025
+**Versión 2.1** - Noviembre 2025
 
-[Características](#características-principales) • [Arquitectura](#arquitectura-técnica) • [Instalación](#instalación-y-configuración) • [API](#documentación-de-la-api) • [Changelog](#changelog-v20---octubre-2025)
+[Características](#características-principales) • [Arquitectura](#arquitectura-técnica) • [Instalación](#instalación-y-configuración) • [API](#documentación-de-la-api) • [Changelog](#changelog-v21---noviembre-2025)
 
 </div>
 
@@ -1492,7 +1492,96 @@ Sistema integral de Mesa de Partes Digital desarrollado para la **Policía Nacio
 
 ---
 
-## 🚀 Características Principales
+## � Estructura del Frontend (Reorganizado v2.1)
+
+### Arquitectura Modular y Escalable
+
+El frontend ha sido completamente reorganizado siguiendo las mejores prácticas de desarrollo web, con una estructura clara y mantenible:
+
+```
+frontend/
+├── pages/                          # Páginas HTML categorizadas
+│   ├── auth/                       # 🔐 Autenticación
+│   │   ├── login.html             # Inicio de sesión
+│   │   └── registro.html          # Registro de documentos interno
+│   ├── admin/                      # 👤 Administración
+│   │   ├── gestion-usuarios.html  # CRUD de usuarios
+│   │   └── bitacora.html          # Historial de operaciones
+│   ├── documents/                  # 📄 Gestión Documental
+│   │   ├── documentos.html        # Lista de documentos
+│   │   ├── registro-usuario.html  # Registro público
+│   │   └── salida-documento.html  # Control de salidas
+│   └── common/                     # 🏠 Páginas Comunes
+│       ├── dashboard.html         # Panel principal
+│       ├── index.html             # Página de entrada
+│       └── sidebar.html           # Menú lateral (componente)
+│
+├── assets/
+│   ├── js/
+│   │   ├── core/                   # ⚙️ Funcionalidades Base
+│   │   │   ├── config.js          # Configuración global (API_URL)
+│   │   │   ├── auth.js            # Gestión de sesiones JWT
+│   │   │   └── permissions.js     # Control de permisos por rol
+│   │   ├── components/             # 🧩 Componentes UI Reutilizables
+│   │   │   ├── sidebar.js         # Lógica del menú lateral
+│   │   │   └── toast.js           # Sistema de notificaciones
+│   │   ├── pages/                  # 📄 Scripts por Página
+│   │   │   ├── auth/              # Scripts de autenticación
+│   │   │   ├── admin/             # Scripts de administración
+│   │   │   ├── documents/         # Scripts de documentos
+│   │   │   └── dashboard.js       # Dashboard principal
+│   │   └── modules/                # 📦 Módulos Funcionales
+│   │       ├── reportes.js        # Generación de reportes
+│   │       ├── reportes-global.js # Reportes del sistema
+│   │       └── notificaciones.js  # Sistema de notificaciones
+│   │
+│   └── css/
+│       ├── core/                   # 🎨 Estilos Base
+│       │   ├── style.css          # Variables CSS y estilos globales
+│       │   └── toast.css          # Estilos de notificaciones
+│       ├── components/             # 🧩 Estilos de Componentes
+│       │   └── sidebar.css        # Estilos del menú lateral
+│       ├── pages/                  # 📄 Estilos por Página
+│       │   ├── auth/              # Login, registro
+│       │   ├── admin/             # Gestión, bitácora
+│       │   ├── documents/         # Salida de documentos
+│       │   └── dashboard.css      # Dashboard
+│       └── features/               # ✨ Features Específicas
+│           └── nuevas-funcionalidades.css
+```
+
+### Convención de Rutas
+
+Todas las páginas usan rutas relativas desde `pages/[categoria]/`:
+
+```html
+<!-- CSS -->
+<link rel="stylesheet" href="../../assets/css/core/style.css">
+<link rel="stylesheet" href="../../assets/css/components/sidebar.css">
+<link rel="stylesheet" href="../../assets/css/pages/[categoria]/[pagina].css">
+
+<!-- JavaScript -->
+<script src="../../assets/js/core/config.js"></script>
+<script src="../../assets/js/core/permissions.js"></script>
+<script src="../../assets/js/core/auth.js"></script>
+<script src="../../assets/js/components/sidebar.js"></script>
+<script src="../../assets/js/pages/[categoria]/[script].js"></script>
+```
+
+### Beneficios de la Nueva Estructura
+
+- ✅ **Separación clara de responsabilidades** - Core, Components, Pages, Modules
+- ✅ **Escalabilidad** - Fácil agregar nuevas páginas y funcionalidades
+- ✅ **Mantenibilidad** - Archivos relacionados están juntos
+- ✅ **Trabajo en equipo** - Estructura intuitiva y auto-documentada
+- ✅ **Reutilización** - Componentes compartidos (sidebar, toast)
+- ✅ **Performance** - Carga optimizada de recursos
+
+> 📚 **Documentación completa:** Consulta `frontend/ESTRUCTURA.md` para detalles técnicos y `frontend/GUIA_PRUEBAS.md` para validación del sistema.
+
+---
+
+## �🚀 Características Principales
 
 ### Gestión de Documentos
 
@@ -3363,14 +3452,26 @@ El backend estará disponible en: `http://localhost:8080`
 
 ### 🌐 Paso 4: Acceder al Frontend
 
-El frontend está integrado en Spring Boot y se sirve automáticamente:
+El frontend está integrado en Spring Boot con una estructura modular y organizada:
 
-1. **Abrir navegador** y acceder a: `http://localhost:8080`
-2. **Redirección automática** a login (index.html detecta sesión)
-3. **Credenciales de prueba**:
+1. **Abrir navegador** y acceder a: `http://localhost:8080/pages/common/index.html`
+   - O directamente a login: `http://localhost:8080/pages/auth/login.html`
+   
+2. **Credenciales de prueba**:
    - Usuario: `nakusu`
    - Contraseña: `123456`
    - Rol: Administrador
+
+**Rutas principales del sistema:**
+- 🔐 **Login:** `/pages/auth/login.html`
+- 🏠 **Dashboard:** `/pages/common/dashboard.html`
+- 📄 **Documentos:** `/pages/documents/documentos.html`
+- 👤 **Gestión Usuarios:** `/pages/admin/gestion-usuarios.html`
+- 📊 **Bitácora:** `/pages/admin/bitacora.html`
+- 📤 **Salida Documentos:** `/pages/documents/salida-documento.html`
+- 📝 **Registro Público:** `/pages/documents/registro-usuario.html`
+
+> 💡 **Nota:** La estructura modular del frontend permite fácil navegación y mantenimiento. Consulta `frontend/ESTRUCTURA.md` para más detalles.
 
 **Otros usuarios de prueba:**
 | Username | Contraseña | Rol | Área |
@@ -3398,7 +3499,18 @@ curl -X POST http://localhost:8080/api/auth/login \
 Debe devolver un token JWT.
 
 **3. Verificar Frontend:**
-Abrir `http://localhost:8080` y verificar redirección a login.
+Abrir navegador y probar las siguientes URLs:
+- `http://localhost:8080/pages/auth/login.html` - Debe mostrar página de login
+- `http://localhost:8080/pages/common/dashboard.html` - Debe redirigir a login si no hay sesión
+- Verificar en DevTools (F12) que no hay errores 404 en archivos CSS/JS
+
+**4. Verificar Estructura de Archivos:**
+```bash
+# Verificar que existe la nueva estructura
+ls frontend/pages/auth/
+ls frontend/assets/js/core/
+ls frontend/assets/css/components/
+```
 
 ---
 
@@ -4176,6 +4288,105 @@ kill -9 [PID]
 ```bash
 mkdir -p uploads/documentos
 ```
+
+---
+
+## Changelog v2.0 - Octubre 2025
+
+---
+
+## Changelog v2.1 - Noviembre 2025
+
+### 📁 Reorganización Completa del Frontend
+
+**Gran refactorización para mejorar mantenibilidad y escalabilidad del proyecto:**
+
+#### Estructura Anterior vs Nueva
+
+**❌ Antes:** Archivos dispersos sin categorización
+```
+frontend/
+├── login.html, registro.html, dashboard.html... (10 archivos mezclados)
+└── assets/
+    ├── js/ (18 archivos sin organizar)
+    └── css/ (10 archivos sin organizar)
+```
+
+**✅ Ahora:** Arquitectura modular y profesional
+```
+frontend/
+├── pages/
+│   ├── auth/          # Autenticación (2 archivos)
+│   ├── admin/         # Administración (2 archivos)
+│   ├── documents/     # Documentos (3 archivos)
+│   └── common/        # Comunes (3 archivos)
+└── assets/
+    ├── js/
+    │   ├── core/         # Base (3 archivos)
+    │   ├── components/   # Componentes (2 archivos)
+    │   ├── pages/        # Por página (10 archivos)
+    │   └── modules/      # Módulos (3 archivos)
+    └── css/
+        ├── core/         # Base (2 archivos)
+        ├── components/   # Componentes (1 archivo)
+        ├── pages/        # Por página (6 archivos)
+        └── features/     # Features (1 archivo)
+```
+
+#### Cambios Implementados
+
+**📄 Páginas HTML (10 archivos movidos):**
+- ✅ `login.html`, `registro.html` → `pages/auth/`
+- ✅ `gestion-usuarios.html`, `bitacora.html` → `pages/admin/`
+- ✅ `documentos.html`, `registro-usuario.html`, `salida-documento.html` → `pages/documents/`
+- ✅ `dashboard.html`, `index.html`, `sidebar.html` → `pages/common/`
+
+**⚙️ JavaScript (18 archivos reorganizados):**
+- ✅ `config.js`, `auth.js`, `permissions.js` → `js/core/`
+- ✅ `sidebar.js`, `toast.js` → `js/components/`
+- ✅ Scripts de páginas → `js/pages/[categoria]/`
+- ✅ `reportes.js`, `notificaciones.js` → `js/modules/`
+
+**🎨 CSS (10 archivos reorganizados):**
+- ✅ `style.css`, `toast.css` → `css/core/`
+- ✅ `sidebar.css` → `css/components/`
+- ✅ Estilos específicos → `css/pages/[categoria]/`
+
+**🔄 Rutas Actualizadas:**
+- Todos los archivos HTML actualizados con rutas relativas `../../assets/`
+- Sidebar actualizado con navegación entre categorías
+- Sistema de carga optimizado: core → components → pages
+
+#### Herramientas y Documentación
+
+**Nuevos archivos creados:**
+- ✅ `frontend/ESTRUCTURA.md` - Documentación completa (200+ líneas)
+- ✅ `frontend/GUIA_PRUEBAS.md` - Checklist de validación (250+ líneas)
+- ✅ `frontend/REORGANIZACION_RESUMEN.md` - Resumen de cambios
+- ✅ `scripts/update_html_paths.ps1` - Script de actualización automática
+
+#### Beneficios Alcanzados
+
+1. **📊 Organización Clara** - Archivos categorizados por funcionalidad
+2. **🔧 Mantenibilidad** - Fácil localizar y modificar código
+3. **📈 Escalabilidad** - Estructura preparada para crecimiento
+4. **👥 Trabajo en Equipo** - Convenciones claras y documentadas
+5. **🎯 Profesionalismo** - Estándar enterprise-level
+6. **🚀 Performance** - Carga optimizada de recursos
+
+#### Compatibilidad
+
+- ✅ **Backend sin cambios** - Spring Boot sirve los archivos automáticamente
+- ✅ **Rutas relativas** - Funcionan independientemente del servidor
+- ✅ **Navegación intacta** - Sidebar actualizado con nuevas rutas
+- ✅ **Funcionalidad completa** - Sistema operativo al 100%
+
+**Archivos modificados:**
+- 10 páginas HTML (rutas actualizadas)
+- 1 sidebar.html (navegación actualizada)
+- 38 archivos movidos a nueva estructura
+- 4 documentos de guía creados
+- 1 script de automatización
 
 ---
 

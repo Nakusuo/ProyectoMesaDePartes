@@ -20,7 +20,7 @@ const APP_CONFIG = {
     
     REQUEST_TIMEOUT: 30000,
     PUBLIC_PAGES: ['login.html', 'index.html'],
-    DEFAULT_DASHBOARD: 'dashboard.html'
+    DEFAULT_DASHBOARD: '/pages/common/dashboard.html'
 };
 
 function getApiUrl(endpoint) {
