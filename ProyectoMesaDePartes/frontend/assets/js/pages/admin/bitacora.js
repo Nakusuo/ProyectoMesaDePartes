@@ -1,5 +1,8 @@
 // Configuración
-const API_URL = 'http://localhost:8080/api';
+// API_URL se declara aquí si no existe globalmente
+if (typeof API_URL === 'undefined') {
+    var API_URL = 'http://localhost:8080/api';
+}
 
 // Variables globales
 let documentosOriginales = [];

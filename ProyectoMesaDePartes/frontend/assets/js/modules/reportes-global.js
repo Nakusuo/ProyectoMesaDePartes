@@ -2,6 +2,11 @@
 // REPORTES - FUNCIONES GLOBALES
 // =====================================================
 
+// URL base del API (solo si no está definida)
+if (typeof API_URL === 'undefined') {
+    var API_URL = window.API_URL || 'http://localhost:8080/api';
+}
+
 // Función para generar reporte PDF
 async function generarReportePDF() {
     try {

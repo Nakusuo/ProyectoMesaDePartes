@@ -140,3 +140,32 @@ window.alert = function(message) {
         duration: type === 'error' ? 5000 : 4000
     });
 };
+
+// Backwards-compatible alias used across the project: some modules call showToast(...)
+// Provide a small wrapper that maps to the new toast API.
+window.showToast = function(message, type = 'info', title = null, duration = undefined) {
+    if (!window.toast) {
+        // Fallback to built-in alert if toast system isn't ready
+        window.alertOriginal ? window.alertOriginal(message) : alert(message);
+        return;
+    }
+
+    // Support a 'loading' type which uses the loading helper
+    if (type === 'loading') {
+        return window.toast.loading(title || '', message || '');
+    }
+
+    const titles = {
+        success: '¡Éxito!',
+        error: 'Error',
+        warning: 'Advertencia',
+        info: 'Información'
+    };
+
+    return window.toast.show({
+        type: type,
+        title: title || titles[type] || 'Notificación',
+        message: message,
+        duration: duration === undefined ? (type === 'error' ? 5000 : 4000) : duration
+    });
+};
