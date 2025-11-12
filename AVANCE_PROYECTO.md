@@ -1,4 +1,8 @@
-# 📋 AVANCE DEL PROYECTO - MESA DE PARTES DIGITAL PNP
+AVANCE_PROYECTO minimizado el 12 de noviembre de 2025.
+
+Motivo: el estado y avance del proyecto fue consolidado en el `README.md` raíz. Este archivo queda como referencia mínima.
+
+Para ver el detalle completo de avance, consulta `README.md` (sección "Análisis de Cumplimiento de Requerimientos").# 📋 AVANCE DEL PROYECTO - MESA DE PARTES DIGITAL PNP
 
 ## 🎯 Progreso General: **70%+**
 

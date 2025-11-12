@@ -1,4 +1,44 @@
 @echo off
+REM Backup automático para ProyectoMesaDePartes (Windows)
+REM Fecha: 12 de noviembre de 2025
+
+:: Configuración (editar según entorno)
+set BACKUP_DIR=C:\backup\mesa_partes
+set DATE=%date:~-4%%date:~3,2%%date:~0,2%_%time:~0,2%%time:~3,2%%time:~6,2%
+set DB_NAME=mesa_partes_db
+set DB_USER=root
+set DB_PASS=root
+
+:: Crear directorio si no existe
+if not exist "%BACKUP_DIR%" mkdir "%BACKUP_DIR%"
+
+:: Ruta a mysqldump (ajustar si es necesario)
+set MYSQLDUMP="C:\Program Files\MySQL\MySQL Server 8.0\bin\mysqldump.exe"
+if not exist %MYSQLDUMP% (
+    set MYSQLDUMP=mysqldump
+)
+
+echo Iniciando backup de la base de datos: %DB_NAME% a %BACKUP_DIR%\db_%DATE%.sql
+%MYSQLDUMP% -u %DB_USER% -p%DB_PASS% %DB_NAME% > "%BACKUP_DIR%\db_%DATE%.sql"
+
+echo Comprimiendo backup SQL...
+powershell -Command "Compress-Archive -Path '%BACKUP_DIR%\db_%DATE%.sql' -DestinationPath '%BACKUP_DIR%\db_%DATE%.zip' -Force"
+del "%BACKUP_DIR%\db_%DATE%.sql"
+
+echo Backup de archivos uploads...
+set UPLOADS_DIR=%~dp0\ProyectoMesaDePartes\backend\uploads
+if exist "%UPLOADS_DIR%" (
+    powershell -Command "Compress-Archive -Path '%UPLOADS_DIR%\*' -DestinationPath '%BACKUP_DIR%\uploads_%DATE%.zip' -Force"
+) else (
+    echo No se encontró carpeta uploads en %UPLOADS_DIR%
+)
+
+echo Eliminando backups más antiguos a 30 días...
+powershell -Command "Get-ChildItem -Path '%BACKUP_DIR%' -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-30) } | Remove-Item -Force"
+
+echo Backup completado: %DATE%
+exit /b 0
+@echo off
 REM ============================================
 REM Script de Backup Automático - Windows
 REM Sistema Mesa de Partes Digital PNP

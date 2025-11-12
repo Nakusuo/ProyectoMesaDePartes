@@ -1,5 +1,9 @@
-Listado de rutas de carpetas
-El n�mero de serie del volumen es FC75-21AC
+estructura_final.txt minimizado el 12 de noviembre de 2025.
+
+Motivo: la estructura final del frontend se documentó en `frontend/README.md` y en `README.md` raíz; este archivo se minimiza para evitar duplicación.
+
+Recuperar versión completa: revisar historial de Git.Listado de rutas de carpetas
+El n�mero de serie del volumen es FC75-21AC
 C:.
 |   ESTRUCTURA.md
 |   estructura_final.txt

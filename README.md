@@ -11,6 +11,7 @@
 **Sistema de Gestión Documental para la Policía Nacional del Perú**
 
 **Versión 2.1** - Noviembre 2025
+**Última actualización:** 12 de noviembre de 2025
 
 [Características](#características-principales) • [Arquitectura](#arquitectura-técnica) • [Instalación](#instalación-y-configuración) • [API](#documentación-de-la-api) • [Changelog](#changelog-v21---noviembre-2025)
 
@@ -644,6 +645,8 @@ El sistema debe realizar backups automáticos cada 5 horas para garantizar la re
 **⚠️ CRÍTICO: Requiere implementación urgente**
 
 **Recomendación para implementar:**
+ 
+> Nota: Se añadieron scripts de respaldo rápidos en `scripts/backup_windows.bat` y `scripts/backup_linux.sh` (ubicación: `scripts/`). Estos scripts permiten programar backups automáticos y sirven como base para configurar cron (Linux) o Tareas Programadas (Windows).
 
 1. **Script de backup automático (Linux/Mac):**
 ```bash
@@ -1053,6 +1056,12 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 
 ## 📊 Resumen General de Cumplimiento
 
+| Categoría                             | Porcentaje |
+|---------------------------------------|-----------:|
+| Requerimientos Funcionales (RF)       | 91.7%     |
+| Requerimientos No Funcionales (RNF)   | 70.0%     |
+| Cumplimiento Global (RF 60% + RNF 40%)| 80.85%    |
+
 ### 🎯 Requerimientos Funcionales: **91.7%**
 
 | RF | Nombre | Estado | Porcentaje |
@@ -1215,7 +1224,7 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 
 ## �📊 Estado de Cumplimiento del Proyecto
 
-### Progreso General: **75%** ✅
+### Progreso General: **80.85%** ✅
 
 <table>
 <thead>
@@ -1789,7 +1798,7 @@ public class DocumentoController {
 
 ## 📊 Estado del Proyecto
 
-### Progreso General: **68%**
+### Progreso General: **80.85%**
 
 | Módulo | Completado | Estado | Observaciones |
 |--------|-----------|--------|---------------|
@@ -4505,6 +4514,23 @@ Nueva página especializada para que los trabajadores gestionen sus documentos a
 **Nuevos archivos:**
 - `NOTIFICACIONES_TOAST.md` - Guía completa del sistema de notificaciones
 - `CAMBIOS_REALIZADOS.md` - Log detallado de modificaciones
+
+### Archivos minimizados (12 de noviembre de 2025)
+
+Los siguientes archivos de documentación fueron minimizados para evitar duplicación; su contenido principal fue consolidado en `README.md` raíz y en `frontend/README.md` cuando aplicable. Si necesitas recuperar versiones completas, usa el historial de Git.
+
+- `AVANCE_PROYECTO.md`
+- `CHANGELOG.md`
+- `FIX_EXPORTACION_PDF_BITACORA.md`
+- `TROUBLESHOOTING_PDF.md`
+- `scripts/README_BACKUPS.md`
+- `scripts/GUIA_RAPIDA.md`
+- `ProyectoMesaDePartes/frontend/REORGANIZACION_RESUMEN.md`
+- `ProyectoMesaDePartes/frontend/GUIA_PRUEBAS.md`
+- `ProyectoMesaDePartes/frontend/ESTRUCTURA.md`
+- `ProyectoMesaDePartes/frontend/estructura_final.txt`
+
+Motivo: mantener una única fuente de verdad (el `README.md` raíz) y reducir contenidos duplicados en el repo.
 
 ---
 

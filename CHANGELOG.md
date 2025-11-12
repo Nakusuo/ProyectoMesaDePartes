@@ -1,4 +1,8 @@
-# Changelog - Sistema Mesa de Partes Digital PNP
+CHANGELOG minimizado el 12 de noviembre de 2025.
+
+Motivo: las entradas relevantes fueron consolidadas en `README.md` y `AVANCE_PROYECTO.md`. Este archivo se mantiene vacío para evitar duplicación.
+
+Recuperar versión completa: revisar historial de Git si se requiere.# Changelog - Sistema Mesa de Partes Digital PNP
 
 ## [2.0.0] - Octubre 2025
 

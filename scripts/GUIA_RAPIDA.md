@@ -1,4 +1,8 @@
-# 🚀 GUÍA RÁPIDA - Configurar Backups en 5 Minutos
+Este archivo fue minimizado el 12 de noviembre de 2025.
+
+Motivo: el contenido fue consolidado en el `README.md` raíz. Mantengo este archivo con una nota para trazabilidad.
+
+Si necesitas la versión completa anterior, recupérala desde el historial de Git.# 🚀 GUÍA RÁPIDA - Configurar Backups en 5 Minutos
 
 ## ⚡ Para Windows (lo más común)
 

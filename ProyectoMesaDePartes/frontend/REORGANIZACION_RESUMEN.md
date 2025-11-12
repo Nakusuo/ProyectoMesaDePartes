@@ -1,4 +1,8 @@
-# 📋 Resumen de Reorganización del Frontend
+REORGANIZACION_RESUMEN minimizado el 12 de noviembre de 2025.
+
+Motivo: la estructura y cambios del frontend fueron documentados en `frontend/README.md` y en el `README.md` raíz; este archivo queda con una nota breve para evitar duplicaciones.
+
+Recuperar versión completa: revisar historial de Git.# 📋 Resumen de Reorganización del Frontend
 
 ## ✅ Cambios Realizados
 

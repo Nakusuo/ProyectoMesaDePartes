@@ -1,4 +1,8 @@
-# 🔧 Fix: Exportación PDF en Bitácora
+Este archivo fue minimizado el 12 de noviembre de 2025.
+
+Motivo: el contenido técnico fue consolidado en el `README.md` raíz y en `frontend`; se mantiene este archivo como referencia mínima.
+
+Si necesitas la versión completa anterior, recupérala desde el historial de Git.# 🔧 Fix: Exportación PDF en Bitácora
 
 ## 📋 Problema Identificado
 

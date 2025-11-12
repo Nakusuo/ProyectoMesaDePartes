@@ -1,4 +1,8 @@
-# 📁 Estructura del Frontend - Mesa de Partes PNP
+ESTRUCTURA minimizada el 12 de noviembre de 2025.
+
+Motivo: el detalle de la estructura del frontend está documentado en `frontend/README.md` y en `README.md` raíz; este archivo queda como nota breve.
+
+Si necesitas la versión completa anterior, recupérala desde el historial de Git.# 📁 Estructura del Frontend - Mesa de Partes PNP
 
 ## Organización de Archivos
 

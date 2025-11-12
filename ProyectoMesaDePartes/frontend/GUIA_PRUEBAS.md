@@ -1,4 +1,8 @@
-# 🧪 Guía de Pruebas - Frontend Reorganizado
+GUIA_PRUEBAS minimizada el 12 de noviembre de 2025.
+
+Motivo: las instrucciones de prueba fueron integradas en `frontend/README.md` y en `README.md` raíz. Este archivo queda como referencia mínima.
+
+Recuperar contenido anterior desde el historial de Git si es necesario.# 🧪 Guía de Pruebas - Frontend Reorganizado
 
 ## ✅ Checklist de Verificación
 

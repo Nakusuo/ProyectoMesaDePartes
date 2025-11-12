@@ -1,4 +1,10 @@
-# 📦 Sistema de Backups Automáticos - Mesa de Partes Digital PNP
+Este archivo fue minimizado el 12 de noviembre de 2025.
+
+Motivo: el contenido relevante de backups y procedimientos fue consolidado en el `README.md` raíz del proyecto.
+
+Si necesitas la versión completa anterior, recupérala desde el historial de Git o solicita restauración.
+
+Ruta original de scripts: `scripts/backup_windows.bat`, `scripts/backup_linux.sh`.# 📦 Sistema de Backups Automáticos - Mesa de Partes Digital PNP
 
 ## 📋 Tabla de Contenidos
 - [Descripción](#descripción)

@@ -1,4 +1,35 @@
 #!/bin/bash
+# Backup automático para ProyectoMesaDePartes (Linux)
+# Fecha: 12 de noviembre de 2025
+
+BACKUP_DIR="/var/backups/mesa_partes"
+DATE=$(date +%Y%m%d_%H%M%S)
+DB_NAME="mesa_partes_db"
+DB_USER="root"
+DB_PASS="root"
+
+mkdir -p "$BACKUP_DIR"
+
+echo "Iniciando backup de la base de datos: $DB_NAME -> $BACKUP_DIR/db_$DATE.sql"
+mysqldump -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" > "$BACKUP_DIR/db_$DATE.sql"
+
+echo "Comprimiendo backup SQL..."
+gzip -f "$BACKUP_DIR/db_$DATE.sql"
+
+echo "Backup de archivos uploads..."
+UPLOADS_DIR="$(pwd)/ProyectoMesaDePartes/backend/uploads"
+if [ -d "$UPLOADS_DIR" ]; then
+  tar -czf "$BACKUP_DIR/uploads_$DATE.tar.gz" -C "$UPLOADS_DIR" .
+else
+  echo "No se encontró carpeta uploads en $UPLOADS_DIR"
+fi
+
+echo "Eliminando backups más antiguos a 30 días..."
+find "$BACKUP_DIR" -type f -mtime +30 -exec rm -f {} \;
+
+echo "Backup completado: $DATE"
+exit 0
+#!/bin/bash
 # ============================================
 # Script de Backup Automático - Linux/Mac
 # Sistema Mesa de Partes Digital PNP
