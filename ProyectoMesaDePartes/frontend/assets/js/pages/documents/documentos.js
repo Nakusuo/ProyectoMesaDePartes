@@ -39,7 +39,7 @@ async function cargarDocumentos() {
         documentosOriginales = documentos;
         
         if (documentos.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #999; padding: 40px;">No tienes documentos asignados</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999; padding: 40px;">No tienes documentos asignados</td></tr>';
             return;
         }
         
@@ -52,7 +52,7 @@ async function cargarDocumentos() {
         console.error('Error al cargar documentos:', error);
         tableBody.innerHTML = `
             <tr>
-                <td colspan="8" style="text-align: center; color: red; padding: 40px;">
+                <td colspan="7" style="text-align: center; color: red; padding: 40px;">
                     Error al cargar los documentos: ${error.message}
                 </td>
             </tr>
@@ -65,7 +65,7 @@ function mostrarDocumentos(documentos) {
     const tableBody = document.getElementById('documentos-table-body');
     
     if (documentos.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #999; padding: 40px;">No se encontraron documentos</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999; padding: 40px;">No se encontraron documentos</td></tr>';
         return;
     }
     
@@ -73,19 +73,18 @@ function mostrarDocumentos(documentos) {
         const fecha = formatearFecha(doc.fechaIngreso);
         const tipo = doc.tipoDocumento?.nombre || 'N/A';
         const estadoBadge = obtenerEstadoBadge(doc.estado);
-        const archivoBtn = doc.archivoUrl 
-            ? `<a href="http://localhost:8080${doc.archivoUrl}" target="_blank" class="btn btn-sm btn-secondary">📎 Ver PDF</a>` 
-            : '<span style="color: #999;">Sin archivo</span>';
+        const archivoLink = doc.archivoUrl 
+            ? `<br>📎 <a href="http://localhost:8080${doc.archivoUrl}" target="_blank">Ver PDF</a>` 
+            : '';
         
         return `
             <tr>
                 <td><strong>${doc.codigo}</strong></td>
-                <td>${doc.titulo || 'Sin título'}</td>
+                <td>${doc.titulo || 'Sin título'}${archivoLink}</td>
                 <td>${tipo}</td>
                 <td>${doc.remitente || 'N/A'}</td>
                 <td>${fecha}</td>
                 <td>${estadoBadge}</td>
-                <td>${archivoBtn}</td>
                 <td>
                     <button class="btn btn-primary btn-sm" onclick="abrirModalEstado(${doc.idDocumento}, '${doc.codigo}', '${doc.estado}', '${escaparComillas(doc.titulo)}')">
                         ✏️ Actualizar

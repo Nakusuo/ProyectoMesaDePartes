@@ -27,37 +27,25 @@
 
         <!-- Navigation -->
         <nav class="sidebar-nav">
-            <div class="nav-section">
+            <div class="nav-section" data-section="principal">
                 <p class="nav-section-title">Principal</p>
                 <ul style="list-style: none; padding: 0; margin: 0;">
-                    <li class="nav-item">
+                    <li class="nav-item" data-permission="VER_DASHBOARD">
                         <a href="../common/dashboard.html" class="nav-link" data-page="dashboard.html">
                             <span class="nav-icon">▦</span>
                             <span class="nav-text">Dashboard</span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a href="../auth/registro.html" class="nav-link" data-page="registro.html">
-                            <span class="nav-icon">+</span>
-                            <span class="nav-text">Registrar Documento</span>
-                        </a>
-                    </li>
                 </ul>
             </div>
 
-            <div class="nav-section">
-                <p class="nav-section-title">Gestión</p>
+            <div class="nav-section" data-section="documentos">
+                <p class="nav-section-title">Documentos</p>
                 <ul style="list-style: none; padding: 0; margin: 0;">
-                    <li class="nav-item">
-                        <a href="../admin/gestion-usuarios.html" class="nav-link" data-page="gestion-usuarios.html">
-                            <span class="nav-icon">◉</span>
-                            <span class="nav-text">Usuarios</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="../admin/bitacora.html" class="nav-link" data-page="bitacora.html">
-                            <span class="nav-icon">≡</span>
-                            <span class="nav-text">Bitácora</span>
+                    <li class="nav-item" data-permission="VER_REGISTRO">
+                        <a href="../auth/registro.html" class="nav-link" data-page="registro.html">
+                            <span class="nav-icon">+</span>
+                            <span class="nav-text">Registrar Documento</span>
                         </a>
                     </li>
                     <li class="nav-item" data-permission="VER_SALIDAS">
@@ -66,9 +54,39 @@
                             <span class="nav-text">Salida de Documentos</span>
                         </a>
                     </li>
-                    <li class="nav-item" data-permission="VER_SOLO_ASIGNADOS">
+                    <li class="nav-item" data-permission="VER_TODOS_DOCUMENTOS">
                         <a href="../documents/documentos.html" class="nav-link" data-page="documentos.html">
                             <span class="nav-icon">📋</span>
+                            <span class="nav-text">Todos los Documentos</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-section" data-section="administracion">
+                <p class="nav-section-title">Administración</p>
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li class="nav-item" data-permission="VER_USUARIOS">
+                        <a href="../admin/gestion-usuarios.html" class="nav-link" data-page="gestion-usuarios.html">
+                            <span class="nav-icon">◉</span>
+                            <span class="nav-text">Gestionar Usuarios</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-permission="VER_BITACORA">
+                        <a href="../admin/bitacora.html" class="nav-link" data-page="bitacora.html">
+                            <span class="nav-icon">≡</span>
+                            <span class="nav-text">Bitácora</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-section" data-section="mi-trabajo">
+                <p class="nav-section-title">Mi Trabajo</p>
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li class="nav-item" data-permission="VER_SOLO_ASIGNADOS">
+                        <a href="../documents/documentos.html" class="nav-link" data-page="documentos.html">
+                            <span class="nav-icon">✓</span>
                             <span class="nav-text">Mis Documentos</span>
                         </a>
                     </li>

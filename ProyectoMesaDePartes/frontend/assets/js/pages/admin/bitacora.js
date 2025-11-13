@@ -221,6 +221,9 @@ function mostrarDocumentos(documentos) {
         const usuarioAsignado = item.usuarioAsignado || 'Sin asignar';
         const tipo = doc.tipoDocumento ? doc.tipoDocumento.nombre : 'N/A';
         const estado = obtenerEstadoBadge(doc.estado);
+        const archivoLink = doc.archivoUrl 
+            ? `<br>📎 <a href="http://localhost:8080${doc.archivoUrl}" target="_blank">Ver PDF</a>` 
+            : '';
         
         return `
             <tr>
@@ -233,7 +236,7 @@ function mostrarDocumentos(documentos) {
                     <strong>Título:</strong> ${doc.titulo || 'Sin título'}<br>
                     <strong>Remitente:</strong> ${doc.remitente || 'N/A'}<br>
                     <strong>Estado:</strong> ${estado}
-                    ${doc.archivoUrl ? '<br>📎 <a href="http://localhost:8080/' + doc.archivoUrl + '" target="_blank">Ver PDF</a>' : ''}
+                    ${archivoLink}
                 </td>
             </tr>
         `;
