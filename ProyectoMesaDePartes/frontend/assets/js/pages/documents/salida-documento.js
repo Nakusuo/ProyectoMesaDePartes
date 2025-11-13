@@ -2,17 +2,43 @@
 // SALIDA DE DOCUMENTOS - MESA DE PARTES PNP
 // =====================================================
 
+// Constante de API
+const API_URL = 'http://localhost:8080/api';
+
 let documentoSeleccionado = null;
 let archivoCargoUrl = null;
 
 // =====================================================
 // INICIALIZACIÓN
 // =====================================================
+
+// Función para verificar autenticación
+function verificarAutenticacion() {
+    const token = getToken();
+    const user = getUserData();
+    
+    if (!token || !user) {
+        console.error('❌ No hay autenticación. Redirigiendo al login...');
+        window.location.href = '../auth/login.html';
+        return false;
+    }
+    
+    console.log('✅ Usuario autenticado:', user.username || user.nombre);
+    return true;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('🔍 DOMContentLoaded: Iniciando salida-documento.js');
     verificarAutenticacion();
+    console.log('✅ Autenticación verificada');
     cargarTiposDocumento();
+    console.log('✅ cargarTiposDocumento() llamada');
+    cargarDestinatarios();
+    console.log('✅ cargarDestinatarios() llamada');
     configurarEventos();
+    console.log('✅ Eventos configurados');
     cargarSalidasRecientes();
+    console.log('✅ Salidas recientes cargadas');
 });
 
 // =====================================================
@@ -50,6 +76,7 @@ async function buscarDocumento() {
 
     try {
         showToast('Buscando documento...', 'loading');
+        console.log('🔍 Buscando documento con código:', codigo);
         
         const response = await fetch(`${API_URL}/documentos/buscar/${codigo}`, {
             headers: {
@@ -57,12 +84,19 @@ async function buscarDocumento() {
             }
         });
 
+        console.log('📡 Response status:', response.status, 'OK:', response.ok);
+        
         if (!response.ok) {
-            throw new Error('Documento no encontrado');
+            throw new Error('Documento no encontrado. Status: ' + response.status);
         }
 
         const data = await response.json();
-        documentoSeleccionado = data.documento;
+        console.log('📦 Datos recibidos:', data);
+        
+        // El endpoint devuelve el documento directamente, no envuelto
+        documentoSeleccionado = data.documento || data;
+        
+        console.log('✅ Documento seleccionado:', documentoSeleccionado);
         
         // Mostrar información del documento
         document.getElementById('infoTitulo').textContent = documentoSeleccionado.titulo;
@@ -78,6 +112,7 @@ async function buscarDocumento() {
         showToast('Documento encontrado exitosamente', 'success');
         
     } catch (error) {
+        console.error('❌ Error al buscar documento:', error);
         showToast('Error: ' + error.message, 'error');
         document.getElementById('documentoInfo').style.display = 'none';
         documentoSeleccionado = null;
@@ -153,7 +188,7 @@ async function registrarSalida(e) {
         return;
     }
 
-    const usuario = getUsuario();
+    const usuario = getUserData();
     
     const salidaData = {
         idDocumento: documentoSeleccionado.idDocumento,
@@ -213,14 +248,22 @@ function limpiarFormulario() {
 // =====================================================
 async function cargarTiposDocumento() {
     try {
-        const response = await fetch(`${API_URL}/tipos-documento`, {
-            headers: {
-                'Authorization': `Bearer ${getToken()}`
-            }
-        });
+        console.log('📡 Llamando a: ' + `${API_URL}/tipos-documento`);
+        const response = await fetch(`${API_URL}/tipos-documento`);
+        console.log('📡 Response status:', response.status, 'OK:', response.ok);
+        
+        if (!response.ok) {
+            throw new Error('Error al cargar tipos de documento. Status: ' + response.status);
+        }
 
         const tipos = await response.json();
+        console.log('✅ Tipos recibidos:', tipos.length, tipos);
         const select = document.getElementById('tipoDocumentoSalida');
+        
+        if (!select) {
+            console.error('❌ Elemento tipoDocumentoSalida no encontrado en el DOM');
+            return;
+        }
         
         select.innerHTML = '<option value="">Seleccione...</option>';
         tipos.forEach(tipo => {
@@ -229,9 +272,47 @@ async function cargarTiposDocumento() {
             option.textContent = tipo.nombre;
             select.appendChild(option);
         });
+        console.log('✅ Dropdown de tipos poblado con ' + tipos.length + ' opciones');
 
     } catch (error) {
-        console.error('Error al cargar tipos de documento:', error);
+        console.error('❌ Error al cargar tipos de documento:', error);
+        const select = document.getElementById('tipoDocumentoSalida');
+        if (select) {
+            select.innerHTML = '<option value="">Error al cargar tipos</option>';
+        }
+    }
+}
+
+// =====================================================
+// CARGAR DESTINATARIOS (Departamentos PNP)
+// =====================================================
+async function cargarDestinatarios() {
+    try {
+        const response = await fetch(`${API_URL}/areas`);
+        
+        if (!response.ok) {
+            throw new Error('Error al cargar destinatarios');
+        }
+
+        const areas = await response.json();
+        // Filtrar solo departamentos PNP (mismo criterio que en entrada de documentos)
+        const departamentosPNP = areas.filter(area => area.tipo === 'DEPARTAMENTO_PNP');
+        
+        const select = document.getElementById('destinatarioSalida');
+        select.innerHTML = '<option value="">Seleccione un destinatario...</option>';
+        
+        departamentosPNP.forEach(area => {
+            const option = document.createElement('option');
+            const textoCompleto = area.sigla ? `${area.sigla} - ${area.nombre}` : area.nombre;
+            option.value = textoCompleto;
+            option.textContent = textoCompleto;
+            select.appendChild(option);
+        });
+
+    } catch (error) {
+        console.error('Error al cargar destinatarios:', error);
+        const select = document.getElementById('destinatarioSalida');
+        select.innerHTML = '<option value="">Error al cargar destinatarios</option>';
     }
 }
 

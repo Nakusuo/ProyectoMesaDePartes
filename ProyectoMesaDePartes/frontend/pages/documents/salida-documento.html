@@ -69,8 +69,9 @@
 
                         <div class="form-group">
                             <label for="destinatarioSalida">Destinatario<span class="required">*</span></label>
-                            <input type="text" id="destinatarioSalida" required 
-                                   placeholder="Entidad o persona a quien se envía">
+                            <select id="destinatarioSalida" class="custom-select" required>
+                                <option value="">Seleccione un destinatario...</option>
+                            </select>
                         </div>
 
                         <div class="form-group">
@@ -134,13 +135,6 @@
     <script src="../../assets/js/components/toast.js"></script>
     <script src="../../assets/js/core/auth.js"></script>
     <script src="../../assets/js/components/sidebar.js"></script>
-    <script>
-        // Esperar a que todos los scripts se carguen antes de ejecutar salida-documento.js
-        window.addEventListener('load', function() {
-            const script = document.createElement('script');
-            script.src = '../../assets/js/pages/documents/salida-documento.js';
-            document.body.appendChild(script);
-        });
-    </script>
+    <script src="../../assets/js/pages/documents/salida-documento.js"></script>
 </body>
 </html>
