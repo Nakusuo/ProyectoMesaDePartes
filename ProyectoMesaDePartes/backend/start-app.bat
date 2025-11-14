@@ -1,3 +1,3 @@
 @echo off
-cd /d C:\Users\User\ProyectoMesaDePartes\ProyectoMesaDePartes\backend
+cd /d %~dp0
 mvnw.cmd spring-boot:run

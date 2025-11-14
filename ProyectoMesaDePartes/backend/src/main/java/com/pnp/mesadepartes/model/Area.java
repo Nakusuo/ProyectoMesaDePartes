@@ -10,6 +10,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+// Enum definido fuera de la clase para evitar conflictos con Lombok
+enum TipoArea {
+    DEPARTAMENTO_PNP,  // Áreas oficiales de la PNP (para documentos)
+    AREA_TRABAJO       // Áreas de trabajo del sistema (para usuarios)
+}
+
 @Data
 @Entity
 @Table(name = "areas")
@@ -29,9 +35,4 @@ public class Area {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TipoArea tipo = TipoArea.DEPARTAMENTO_PNP;
-    
-    public enum TipoArea {
-        DEPARTAMENTO_PNP,  // Áreas oficiales de la PNP (para documentos)
-        AREA_TRABAJO       // Áreas de trabajo del sistema (para usuarios)
-    }
 }
