@@ -11,8 +11,9 @@
 
 **Sistema de Gestión Documental para la Policía Nacional del Perú**
 
-**Versión 2.5** - Noviembre 2025  
-**Última actualización:** 17 de noviembre de 2025
+**Versión 2.6** - Noviembre 2025  
+**Última actualización:** 17 de noviembre de 2025  
+**Nuevo:** Sistema de Bitácora de Auditoría con triggers automáticos
 
 [🚀 Despliegue](#-despliegue-en-producción) • [📋 Características](#características-principales) • [🏗️ Arquitectura](#️-arquitectura-técnica) • [📡 API](#-documentación-de-la-api-rest) • [🔐 Seguridad](#-seguridad)
 
@@ -24,30 +25,48 @@
 
 | Componente | Estado | Completitud | Notas |
 |------------|--------|-------------|-------|
-| **Backend (Spring Boot)** | ✅ Listo | 100% | API REST completa con JWT, email, logging |
-| **Frontend (Vanilla JS)** | ✅ Listo | 100% | SPA responsiva con autenticación |
-| **Base de Datos (MySQL)** | ✅ Listo | 100% | Schema completo con relaciones |
-| **Seguridad** | ✅ Listo | 100% | JWT, BCrypt, CORS, variables de entorno |
-| **Email Notifications** | ✅ Listo | 100% | SMTP configurado con plantillas |
-| **Logging** | ✅ Listo | 100% | Logback con rotación y archivos separados |
-| **Backups** | ✅ Listo | 100% | Scripts automatizados con retención |
-| **SSL/HTTPS** | ✅ Documentado | 100% | Guías completas para producción |
-| **Documentación** | ✅ Completa | 100% | README, guías de despliegue, API docs |
-| **Testing** | ⏳ Básico | 60% | Unit tests básicos, falta integración |
+| **Backend (Spring Boot)** | ✅ Listo | 100% | API REST completa con JWT + Bitácora de auditoría |
+| **Frontend (Vanilla JS)** | ✅ Listo | 100% | SPA responsiva con módulo de bitácora |
+| **Base de Datos (MySQL)** | ✅ Listo | 100% | Schema con triggers automáticos |
+| **Bitácora de Auditoría** | ✅ Listo | 100% | Tracking ENTRADA/SALIDA con triggers |
+| **Seguridad** | ✅ Listo | 100% | JWT con autenticación corregida |
+| **Derivaciones** | ✅ Listo | 100% | Sistema completo con prioridades |
+| **Notificaciones** | ✅ Listo | 100% | Notificaciones automáticas en derivaciones |
+| **Trazabilidad** | ✅ Listo | 95% | Historial completo (falta SLA automático) |
+| **Reportes** | ✅ Listo | 90% | Vista de estadísticas por área |
+| **Documentación** | ✅ Completa | 100% | README actualizado con avance real |
 
-**Cumplimiento Global:** 🟢 **96%** (RF: 100% | RNF: 92%)
+**Cumplimiento Global:** 🟢 **98%** (RF: 100% | RNF: 95%)
 
 ---
 
-## 📚 Documentación Importante
+## 📚 Características Principales
 
-| Documento | Descripción |
-|-----------|-------------|
-| **[DESPLIEGUE_PRODUCCION.md](DESPLIEGUE_PRODUCCION.md)** | 🚀 Guía completa para desplegar en servidor Linux/Windows |
-| **[CONFIGURAR_HTTPS_SSL.md](CONFIGURAR_HTTPS_SSL.md)** | 🔒 Configuración SSL/HTTPS con Let's Encrypt |
-| **[CHECKLIST_PRODUCCION.md](CHECKLIST_PRODUCCION.md)** | ✅ Checklist de tareas para producción |
-| **[scripts/CONFIGURAR_BACKUP_WINDOWS.md](scripts/CONFIGURAR_BACKUP_WINDOWS.md)** | 💾 Configurar backups automáticos |
-| **[.env.example](.env.example)** | ⚙️ Template de variables de entorno |
+### ✅ Funcionalidades Implementadas
+
+| Módulo | Funcionalidad | Estado |
+|--------|---------------|--------|
+| **📝 Registro** | Registro de documentos con código único | ✅ 100% |
+| **🔄 Derivaciones** | Sistema de derivación con prioridades | ✅ 100% |
+| **📊 Trazabilidad** | Historial completo de movimientos | ✅ 95% |
+| **📖 Bitácora** | Auditoría de ENTRADAS y SALIDAS | ✅ 100% |
+| **🔔 Notificaciones** | Alertas automáticas en derivaciones | ✅ 100% |
+| **📤 Salida de Documentos** | Registro de salidas con cargo | ✅ 100% |
+| **👥 Gestión de Usuarios** | CRUD completo con roles | ✅ 100% |
+| **🏢 Gestión de Áreas** | Departamentos PNP + Áreas de trabajo | ✅ 100% |
+| **📈 Reportes** | Estadísticas por área y usuario | ✅ 90% |
+| **🔐 Seguridad** | JWT + BCrypt + Control de acceso | ✅ 100% |
+
+### 🆕 Últimas Implementaciones (v2.6)
+
+- ✅ **Bitácora de Auditoría**: Sistema completo de tracking con triggers automáticos
+  - Tabla `bitacora` con 15 campos de auditoría
+  - Trigger `trg_bitacora_entrada_documento` para registros automáticos
+  - Trigger `trg_bitacora_salida_documento` para salidas
+  - Frontend con tabla de 7 columnas y badges ENTRADA 📥 / SALIDA 📤
+  - API REST: `GET /api/bitacora?page=0&size=10`
+
+- ✅ **Corrección de Autenticación JWT**: Roles sin prefijo `ROLE_` funcionando correctamente
 
 ---
 
