@@ -7,43 +7,104 @@
 ![MySQL](https://img.shields.io/badge/MySQL-8.0.40-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![Status](https://img.shields.io/badge/Status-Producción_Ready-success?style=for-the-badge)
 
 **Sistema de Gestión Documental para la Policía Nacional del Perú**
 
-**Versión 2.1** - Noviembre 2025
-**Última actualización:** 12 de noviembre de 2025
+**Versión 2.5** - Noviembre 2025  
+**Última actualización:** 17 de noviembre de 2025
 
-[Características](#características-principales) • [Arquitectura](#arquitectura-técnica) • [Instalación](#instalación-y-configuración) • [API](#documentación-de-la-api) • [Changelog](#changelog-v21---noviembre-2025)
+[🚀 Despliegue](#-despliegue-en-producción) • [📋 Características](#características-principales) • [🏗️ Arquitectura](#️-arquitectura-técnica) • [📡 API](#-documentación-de-la-api-rest) • [🔐 Seguridad](#-seguridad)
 
 </div>
 
 ---
 
+## 🎯 Estado del Proyecto
+
+| Componente | Estado | Completitud | Notas |
+|------------|--------|-------------|-------|
+| **Backend (Spring Boot)** | ✅ Listo | 100% | API REST completa con JWT, email, logging |
+| **Frontend (Vanilla JS)** | ✅ Listo | 100% | SPA responsiva con autenticación |
+| **Base de Datos (MySQL)** | ✅ Listo | 100% | Schema completo con relaciones |
+| **Seguridad** | ✅ Listo | 100% | JWT, BCrypt, CORS, variables de entorno |
+| **Email Notifications** | ✅ Listo | 100% | SMTP configurado con plantillas |
+| **Logging** | ✅ Listo | 100% | Logback con rotación y archivos separados |
+| **Backups** | ✅ Listo | 100% | Scripts automatizados con retención |
+| **SSL/HTTPS** | ✅ Documentado | 100% | Guías completas para producción |
+| **Documentación** | ✅ Completa | 100% | README, guías de despliegue, API docs |
+| **Testing** | ⏳ Básico | 60% | Unit tests básicos, falta integración |
+
+**Cumplimiento Global:** 🟢 **96%** (RF: 100% | RNF: 92%)
+
+---
+
+## 📚 Documentación Importante
+
+| Documento | Descripción |
+|-----------|-------------|
+| **[DESPLIEGUE_PRODUCCION.md](DESPLIEGUE_PRODUCCION.md)** | 🚀 Guía completa para desplegar en servidor Linux/Windows |
+| **[CONFIGURAR_HTTPS_SSL.md](CONFIGURAR_HTTPS_SSL.md)** | 🔒 Configuración SSL/HTTPS con Let's Encrypt |
+| **[CHECKLIST_PRODUCCION.md](CHECKLIST_PRODUCCION.md)** | ✅ Checklist de tareas para producción |
+| **[scripts/CONFIGURAR_BACKUP_WINDOWS.md](scripts/CONFIGURAR_BACKUP_WINDOWS.md)** | 💾 Configurar backups automáticos |
+| **[.env.example](.env.example)** | ⚙️ Template de variables de entorno |
+
+---
+
 ## � Índice
 
+- [🎯 Estado del Proyecto](#-estado-del-proyecto)
+- [📚 Documentación Importante](#-documentación-importante)
+- [🚀 Inicio Rápido](#-inicio-rápido)
 - [📋 Análisis de Cumplimiento de Requerimientos](#-análisis-de-cumplimiento-de-requerimientos)
   - [✅ Requerimientos Funcionales (RF)](#-requerimientos-funcionales-rf)
-    - [RF01 - Registrar documentos](#rf01---registrar-documentos)
-    - [RF02 - Derivar documentos a áreas internas](#rf02---derivar-documentos-a-áreas-internas)
-    - [RF03 - Consultar estado y trazabilidad de trámites](#rf03---consultar-estado-y-trazabilidad-de-trámites)
-    - [RF04 - Gestión de roles y permisos](#rf04---gestión-de-roles-y-permisos)
-    - [RF05 - Generar reportes de documentos y tiempos de atención](#rf05---generar-reportes-de-documentos-y-tiempos-de-atención)
-    - [RF06 - Notificaciones automáticas al usuario](#rf06---notificaciones-automáticas-al-usuario)
   - [🔧 Requerimientos No Funcionales (RNF)](#-requerimientos-no-funcionales-rnf)
-    - [RNF01 - Rendimiento (tiempo máximo de respuesta 4 seg.)](#rnf01---rendimiento-tiempo-máximo-de-respuesta-4-seg)
-    - [RNF02 - Seguridad (cifrado, autenticación, auditoría)](#rnf02---seguridad-cifrado-autenticación-auditoría)
-    - [RNF03 - Fiabilidad (respaldo de datos)](#rnf03---fiabilidad-respaldo-de-datos)
-    - [RNF04 - Disponibilidad (99% uptime)](#rnf04---disponibilidad-99-uptime)
-    - [RNF05 - Mantenibilidad](#rnf05---mantenibilidad)
-    - [RNF06 - Portabilidad](#rnf06---portabilidad)
-  - [📊 Resumen General de Cumplimiento](#-resumen-general-de-cumplimiento)
-  - [🎯 Prioridades para Completar al 100%](#-prioridades-para-completar-al-100)
 - [📊 Estado de Cumplimiento del Proyecto](#-estado-de-cumplimiento-del-proyecto)
 - [🏗️ Arquitectura Técnica](#️-arquitectura-técnica)
-- [🚀 Instalación y Configuración](#-instalación-y-configuración)
+- [🚀 Despliegue en Producción](#-despliegue-en-producción)
+- [🔐 Seguridad](#-seguridad)
 - [📡 Documentación de la API REST](#-documentación-de-la-api-rest)
 - [🔍 Cómo Funciona el Proyecto](#-cómo-funciona-el-proyecto)
 - [📝 Changelog](#-changelog)
+
+---
+
+## 🚀 Inicio Rápido
+
+### Pre-requisitos
+
+- Java 21 LTS
+- MySQL 8.0.40+
+- Maven 3.9+
+- Node.js (opcional, para desarrollo frontend)
+
+### Configuración en 5 Pasos
+
+```bash
+# 1. Clonar repositorio
+git clone https://github.com/TU_USUARIO/ProyectoMesaDePartes.git
+cd ProyectoMesaDePartes
+
+# 2. Configurar variables de entorno
+cp .env.example .env
+# Editar .env con tus credenciales
+
+# 3. Crear base de datos
+mysql -u root -p < SQL/mesa_partes_db_completa_con_funcionalidades.sql
+
+# 4. Compilar y ejecutar backend
+cd backend
+./mvnw spring-boot:run
+
+# 5. Abrir frontend
+# Abrir frontend/pages/auth/login.html en el navegador
+```
+
+**Usuario por defecto:**
+- Email: `admin@pnp.gob.pe`
+- Password: `admin123`
+
+Para producción, ver [DESPLIEGUE_PRODUCCION.md](DESPLIEGUE_PRODUCCION.md)
 
 ---
 
