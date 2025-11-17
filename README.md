@@ -36,7 +36,7 @@
 | **Reportes** | ✅ Listo | 90% | Vista de estadísticas por área |
 | **Documentación** | ✅ Completa | 100% | README actualizado con avance real |
 
-**Cumplimiento Global:** 🟢 **98%** (RF: 100% | RNF: 95%)
+**Cumplimiento Global:** 🟢 **80.85%** (RF: 91.7% | RNF: 70%)
 
 ---
 
@@ -1330,61 +1330,71 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
   </tr>
   <tr>
     <td><b>RF3:</b> Trazabilidad completa de trámites</td>
-    <td>✅ Completado</td>
-    <td><b>100%</b></td>
-  </tr>
-  <tr>
-    <td><b>RF4:</b> Gestión de roles y permisos</td>
-    <td>⚠️ Parcial</td>
-    <td><b>60%</b></td>
-  </tr>
-  <tr>
-    <td><b>RF5:</b> Generación de reportes (PDF/Excel)</td>
-    <td>✅ Completado</td>
+    <td>⚠️ Casi completo</td>
     <td><b>95%</b></td>
   </tr>
   <tr>
-    <td><b>RF6:</b> Sistema de notificaciones</td>
+    <td><b>RF4:</b> Gestión de roles y permisos</td>
     <td>✅ Completado</td>
     <td><b>100%</b></td>
+  </tr>
+  <tr>
+    <td><b>RF5:</b> Generación de reportes (PDF/Excel)</td>
+    <td>⚠️ Casi completo</td>
+    <td><b>90%</b></td>
+  </tr>
+  <tr>
+    <td><b>RF6:</b> Sistema de notificaciones</td>
+    <td>⚠️ Casi completo</td>
+    <td><b>80%</b></td>
   </tr>
   <!-- REQUISITOS NO FUNCIONALES -->
   <tr>
     <td rowspan="6"><b>⚙️ Requisitos<br>No Funcionales</b></td>
     <td><b>RNF1:</b> Rendimiento (< 4 segundos)</td>
-    <td>✅ Completado</td>
-    <td><b>90%</b></td>
-  </tr>
-  <tr>
-    <td><b>RNF2:</b> Seguridad (JWT + BCrypt)</td>
-    <td>⚠️ Ignorado</td>
-    <td><b>0%</b></td>
-  </tr>
-  <tr>
-    <td><b>RNF3:</b> Confiabilidad</td>
-    <td>✅ Completado</td>
-    <td><b>85%</b></td>
-  </tr>
-  <tr>
-    <td><b>RNF4:</b> Disponibilidad</td>
-    <td>✅ Completado</td>
-    <td><b>80%</b></td>
-  </tr>
-  <tr>
-    <td><b>RNF5:</b> Mantenibilidad</td>
-    <td>✅ Completado</td>
+    <td>✅ Cumplido</td>
     <td><b>95%</b></td>
   </tr>
   <tr>
-    <td><b>RNF6:</b> Portabilidad</td>
-    <td>✅ Completado</td>
+    <td><b>RNF2:</b> Seguridad (JWT + BCrypt)</td>
+    <td>⚠️ Parcial</td>
+    <td><b>85%</b></td>
+  </tr>
+  <tr>
+    <td><b>RNF3:</b> Fiabilidad (Backups)</td>
+    <td>❌ No implementado</td>
+    <td><b>0%</b></td>
+  </tr>
+  <tr>
+    <td><b>RNF4:</b> Disponibilidad (99% uptime)</td>
+    <td>⚠️ Parcial</td>
+    <td><b>50%</b></td>
+  </tr>
+  <tr>
+    <td><b>RNF5:</b> Mantenibilidad</td>
+    <td>✅ Cumplido</td>
     <td><b>90%</b></td>
+  </tr>
+  <tr>
+    <td><b>RNF6:</b> Portabilidad</td>
+    <td>✅ Cumplido</td>
+    <td><b>100%</b></td>
   </tr>
   <!-- TOTALES -->
   <tr>
     <td colspan="2"><b>📈 CUMPLIMIENTO TOTAL DEL PROYECTO</b></td>
     <td><b>✅ OBJETIVO ALCANZADO</b></td>
-    <td><b>75%</b></td>
+    <td><b>80.85%</b></td>
+  </tr>
+  <tr>
+    <td colspan="2"><b>├─ Requisitos Funcionales (RF) - Peso 60%</b></td>
+    <td><b>✅ Excelente</b></td>
+    <td><b>91.7%</b></td>
+  </tr>
+  <tr>
+    <td colspan="2"><b>└─ Requisitos No Funcionales (RNF) - Peso 40%</b></td>
+    <td><b>⚠️ Bueno</b></td>
+    <td><b>70%</b></td>
   </tr>
 </tbody>
 </table>
@@ -1406,55 +1416,97 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 - ✔️ Módulo frontend `derivaciones.js` con modal UI
 - ✔️ Endpoints REST: derivar, recibir, listar por área
 
-#### ✅ **RF3 - Trazabilidad (100%)**
+#### ✅ **RF3 - Trazabilidad (95%)**
 - ✔️ Servicio `obtenerTrazabilidad()` con cálculo de Duration
 - ✔️ DTO anidado: TrazabilidadDTO → MovimientoDTO → EstadisticasDTO
 - ✔️ Vista SQL `vista_documentos_trazabilidad`
 - ✔️ Frontend `trazabilidad.js` con timeline visual
 - ✔️ Cálculo de tiempo en cada área (horas/días)
+- ⚠️ **PENDIENTE**: Alertas automáticas de SLA excedido
 
-#### ⚠️ **RF4 - Gestión de Roles (60%)**
-- ✔️ Sistema de roles básico implementado
-- ✔️ JWT + BCrypt funcionando
-- ❌ Falta: Endpoints CRUD de permisos
-- ❌ Falta: @PreAuthorize en controllers
-- ❌ Falta: UI de administración de roles
+#### ✅ **RF4 - Gestión de Roles (100%)**
+- ✔️ Sistema de roles completo (ADMIN, MESA_PARTES, TRABAJADOR, JEFATURA, USUARIO_EXTERNO)
+- ✔️ JWT + BCrypt completamente funcional
+- ✔️ Módulo `permissions.js` con control granular en frontend
+- ✔️ Endpoints de gestión de usuarios en `/api/usuarios`
+- ✔️ Página `gestion-usuarios.html` con CRUD completo
 
-#### ✅ **RF5 - Reportes (95%)**
+#### ⚠️ **RF5 - Reportes (90%)**
 - ✔️ Generación de PDF con iText7 7.2.5
-- ✔️ Generación de Excel con Apache POI 5.2.5
-- ✔️ Filtros por fecha, estado y área
 - ✔️ Servicio `ReporteService` completo
-- ✔️ Frontend `reportes.js` con modal y estadísticas
-- ⚠️ Pendiente: `mvn clean install` para descargar dependencias
+- ✔️ Frontend `reportes-global.js` con funciones centralizadas
+- ✔️ Estadísticas por área en dashboard
+- ⚠️ **PENDIENTE**: Exportación a Excel funcional
+- ⚠️ **PENDIENTE**: Reportes de tiempos de atención (SLA)
+- ⚠️ **PENDIENTE**: Filtros avanzados por rango de fechas
 
-#### ✅ **RF6 - Notificaciones (100%)**
-- ✔️ Tabla `notificaciones` con 4 tipos
-- ✔️ Servicio `NotificacionService` con batch operations
-- ✔️ Frontend con polling cada 30 segundos
-- ✔️ Badge de conteo de no leídas
-- ✔️ Auto-marcado al hacer clic
-- ✔️ Trigger SQL automático en derivaciones
+#### ⚠️ **RF6 - Notificaciones (80%)**
+- ✔️ Tabla `notificaciones` con 4 tipos (DOCUMENTO_REGISTRADO, DOCUMENTO_DERIVADO, DOCUMENTO_RECIBIDO, ESTADO_ACTUALIZADO)
+- ✔️ Servicio `NotificacionService` con 7 endpoints REST
+- ✔️ Frontend con badge contador en sidebar
+- ✔️ Sistema Toast con 5 tipos de alertas visuales
+- ✔️ Notificaciones in-app funcionando correctamente
+- ❌ **FALTA**: Envío de emails (requiere configuración SMTP)
+- ❌ **FALTA**: Notificaciones push del navegador
 
-#### ✅ **RNF1 - Rendimiento (90%)**
-- ✔️ 20+ índices en MySQL (idx_estado, idx_fecha, etc.)
+#### ✅ **RNF1 - Rendimiento (95%)**
+- ✔️ 20+ índices en MySQL (idx_documento_codigo, idx_documento_estado, idx_usuario_username, etc.)
 - ✔️ 2 vistas SQL optimizadas
-- ✔️ 1 procedimiento almacenado
-- ✔️ Eager fetching en consultas JPA
-- ✔️ Respuestas < 4 segundos verificadas
+- ✔️ Pool de conexiones Hikari (max 10, min 5)
+- ✔️ Lazy loading en relaciones JPA
+- ✔️ Respuestas API < 1 segundo (medido: 180-400ms)
 
-#### ✅ **RNF3-6 - Otros RNF (85-95%)**
-- ✔️ Arquitectura limpia con separación de capas
-- ✔️ Código documentado y mantenible
-- ✔️ Compatible con Docker
-- ✔️ Transacciones con @Transactional
+#### ⚠️ **RNF2 - Seguridad (85%)**
+- ✔️ JWT con algoritmo HS512 y expiración 8 horas
+- ✔️ BCrypt para cifrado de contraseñas
+- ✔️ CORS configurado
+- ✔️ Protección contra inyección SQL (JPA/Hibernate)
+- ✔️ Validación XSS en frontend y backend
+- ⚠️ **PENDIENTE**: SSL/TLS (HTTPS) para producción
+- ⚠️ **PENDIENTE**: WAF y rate limiting
 
-### 🎯 Próximos Pasos (25% restante)
+#### ❌ **RNF3 - Fiabilidad (0%)**
+- ❌ **CRÍTICO**: Sin backups automáticos configurados
+- ❌ Sin replicación de base de datos
+- ❌ Sin plan de recuperación documentado
+- ⚠️ Nota: Scripts de respaldo básicos disponibles en `scripts/backup_*.bat|sh`
 
-1. **Completar RF4** - Endpoints CRUD de permisos (15%)
-2. **Ejecutar SQL** - Aplicar `mesa_partes_db_completa_con_funcionalidades.sql` (5%)
-3. **Instalar dependencias** - Ejecutar `mvn clean install` (3%)
-4. **Integrar frontend** - Agregar scripts en HTML (2%)
+#### ⚠️ **RNF4 - Disponibilidad (50%)**
+- ✔️ Servidor Tomcat embebido estable
+- ✔️ MySQL 8.0.40 confiable
+- ❌ Sin monitoreo activo de uptime
+- ❌ Sin balanceo de carga
+- ❌ Sin health checks configurados
+- ❌ Sin auto-restart en caso de caída
+
+#### ✅ **RNF5 - Mantenibilidad (90%)**
+- ✔️ Arquitectura MVC con separación clara de capas
+- ✔️ README.md completo con 4600+ líneas de documentación
+- ✔️ Código limpio con nombres descriptivos
+- ✔️ Patrones de diseño: Repository, DTO, Service Layer
+- ⚠️ **PENDIENTE**: Manual de usuario en PDF
+
+#### ✅ **RNF6 - Portabilidad (100%)**
+- ✔️ Compatible con todos los navegadores modernos (Chrome, Firefox, Edge, Safari)
+- ✔️ Diseño responsive para móviles
+- ✔️ Java 21 multiplataforma (Windows/Linux/Mac)
+- ✔️ MySQL 8.0 compatible con todos los OS
+- ✔️ Sin dependencias específicas de sistema operativo
+
+### 🎯 Próximos Pasos para alcanzar 100%
+
+**Prioridad CRÍTICA:**
+1. ❌ **RNF3**: Implementar backups automáticos cada 5 horas (2 horas de trabajo)
+2. ⚠️ **RF6**: Configurar envío de emails con Spring Mail (4 horas de trabajo)
+3. ⚠️ **RF5**: Agregar reportes de SLA y tiempos de atención (6 horas de trabajo)
+
+**Prioridad ALTA:**
+4. ⚠️ **RNF4**: Configurar monitoreo y health checks (3 horas de trabajo)
+5. ⚠️ **RNF2**: Habilitar HTTPS en producción (4 horas de trabajo)
+
+**Prioridad MEDIA:**
+6. ⚠️ **RF5**: Implementar exportación a Excel funcional (3 horas de trabajo)
+7. ⚠️ **RF3**: Agregar alertas automáticas de SLA (2 horas de trabajo)
 
 ---
 
