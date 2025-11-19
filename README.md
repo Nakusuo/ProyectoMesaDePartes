@@ -1532,8 +1532,7 @@ function mostrarDocumentos(documentos) {
 | **Performance** | Más queries | Menos queries ✅ |
 
 **Archivos modificados:**
-- ✅ `SQL/mesa_partes_db_completa_actualizada.sql` - Script unificado
-- ✅ `SQL/fix_trigger_bitacora.sql` - Fix para trigger de salida
+- ✅ `SQL/mesa_partes_db_completa_actualizada.sql` - **Script único con todo incluido**
 - ✅ `backend/src/main/java/com/pnp/mesadepartes/model/Bitacora.java`
 - ✅ `backend/src/main/java/com/pnp/mesadepartes/repository/BitacoraRepository.java`
 - ✅ `backend/src/main/java/com/pnp/mesadepartes/service/BitacoraService.java`
@@ -1542,8 +1541,8 @@ function mostrarDocumentos(documentos) {
 
 **Verificación:**
 ```bash
-# 1. Ejecutar script actualizado
-mysql -u root -proot < SQL/mesa_partes_db_completa_actualizada.sql
+# 1. Ejecutar script único (contiene TODO lo necesario)
+"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u root -proot < SQL\mesa_partes_db_completa_actualizada.sql
 
 # 2. Verificar estructura
 mysql -u root -proot mesa_partes_db -e "DESCRIBE bitacora;"
@@ -4812,8 +4811,7 @@ mkdir -p uploads/documentos
    - ✅ Eliminada función `agruparPorDocumento()` (ya no necesaria)
 
 5. **Scripts SQL:**
-   - ✅ `mesa_partes_db_completa_actualizada.sql` - Script completo con bitácora unificada
-   - ✅ `fix_trigger_bitacora.sql` - Fix específico para trigger de salida
+   - ✅ `mesa_partes_db_completa_actualizada.sql` - **Script único completo (incluye BD + triggers corregidos)**
 
 **Resultado:**
 - ✅ Cada documento aparece **UNA SOLA VEZ** en la bitácora
@@ -4821,7 +4819,7 @@ mkdir -p uploads/documentos
 - ✅ Código más limpio y mantenible
 - ✅ Interfaz más clara para usuarios
 
-**Archivos modificados:** 8 archivos (4 backend, 1 frontend, 2 SQL, 1 README)
+**Archivos modificados:** 7 archivos (4 backend, 1 frontend, 1 SQL, 1 README)
 
 ---
 

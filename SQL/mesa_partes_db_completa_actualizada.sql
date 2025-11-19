@@ -543,7 +543,7 @@ END //
 DELIMITER ;
 
 -- =====================================================
--- TRIGGER: Actualizar bitácora con SALIDA (UNIFICADO)
+-- TRIGGER: Actualizar bitácora con SALIDA (UNIFICADO - VERSIÓN CORREGIDA)
 -- =====================================================
 DROP TRIGGER IF EXISTS trg_bitacora_salida_documento;
 
@@ -552,22 +552,28 @@ CREATE TRIGGER trg_bitacora_salida_documento
 AFTER INSERT ON salidas_documento
 FOR EACH ROW
 BEGIN
-    -- Intentar actualizar el registro existente
-    UPDATE bitacora b
-    INNER JOIN documentos d ON b.ID_documento = d.ID_documento
-    INNER JOIN usuarios u ON NEW.ID_usuario_salida = u.ID_usuario
-    SET 
-        b.tiene_salida = TRUE,
-        b.destinatario = NEW.destinatario_salida,
-        b.fecha_salida = NEW.fecha_salida,
-        b.usuario_salida = CONCAT(u.nombre, ' ', u.apellido),
-        b.numero_documento_salida = NEW.numero_documento_salida,
-        b.observaciones_salida = NEW.observacion,
-        b.archivo_salida_url = NEW.archivo_cargo_url
-    WHERE b.ID_documento = NEW.ID_documento;
+    DECLARE existe_registro INT;
     
-    -- Si no existe registro de entrada, crear uno solo con salida
-    IF ROW_COUNT() = 0 THEN
+    -- Verificar si ya existe un registro para este documento
+    SELECT COUNT(*) INTO existe_registro
+    FROM bitacora
+    WHERE ID_documento = NEW.ID_documento;
+    
+    IF existe_registro > 0 THEN
+        -- Actualizar registro existente con datos de salida
+        UPDATE bitacora b
+        LEFT JOIN usuarios u ON NEW.ID_usuario_salida = u.ID_usuario
+        SET 
+            b.tiene_salida = TRUE,
+            b.destinatario = NEW.destinatario_salida,
+            b.fecha_salida = NEW.fecha_salida,
+            b.usuario_salida = CONCAT(IFNULL(u.nombre, ''), ' ', IFNULL(u.apellido, '')),
+            b.numero_documento_salida = NEW.numero_documento_salida,
+            b.observaciones_salida = NEW.observacion,
+            b.archivo_salida_url = NEW.archivo_cargo_url
+        WHERE b.ID_documento = NEW.ID_documento;
+    ELSE
+        -- Crear nuevo registro solo con datos de salida (caso excepcional)
         INSERT INTO bitacora (
             ID_documento,
             codigo_documento,
