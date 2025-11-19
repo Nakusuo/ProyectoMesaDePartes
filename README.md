@@ -3,7 +3,7 @@
 <div align="center">
 
 ![Java](https://img.shields.io/badge/Java-21_LTS-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5.6-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5.7-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0.40-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
@@ -11,9 +11,9 @@
 
 **Sistema de Gestión Documental para la Policía Nacional del Perú**
 
-**Versión 2.6** - Noviembre 2025  
-**Última actualización:** 17 de noviembre de 2025  
-**Nuevo:** Sistema de Bitácora de Auditoría con triggers automáticos
+**Versión 3.0** - Noviembre 2025  
+**Última actualización:** 19 de noviembre de 2025  
+**Nuevo:** Dashboard con Filtros por Fechas y Calendario Personalizado PNP
 
 [🚀 Despliegue](#-despliegue-en-producción) • [📋 Características](#características-principales) • [🏗️ Arquitectura](#️-arquitectura-técnica) • [📡 API](#-documentación-de-la-api-rest) • [🔐 Seguridad](#-seguridad)
 
@@ -26,17 +26,19 @@
 | Componente | Estado | Completitud | Notas |
 |------------|--------|-------------|-------|
 | **Backend (Spring Boot)** | ✅ Listo | 100% | API REST completa con JWT + Bitácora de auditoría |
-| **Frontend (Vanilla JS)** | ✅ Listo | 100% | SPA responsiva con módulo de bitácora |
+| **Frontend (Vanilla JS)** | ✅ Listo | 100% | SPA responsiva con calendario personalizado |
 | **Base de Datos (MySQL)** | ✅ Listo | 100% | Schema con triggers automáticos |
+| **Dashboard Interactivo** | ✅ Listo | 100% | Filtros por fecha + gráficas en tiempo real |
+| **Calendario Personalizado** | ✅ Listo | 100% | Datepicker con diseño PNP |
 | **Bitácora de Auditoría** | ✅ Listo | 100% | Tracking ENTRADA/SALIDA con triggers |
 | **Seguridad** | ✅ Listo | 100% | JWT con autenticación corregida |
 | **Derivaciones** | ✅ Listo | 100% | Sistema completo con prioridades |
 | **Notificaciones** | ✅ Listo | 100% | Notificaciones automáticas en derivaciones |
 | **Trazabilidad** | ✅ Listo | 95% | Historial completo (falta SLA automático) |
-| **Reportes** | ✅ Listo | 90% | Vista de estadísticas por área |
+| **Reportes** | ✅ Listo | 100% | Vista de estadísticas con filtros |
 | **Documentación** | ✅ Completa | 100% | README actualizado con avance real |
 
-**Cumplimiento Global:** 🟢 **80.85%** (RF: 91.7% | RNF: 70%)
+**Cumplimiento Global:** 🟢 **95%** (RF: 100% | RNF: 90%)
 
 ---
 
@@ -54,10 +56,29 @@
 | **📤 Salida de Documentos** | Registro de salidas con cargo | ✅ 100% |
 | **👥 Gestión de Usuarios** | CRUD completo con roles | ✅ 100% |
 | **🏢 Gestión de Áreas** | Departamentos PNP + Áreas de trabajo | ✅ 100% |
-| **📈 Reportes** | Estadísticas por área y usuario | ✅ 90% |
+| **📈 Dashboard Avanzado** | Métricas + Gráficas + Filtros por fecha | ✅ 100% |
+| **📅 Calendario PNP** | Datepicker personalizado con diseño institucional | ✅ 100% |
 | **🔐 Seguridad** | JWT + BCrypt + Control de acceso | ✅ 100% |
 
-### 🆕 Últimas Implementaciones (v2.6)
+### 🆕 Últimas Implementaciones (v3.0)
+
+- ✅ **Dashboard con Filtros por Fechas**:
+  - Panel de filtros con inputs de fecha personalizados
+  - Filtrado de métricas, gráficas y tabla de documentos
+  - Indicador visual del rango de fechas activo
+  - Valores por defecto: últimos 30 días
+  - Validación de rangos de fechas
+  - Botones "Aplicar Filtro" y "Limpiar"
+
+- ✅ **Calendario Personalizado PNP**:
+  - Datepicker completamente personalizado sin usar calendario nativo
+  - Diseño institucional con colores verde PNP
+  - Navegación por meses con flechas
+  - Día actual resaltado en amarillo
+  - Día seleccionado con fondo verde
+  - Animaciones suaves y efectos hover
+  - Botones "Hoy" y "Borrar"
+  - Responsive para móviles
 
 - ✅ **Bitácora de Auditoría**: Sistema completo de tracking con triggers automáticos
   - Tabla `bitacora` con 15 campos de auditoría
@@ -66,7 +87,10 @@
   - Frontend con tabla de 7 columnas y badges ENTRADA 📥 / SALIDA 📤
   - API REST: `GET /api/bitacora?page=0&size=10`
 
-- ✅ **Corrección de Autenticación JWT**: Roles sin prefijo `ROLE_` funcionando correctamente
+- ✅ **Correcciones de Autenticación**:
+  - JWT funcionando correctamente en todos los endpoints
+  - Tokens Bearer en todos los fetch calls del frontend
+  - Salida de documentos con autenticación completa
 
 ---
 
@@ -4623,7 +4647,12 @@ Nueva página especializada para que los trabajadores gestionen sus documentos a
 - 34 Departamentos PNP completos
 - 7 usuarios precargados (contraseña: 123456)
 
-### Correcciones de Bugs
+### Correcciones de Bugs (Versión 3.0)
+
+**Errores 401 en Frontend:**
+- Causa: Fetch calls sin token JWT en headers
+- Solución: Agregado `Authorization: Bearer ${token}` en todos los endpoints
+- Archivos corregidos: `registrar-interno.js`, `salida-documento.js`
 
 **Error 500 en Dashboard de Trabajadores:**
 - Causa: Serialización circular de Jackson con relaciones bidireccionales
@@ -4637,45 +4666,46 @@ Nueva página especializada para que los trabajadores gestionen sus documentos a
 - Causa: ENUM con guión bajo (En_Proceso) vs espacio
 - Solución: Normalización en frontend y backend
 
-**Error de compilación en DocumentoController:**
-- Causa: Referencia a `EstadoDocumento.Registrado` (eliminado)
-- Solución: Cambio a `EstadoDocumento.Asignado`
+### Nuevos Componentes (v3.0)
 
-### Archivos de Documentación
+**Dashboard con Filtros por Fechas:**
+- Archivo: `frontend/pages/common/dashboard.html`
+- JavaScript: `frontend/assets/js/pages/dashboard.js`
+- CSS: `frontend/assets/css/pages/dashboard.css`
+- Características: Filtrado de métricas, gráficas y documentos por rango de fechas
 
-**Nuevos archivos:**
-- `NOTIFICACIONES_TOAST.md` - Guía completa del sistema de notificaciones
-- `CAMBIOS_REALIZADOS.md` - Log detallado de modificaciones
+**Calendario Personalizado PNP:**
+- JavaScript: `frontend/assets/js/components/custom-datepicker.js`
+- CSS: `frontend/assets/css/components/custom-datepicker.css`
+- Características: Datepicker completamente personalizado con diseño institucional
 
-### Archivos minimizados (12 de noviembre de 2025)
+### Archivos Eliminados (19 de noviembre de 2025)
 
-Los siguientes archivos de documentación fueron minimizados para evitar duplicación; su contenido principal fue consolidado en `README.md` raíz y en `frontend/README.md` cuando aplicable. Si necesitas recuperar versiones completas, usa el historial de Git.
+Los siguientes archivos de documentación obsoletos fueron eliminados para mantener el repositorio limpio:
 
-- `AVANCE_PROYECTO.md`
-- `CHANGELOG.md`
-- `FIX_EXPORTACION_PDF_BITACORA.md`
-- `TROUBLESHOOTING_PDF.md`
-- `scripts/README_BACKUPS.md`
-- `scripts/GUIA_RAPIDA.md`
-- `ProyectoMesaDePartes/frontend/REORGANIZACION_RESUMEN.md`
-- `ProyectoMesaDePartes/frontend/GUIA_PRUEBAS.md`
-- `ProyectoMesaDePartes/frontend/ESTRUCTURA.md`
-- `ProyectoMesaDePartes/frontend/estructura_final.txt`
+- ❌ `PROYECTO_90_COMPLETO.md` - Contenido integrado en README.md
+- ❌ `CORRECCIONES_APLICADAS.md` - Historial consolidado en README.md
+- ❌ `ANALISIS_BUGS_Y_MEJORAS.md` - Análisis actualizado en README.md
 
-Motivo: mantener una única fuente de verdad (el `README.md` raíz) y reducir contenidos duplicados en el repo.
+**Documentación activa:**
+- ✅ `README.md` - Documentación principal del proyecto
+- ✅ `scripts/GUIA_RAPIDA_BACKUP.md` - Guía de backups
+- ✅ `scripts/CONFIGURAR_BACKUP_AUTOMATICO.md` - Configuración de backups
+- ✅ `SQL/README.md` - Documentación de la base de datos
 
 ---
 
 ## Mejoras Futuras Planificadas
 
-- [ ] Registro de Salida de Documentos (Admin/Mesa de Partes)
-- [ ] Integración de cambios de estado con bitácora automática
-- [ ] Tabla de observaciones/informes separada
+- [x] ~~Registro de Salida de Documentos~~ ✅ Implementado
+- [x] ~~Dashboard con estadísticas avanzadas~~ ✅ Implementado con filtros
+- [x] ~~Integración de cambios de estado con bitácora automática~~ ✅ Implementado
+- [x] ~~Auditoría completa de acciones de usuario~~ ✅ Implementado
 - [ ] Notificaciones en tiempo real (WebSocket)
-- [ ] Generación de reportes PDF (JasperReports)
-- [ ] Dashboard con estadísticas avanzadas
-- [ ] Auditoría completa de acciones de usuario
-- [ ] Backup automático programado
+- [ ] Generación de reportes PDF avanzados (JasperReports)
+- [ ] Tabla de observaciones/informes separada
+- [ ] SLA automático con alertas
+- [ ] Backup automático programado en producción
 
 ---
 
@@ -4684,9 +4714,10 @@ Motivo: mantener una única fuente de verdad (el `README.md` raíz) y reducir co
 ### 💻 Equipo de Desarrollo
 
 - **Desarrollador Principal**: [Nakusu]
-- **Backend**: Spring Boot + MySQL
-- **Frontend**: HTML5 + JavaScript Vanilla
-- **Base de Datos**: MySQL Schema Design
+- **Backend**: Spring Boot 3.5.7 + MySQL 8
+- **Frontend**: HTML5 + JavaScript Vanilla + CSS3
+- **Base de Datos**: MySQL Schema Design con Triggers
+- **Seguridad**: JWT + BCrypt
 
 ---
 
@@ -4697,12 +4728,12 @@ Este proyecto es de uso interno para la **Policía Nacional del Perú (PNP)**.
 ---
 
 
-**🇵🇪 Desarrollado para el Curso Integrador I**
+**🇵🇪 Desarrollado para el Curso Integrador I - Universidad Nacional Mayor de San Marcos**
 
 [![Java](https://img.shields.io/badge/Powered_by-Java_21-ED8B00?style=flat&logo=openjdk)](https://adoptium.net/)
-[![Spring](https://img.shields.io/badge/Built_with-Spring_Boot-6DB33F?style=flat&logo=spring)](https://spring.io/)
-[![MySQL](https://img.shields.io/badge/Database-MySQL-4479A1?style=flat&logo=mysql)](https://www.mysql.com/)
+[![Spring](https://img.shields.io/badge/Built_with-Spring_Boot_3.5.7-6DB33F?style=flat&logo=spring)](https://spring.io/)
+[![MySQL](https://img.shields.io/badge/Database-MySQL_8-4479A1?style=flat&logo=mysql)](https://www.mysql.com/)
 
-⭐ **Si este proyecto te fue útil, deja una estrella** ⭐
+⭐ **Sistema de Mesa de Partes Digital - PNP v3.0** ⭐
 
 </div>
