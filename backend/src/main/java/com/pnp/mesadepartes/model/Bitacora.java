@@ -18,11 +18,7 @@ public class Bitacora {
     @Column(name = "ID_bitacora")
     private Long idBitacora;
     
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_operacion", nullable = false)
-    private TipoOperacion tipoOperacion;
-    
-    @Column(name = "ID_documento", nullable = false)
+    @Column(name = "ID_documento", nullable = false, unique = true)
     private Long idDocumento;
     
     @Column(name = "codigo_documento", nullable = false, length = 50)
@@ -34,40 +30,61 @@ public class Bitacora {
     @Column(name = "tipo_documento", length = 100)
     private String tipoDocumento;
     
+    // ========== DATOS DE ENTRADA ==========
+    @Column(name = "tiene_entrada", nullable = false)
+    private Boolean tieneEntrada = false;
+    
     @Column(name = "remitente", length = 200)
     private String remitente;
+    
+    @Column(name = "fecha_entrada")
+    private LocalDateTime fechaEntrada;
+    
+    @Column(name = "usuario_entrada", length = 200)
+    private String usuarioEntrada;
+    
+    @Column(name = "numero_documento_entrada", length = 100)
+    private String numeroDocumentoEntrada;
+    
+    @Column(name = "archivo_entrada_url", length = 255)
+    private String archivoEntradaUrl;
+    
+    // ========== DATOS DE SALIDA ==========
+    @Column(name = "tiene_salida", nullable = false)
+    private Boolean tieneSalida = false;
     
     @Column(name = "destinatario", length = 200)
     private String destinatario;
     
-    @Column(name = "fecha_operacion", nullable = false)
-    private LocalDateTime fechaOperacion;
+    @Column(name = "fecha_salida")
+    private LocalDateTime fechaSalida;
     
-    @Column(name = "ID_usuario_operacion")
-    private Long idUsuarioOperacion;
+    @Column(name = "usuario_salida", length = 200)
+    private String usuarioSalida;
     
-    @Column(name = "usuario_nombre", length = 200)
-    private String usuarioNombre;
+    @Column(name = "numero_documento_salida", length = 100)
+    private String numeroDocumentoSalida;
     
-    @Column(name = "numero_documento", length = 100)
-    private String numeroDocumento;
+    @Column(name = "observaciones_salida", columnDefinition = "TEXT")
+    private String observacionesSalida;
     
-    @Column(name = "observaciones", columnDefinition = "TEXT")
-    private String observaciones;
-    
-    @Column(name = "archivo_url", length = 255)
-    private String archivoUrl;
+    @Column(name = "archivo_salida_url", length = 255)
+    private String archivoSalidaUrl;
     
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
     
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+    
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
     
-    public enum TipoOperacion {
-        ENTRADA,
-        SALIDA
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }

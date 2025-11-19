@@ -50,17 +50,16 @@ public class BitacoraController {
     @GetMapping("/filtrar")
     @PreAuthorize("hasAnyRole('Administrador', 'Jefatura')")
     public ResponseEntity<Map<String, Object>> filtrarBitacora(
-            @RequestParam(required = false) String tipoOperacion,
-            @RequestParam(required = false) Long idUsuario,
+            @RequestParam(required = false) Boolean tieneEntrada,
+            @RequestParam(required = false) Boolean tieneSalida,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         
         Pageable pageable = PageRequest.of(page, size);
-        Bitacora.TipoOperacion tipo = tipoOperacion != null ? Bitacora.TipoOperacion.valueOf(tipoOperacion) : null;
         
-        Page<Bitacora> bitacoraPage = bitacoraService.buscarConFiltros(tipo, idUsuario, fechaInicio, fechaFin, pageable);
+        Page<Bitacora> bitacoraPage = bitacoraService.buscarConFiltros(tieneEntrada, tieneSalida, fechaInicio, fechaFin, pageable);
         
         Map<String, Object> response = new HashMap<>();
         response.put("content", bitacoraPage.getContent());
@@ -86,8 +85,8 @@ public class BitacoraController {
      */
     @GetMapping("/documento/id/{idDocumento}")
     @PreAuthorize("hasAnyRole('Administrador', 'Jefatura', 'Mesa de Partes')")
-    public ResponseEntity<List<Bitacora>> obtenerPorIdDocumento(@PathVariable Long idDocumento) {
-        List<Bitacora> bitacora = bitacoraService.buscarPorIdDocumento(idDocumento);
+    public ResponseEntity<Bitacora> obtenerPorIdDocumento(@PathVariable Long idDocumento) {
+        Bitacora bitacora = bitacoraService.buscarPorIdDocumento(idDocumento);
         return ResponseEntity.ok(bitacora);
     }
     

@@ -22,14 +22,28 @@ public class BitacoraService {
      * Obtener todas las entradas de bitácora con paginación
      */
     public Page<Bitacora> obtenerTodos(Pageable pageable) {
-        return bitacoraRepository.findAllByOrderByFechaOperacionDesc(pageable);
+        return bitacoraRepository.findAllByOrderByFechaDesc(pageable);
     }
     
     /**
-     * Buscar bitácora por tipo de operación
+     * Buscar bitácora con entrada
      */
-    public Page<Bitacora> buscarPorTipoOperacion(Bitacora.TipoOperacion tipoOperacion, Pageable pageable) {
-        return bitacoraRepository.findByTipoOperacion(tipoOperacion, pageable);
+    public Page<Bitacora> buscarConEntrada(Pageable pageable) {
+        return bitacoraRepository.findAllWithEntrada(pageable);
+    }
+    
+    /**
+     * Buscar bitácora con salida
+     */
+    public Page<Bitacora> buscarConSalida(Pageable pageable) {
+        return bitacoraRepository.findAllWithSalida(pageable);
+    }
+    
+    /**
+     * Buscar bitácora sin salida (pendientes)
+     */
+    public Page<Bitacora> buscarSinSalida(Pageable pageable) {
+        return bitacoraRepository.findAllSinSalida(pageable);
     }
     
     /**
@@ -42,7 +56,7 @@ public class BitacoraService {
     /**
      * Buscar bitácora por ID de documento
      */
-    public List<Bitacora> buscarPorIdDocumento(Long idDocumento) {
+    public Bitacora buscarPorIdDocumento(Long idDocumento) {
         return bitacoraRepository.findByIdDocumento(idDocumento);
     }
     
@@ -50,26 +64,19 @@ public class BitacoraService {
      * Buscar bitácora por rango de fechas
      */
     public Page<Bitacora> buscarPorRangoFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin, Pageable pageable) {
-        return bitacoraRepository.findByFechaOperacionBetween(fechaInicio, fechaFin, pageable);
-    }
-    
-    /**
-     * Buscar bitácora por usuario
-     */
-    public Page<Bitacora> buscarPorUsuario(Long idUsuario, Pageable pageable) {
-        return bitacoraRepository.findByIdUsuarioOperacion(idUsuario, pageable);
+        return bitacoraRepository.findByFechaEntradaBetween(fechaInicio, fechaFin, pageable);
     }
     
     /**
      * Búsqueda avanzada con múltiples filtros
      */
     public Page<Bitacora> buscarConFiltros(
-            Bitacora.TipoOperacion tipoOperacion,
-            Long idUsuario,
+            Boolean tieneEntrada,
+            Boolean tieneSalida,
             LocalDateTime fechaInicio,
             LocalDateTime fechaFin,
             Pageable pageable) {
-        return bitacoraRepository.buscarConFiltros(tipoOperacion, idUsuario, fechaInicio, fechaFin, pageable);
+        return bitacoraRepository.buscarConFiltros(tieneEntrada, tieneSalida, fechaInicio, fechaFin, pageable);
     }
     
     /**
@@ -81,7 +88,8 @@ public class BitacoraService {
     }
     
     /**
-     * Registrar salida de documento en bitácora
+     * Registrar o actualizar salida de documento en bitácora
+     * Este método busca el registro existente y actualiza la información de salida
      */
     public Bitacora registrarSalida(
             Long idDocumento,
@@ -95,19 +103,34 @@ public class BitacoraService {
             Long idUsuario,
             String nombreUsuario) {
         
-        Bitacora bitacora = new Bitacora();
-        bitacora.setTipoOperacion(Bitacora.TipoOperacion.SALIDA);
-        bitacora.setIdDocumento(idDocumento);
-        bitacora.setCodigoDocumento(codigoDocumento);
-        bitacora.setTituloDocumento(tituloDocumento);
-        bitacora.setTipoDocumento(tipoDocumento);
-        bitacora.setDestinatario(destinatario);
-        bitacora.setNumeroDocumento(numeroDocumentoSalida);
-        bitacora.setObservaciones(observaciones);
-        bitacora.setArchivoUrl(archivoUrl);
-        bitacora.setFechaOperacion(LocalDateTime.now());
-        bitacora.setIdUsuarioOperacion(idUsuario);
-        bitacora.setUsuarioNombre(nombreUsuario);
+        // Buscar registro existente
+        Bitacora bitacora = bitacoraRepository.findByIdDocumento(idDocumento);
+        
+        if (bitacora != null) {
+            // Actualizar con información de salida
+            bitacora.setTieneSalida(true);
+            bitacora.setDestinatario(destinatario);
+            bitacora.setFechaSalida(LocalDateTime.now());
+            bitacora.setUsuarioSalida(nombreUsuario);
+            bitacora.setNumeroDocumentoSalida(numeroDocumentoSalida);
+            bitacora.setObservacionesSalida(observaciones);
+            bitacora.setArchivoSalidaUrl(archivoUrl);
+        } else {
+            // Crear nuevo registro solo con salida
+            bitacora = new Bitacora();
+            bitacora.setIdDocumento(idDocumento);
+            bitacora.setCodigoDocumento(codigoDocumento);
+            bitacora.setTituloDocumento(tituloDocumento);
+            bitacora.setTipoDocumento(tipoDocumento);
+            bitacora.setTieneEntrada(false);
+            bitacora.setTieneSalida(true);
+            bitacora.setDestinatario(destinatario);
+            bitacora.setFechaSalida(LocalDateTime.now());
+            bitacora.setUsuarioSalida(nombreUsuario);
+            bitacora.setNumeroDocumentoSalida(numeroDocumentoSalida);
+            bitacora.setObservacionesSalida(observaciones);
+            bitacora.setArchivoSalidaUrl(archivoUrl);
+        }
         
         return bitacoraRepository.save(bitacora);
     }

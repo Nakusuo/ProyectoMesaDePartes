@@ -215,110 +215,86 @@ function mostrarDocumentos(registros) {
         return;
     }
     
-    // Agrupar registros por idDocumento
-    const documentosAgrupados = agruparPorDocumento(registros);
-    
-    tableBody.innerHTML = documentosAgrupados.map(grupo => {
-        const fecha = formatearFecha(grupo.fechaOperacion);
+    tableBody.innerHTML = registros.map(reg => {
+        // Determinar fecha más reciente
+        const fecha = reg.fechaSalida ? formatearFecha(reg.fechaSalida) : formatearFecha(reg.fechaEntrada);
         
         // Construir badges de tipo de operación
         let tiposOperacion = '';
-        if (grupo.tieneEntrada && grupo.tieneSalida) {
+        if (reg.tieneEntrada && reg.tieneSalida) {
             tiposOperacion = '<span style="color: #28a745; font-weight: bold;">📥 ENTRADA</span> + <span style="color: #dc3545; font-weight: bold;">📤 SALIDA</span>';
-        } else if (grupo.tieneEntrada) {
-            tiposOperacion = '<span style="color: #28a745; font-weight: bold;">📥 ENTRADA</span>';
-        } else {
-            tiposOperacion = '<span style="color: #dc3545; font-weight: bold;">📤 SALIDA</span>';
+        } else if (reg.tieneEntrada) {
+            tiposOperacion = '<span style="color: #28a745; font-weight: bold;">📥 ENTRADA</span><br><small style="color: #999;">Sin salida</small>';
+        } else if (reg.tieneSalida) {
+            tiposOperacion = '<span style="color: #dc3545; font-weight: bold;">📤 SALIDA</span><br><small style="color: #999;">Sin entrada</small>';
         }
         
-        const usuario = grupo.usuarioNombre || 'Sin usuario';
-        const tipo = grupo.tipoDocumento || 'N/A';
-        const archivoLink = grupo.archivoUrl 
-            ? `<br>📎 <a href="http://localhost:8080${grupo.archivoUrl}" target="_blank">Ver archivo</a>` 
-            : '';
+        // Construir información del usuario
+        let usuarioInfo = '';
+        if (reg.tieneEntrada && reg.tieneSalida) {
+            usuarioInfo = `<strong>Entrada:</strong> ${reg.usuarioEntrada || 'N/A'}<br><strong>Salida:</strong> ${reg.usuarioSalida || 'N/A'}`;
+        } else if (reg.tieneEntrada) {
+            usuarioInfo = reg.usuarioEntrada || 'Sin usuario';
+        } else {
+            usuarioInfo = reg.usuarioSalida || 'Sin usuario';
+        }
+        
+        const tipo = reg.tipoDocumento || 'N/A';
         
         // Construir información de remitente/destinatario
         let infoParticipantes = '';
-        if (grupo.remitente && grupo.destinatario) {
-            infoParticipantes = `<strong>Remitente:</strong> ${grupo.remitente}<br><strong>Destinatario:</strong> ${grupo.destinatario}`;
-        } else if (grupo.remitente) {
-            infoParticipantes = `<strong>Remitente:</strong> ${grupo.remitente}`;
-        } else if (grupo.destinatario) {
-            infoParticipantes = `<strong>Destinatario:</strong> ${grupo.destinatario}`;
+        if (reg.remitente && reg.destinatario) {
+            infoParticipantes = `<strong>Remitente:</strong> ${reg.remitente}<br><strong>Destinatario:</strong> ${reg.destinatario}`;
+        } else if (reg.remitente) {
+            infoParticipantes = `<strong>Remitente:</strong> ${reg.remitente}`;
+        } else if (reg.destinatario) {
+            infoParticipantes = `<strong>Destinatario:</strong> ${reg.destinatario}`;
         } else {
-            infoParticipantes = '<strong>Sin información</strong>';
+            infoParticipantes = '<em style="color: #999;">Sin información</em>';
+        }
+        
+        // Construir información de números de documento
+        let numerosDoc = '';
+        if (reg.numeroDocumentoEntrada && reg.numeroDocumentoSalida) {
+            numerosDoc = `<strong>N° Entrada:</strong> ${reg.numeroDocumentoEntrada}<br><strong>N° Salida:</strong> ${reg.numeroDocumentoSalida}`;
+        } else if (reg.numeroDocumentoEntrada) {
+            numerosDoc = `<strong>N° Doc:</strong> ${reg.numeroDocumentoEntrada}`;
+        } else if (reg.numeroDocumentoSalida) {
+            numerosDoc = `<strong>N° Doc:</strong> ${reg.numeroDocumentoSalida}`;
+        } else {
+            numerosDoc = '<em style="color: #999;">Sin número</em>';
+        }
+        
+        // Construir enlaces de archivos
+        let archivosLinks = '';
+        if (reg.archivoEntradaUrl) {
+            archivosLinks += `📎 <a href="http://localhost:8080${reg.archivoEntradaUrl}" target="_blank">Ver archivo entrada</a>`;
+        }
+        if (reg.archivoSalidaUrl) {
+            if (archivosLinks) archivosLinks += '<br>';
+            archivosLinks += `📎 <a href="http://localhost:8080${reg.archivoSalidaUrl}" target="_blank">Ver cargo salida</a>`;
         }
         
         return `
             <tr>
                 <td>${fecha}</td>
                 <td>${tiposOperacion}</td>
-                <td><strong>${usuario}</strong></td>
+                <td>${usuarioInfo}</td>
                 <td>${tipo}</td>
-                <td><strong>${grupo.codigoDocumento}</strong></td>
+                <td><strong>${reg.codigoDocumento}</strong></td>
                 <td>
-                    <strong>Título:</strong> ${grupo.tituloDocumento}<br>
+                    <strong>Título:</strong> ${reg.tituloDocumento}<br>
                     ${infoParticipantes}<br>
-                    <strong>N° Doc:</strong> ${grupo.numeroDocumento || 'N/A'}
-                    ${archivoLink}
+                    ${numerosDoc}
+                    ${archivosLinks ? '<br>' + archivosLinks : ''}
                 </td>
-                <td>${grupo.observaciones || '-'}</td>
+                <td>${reg.observacionesSalida || '-'}</td>
             </tr>
         `;
     }).join('');
 }
 
-// Función para agrupar registros por documento
-function agruparPorDocumento(registros) {
-    const mapaDocumentos = new Map();
-    
-    registros.forEach(reg => {
-        const key = reg.idDocumento;
-        
-        if (!mapaDocumentos.has(key)) {
-            // Crear entrada nueva con los datos del primer registro
-            mapaDocumentos.set(key, {
-                idDocumento: reg.idDocumento,
-                codigoDocumento: reg.codigoDocumento,
-                tituloDocumento: reg.tituloDocumento,
-                tipoDocumento: reg.tipoDocumento,
-                numeroDocumento: reg.numeroDocumento,
-                usuarioNombre: reg.usuarioNombre,
-                fechaOperacion: reg.fechaOperacion,
-                archivoUrl: reg.archivoUrl,
-                observaciones: reg.observaciones,
-                remitente: null,
-                destinatario: null,
-                tieneEntrada: false,
-                tieneSalida: false
-            });
-        }
-        
-        const doc = mapaDocumentos.get(key);
-        
-        // Actualizar según el tipo de operación
-        if (reg.tipoOperacion === 'ENTRADA') {
-            doc.tieneEntrada = true;
-            if (reg.remitente) {
-                doc.remitente = reg.remitente;
-            }
-        } else if (reg.tipoOperacion === 'SALIDA') {
-            doc.tieneSalida = true;
-            if (reg.destinatario) {
-                doc.destinatario = reg.destinatario;
-            }
-        }
-        
-        // Actualizar fecha con la más reciente
-        if (new Date(reg.fechaOperacion) > new Date(doc.fechaOperacion)) {
-            doc.fechaOperacion = reg.fechaOperacion;
-        }
-    });
-    
-    // Convertir el mapa a array y ordenar por fecha descendente
-    return Array.from(mapaDocumentos.values())
-        .sort((a, b) => new Date(b.fechaOperacion) - new Date(a.fechaOperacion));
-}
+// Eliminar la función agruparPorDocumento ya no es necesaria
 
 // Función para inicializar eventos de filtros
 function inicializarEventos() {
