@@ -126,50 +126,61 @@ cp .env.example .env
 
 #### 3️⃣ Crear y Configurar Base de Datos
 ```bash
-# Iniciar MySQL
-mysql -u root -p
+# Windows (CMD)
+"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u root -proot < SQL\mesa_partes_db_completa_actualizada.sql
 
-# Ejecutar script SQL completo
-mysql -u root -p < SQL/mesa_partes_db_completa_con_funcionalidades.sql
+# Linux/Mac
+mysql -u root -p < SQL/mesa_partes_db_completa_actualizada.sql
 
 # Verificar que la BD se creó correctamente
-mysql -u root -p -e "USE mesa_partes_db; SHOW TABLES;"
+mysql -u root -proot mesa_partes_db -e "SELECT COUNT(*) AS total_documentos FROM documentos;"
 ```
 
 #### 4️⃣ Compilar y Ejecutar Backend
 ```bash
 cd backend
 
-# Opción 1: Usando Maven Wrapper (recomendado)
+# Windows
+start-app.bat
+
+# Linux/Mac
 ./mvnw spring-boot:run
 
-# Opción 2: Usando Maven instalado
-mvn spring-boot:run
-
 # El backend estará disponible en: http://localhost:8080
+# Verifica que esté funcionando: http://localhost:8080/actuator/health
 ```
 
-#### 5️⃣ Abrir Frontend
+#### 5️⃣ Ejecutar Frontend
 ```bash
-# Opción 1: Con Live Server (VS Code)
-# Instalar extensión "Live Server"
-# Click derecho en frontend/pages/auth/login.html > "Open with Live Server"
-# URL: http://localhost:5500/frontend/pages/auth/login.html
+cd frontend
 
-# Opción 2: Abrir directamente en navegador
-# Abrir: frontend/pages/auth/login.html
+# Instalar y ejecutar Live Server
+npx live-server --port=5500 --no-browser
+
+# El frontend estará disponible en: http://127.0.0.1:5500/pages/auth/login.html
 ```
 
 #### 🔑 Credenciales por Defecto
 ```
 Usuario Administrador:
-Email: admin@pnp.gob.pe
-Password: admin123
-
-Usuario de Prueba:
 Username: nakusu
 Password: 123456
+
+Usuario Mesa de Partes:
+Username: accori
+Password: 123456
+
+Todos los usuarios: password = 123456
 ```
+
+#### ✅ Verificación del Sistema
+
+Después de iniciar backend y frontend, verifica:
+
+1. **Backend corriendo** → http://localhost:8080/actuator/health debe mostrar `{"status":"UP"}`
+2. **Frontend accesible** → http://127.0.0.1:5500/pages/auth/login.html
+3. **Login funcional** → Inicia sesión con `nakusu` / `123456`
+4. **Bitácora unificada** → Accede a Admin → Bitácora y verifica que cada documento aparece UNA SOLA VEZ
 
 ---
 
@@ -189,13 +200,15 @@ Password: 123456
 | **RF08** | Gestionar áreas/dependencias | 🟡 Media | ✅ Cumplido | 100% | CRUD de áreas + Departamentos PNP precargados |
 | **RF09** | Generar reportes y estadísticas | 🟡 Media | ✅ Cumplido | 100% | Dashboard con gráficas + filtros por fechas |
 | **RF10** | Registrar documentos internos | 🟡 Media | ✅ Cumplido | 100% | Documentos generados por usuarios internos |
-| **RF11** | Auditoría de operaciones (Bitácora) | 🔴 Alta | ✅ Cumplido | 100% | Triggers automáticos para ENTRADA/SALIDA de documentos |
+| **RF11** | Auditoría de operaciones (Bitácora) | 🔴 Alta | ✅ Cumplido | 100% | **Bitácora UNIFICADA**: Un solo registro por documento con entrada + salida |
 | **RF12** | Búsqueda avanzada de documentos | 🟢 Baja | ✅ Cumplido | 100% | Por código, título, remitente, fecha |
 | **RF13** | Calendario personalizado para filtros | 🟢 Baja | ✅ Cumplido | 100% | Datepicker con diseño institucional PNP |
 
 **Cumplimiento RF:** ✅ **13/13** = **100%**
 
 > **📌 Nota sobre RF06 (Notificaciones):** El sistema de notificaciones **in-app** está 100% funcional. Los usuarios ven documentos pendientes al acceder a la página "Mis Documentos". No se implementará envío de emails porque el flujo de trabajo interno no lo requiere - los usuarios ya inician sesión diariamente para trabajar. Ver [justificación completa](#2--rf06-sistema-de-notificaciones---completado).
+
+> **🆕 Actualización RF11 (Bitácora):** Se rediseñó completamente el sistema de bitácora para **eliminar duplicación de documentos**. Ahora cada documento tiene **UN SOLO REGISTRO** que muestra tanto entrada como salida en la misma fila. El trigger actualiza el registro existente en lugar de crear uno nuevo. Ver [detalles técnicos](#-bitácora-unificada---mejora-crítica).
 
 ---
 
@@ -1324,7 +1337,231 @@ GET /api/derivaciones/area/{idArea}     // Derivaciones pendientes por área
 
 **Conclusión:** ✅ El requerimiento de "notificar a usuarios" está **100% cumplido** mediante notificaciones in-app. Los emails no agregan valor al flujo de trabajo interno de la institución.
 
-#### 3. ⚠️ **RF05: Agregar cálculo de tiempos de atención (SLA)**
+#### 3. ✅ **RF11: Bitácora Unificada - MEJORA CRÍTICA**
+**Estado:** ✅ **COMPLETADO Y OPTIMIZADO**  
+**Fecha de implementación:** 19 de noviembre de 2025
+
+**Problema identificado:**
+El sistema original de bitácora creaba **dos registros separados** por cada documento:
+- 1 registro para ENTRADA (al registrar el documento)
+- 1 registro para SALIDA (al procesar la salida)
+
+Esto causaba **duplicación visual** en la interfaz, mostrando el mismo documento dos veces.
+
+**Solución implementada:**
+Se rediseñó completamente el sistema de bitácora para usar un **modelo unificado** donde cada documento tiene **UN SOLO REGISTRO** que contiene tanto la información de entrada como de salida.
+
+**Cambios en la base de datos:**
+
+```sql
+-- ANTES: Dos registros por documento
+CREATE TABLE bitacora (
+    ID_bitacora BIGINT PRIMARY KEY AUTO_INCREMENT,
+    ID_documento INT UNSIGNED NOT NULL,
+    tipo_operacion ENUM('ENTRADA', 'SALIDA'),  -- ❌ Duplica documentos
+    fecha_operacion DATETIME,
+    usuario_operacion VARCHAR(200),
+    -- ...
+);
+
+-- DESPUÉS: Un registro por documento con entrada Y salida
+CREATE TABLE bitacora (
+    ID_bitacora BIGINT PRIMARY KEY AUTO_INCREMENT,
+    ID_documento INT UNSIGNED NOT NULL UNIQUE,  -- ✅ UNIQUE constraint
+    
+    -- Datos de ENTRADA
+    tiene_entrada BOOLEAN DEFAULT FALSE,
+    remitente VARCHAR(200),
+    fecha_entrada DATETIME,
+    usuario_entrada VARCHAR(200),
+    numero_documento_entrada VARCHAR(100),
+    archivo_entrada_url VARCHAR(255),
+    
+    -- Datos de SALIDA
+    tiene_salida BOOLEAN DEFAULT FALSE,
+    destinatario VARCHAR(200),
+    fecha_salida DATETIME,
+    usuario_salida VARCHAR(200),
+    numero_documento_salida VARCHAR(100),
+    observaciones_salida TEXT,
+    archivo_salida_url VARCHAR(255),
+    
+    updated_at DATETIME ON UPDATE CURRENT_TIMESTAMP
+);
+```
+
+**Triggers corregidos:**
+
+```sql
+-- Trigger 1: Registra ENTRADA (INSERT nuevo registro)
+CREATE TRIGGER trg_bitacora_entrada_documento
+AFTER INSERT ON documentos
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora (
+        ID_documento, tiene_entrada, remitente, 
+        fecha_entrada, usuario_entrada, ...
+    ) SELECT NEW.ID_documento, TRUE, NEW.remitente, ...;
+END;
+
+-- Trigger 2: Actualiza con SALIDA (UPDATE registro existente)
+CREATE TRIGGER trg_bitacora_salida_documento
+AFTER INSERT ON salidas_documento
+FOR EACH ROW
+BEGIN
+    DECLARE existe_registro INT;
+    SELECT COUNT(*) INTO existe_registro 
+    FROM bitacora WHERE ID_documento = NEW.ID_documento;
+    
+    IF existe_registro > 0 THEN
+        -- ✅ Actualiza el registro existente
+        UPDATE bitacora SET
+            tiene_salida = TRUE,
+            destinatario = NEW.destinatario_salida,
+            fecha_salida = NEW.fecha_salida,
+            ...
+        WHERE ID_documento = NEW.ID_documento;
+    ELSE
+        -- Crea registro solo con salida (caso excepcional)
+        INSERT INTO bitacora (...) VALUES (...);
+    END IF;
+END;
+```
+
+**Cambios en el backend (Java):**
+
+```java
+// Bitacora.java - Modelo actualizado
+@Entity
+@Table(name = "bitacora")
+public class Bitacora {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idBitacora;
+    
+    @Column(unique = true, nullable = false)
+    private Integer idDocumento;  // ✅ UNIQUE
+    
+    // Campos de ENTRADA
+    private Boolean tieneEntrada;
+    private String remitente;
+    private LocalDateTime fechaEntrada;
+    
+    // Campos de SALIDA
+    private Boolean tieneSalida;
+    private String destinatario;
+    private LocalDateTime fechaSalida;
+    
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+}
+
+// BitacoraRepository.java - Consultas actualizadas
+@Repository
+public interface BitacoraRepository extends JpaRepository<Bitacora, Long> {
+    Optional<Bitacora> findByIdDocumento(Integer idDocumento);  // ✅ Retorna único
+    List<Bitacora> findAllByOrderByFechaEntradaDesc();
+    List<Bitacora> findByTieneEntradaTrue();
+    List<Bitacora> findByTieneSalidaTrue();
+    List<Bitacora> findByTieneEntradaTrueAndTieneSalidaFalse();  // Solo entrada
+}
+
+// BitacoraService.java - Lógica de actualización
+public void registrarSalida(SalidaDocumento salida) {
+    Optional<Bitacora> bitacoraOpt = 
+        bitacoraRepository.findByIdDocumento(salida.getIdDocumento());
+    
+    if (bitacoraOpt.isPresent()) {
+        // ✅ Actualiza registro existente
+        Bitacora bitacora = bitacoraOpt.get();
+        bitacora.setTieneSalida(true);
+        bitacora.setDestinatario(salida.getDestinatarioSalida());
+        bitacora.setFechaSalida(salida.getFechaSalida());
+        // ...
+        bitacoraRepository.save(bitacora);
+    } else {
+        // Crea nuevo registro (caso excepcional)
+        // ...
+    }
+}
+```
+
+**Cambios en el frontend (JavaScript):**
+
+```javascript
+// bitacora.js - Vista unificada
+function mostrarDocumentos(documentos) {
+    documentos.forEach(doc => {
+        const badge = doc.tiene_entrada && doc.tiene_salida
+            ? '<span class="badge-entrada-salida">📥 ENTRADA + 📤 SALIDA</span>'
+            : '<span class="badge-entrada">📥 ENTRADA - Sin salida</span>';
+        
+        const html = `
+            <tr>
+                <td>${doc.codigo_documento}</td>
+                <td>${badge}</td>
+                <td>${doc.remitente || '-'}</td>
+                <td>${doc.destinatario || '-'}</td>
+                <td>${doc.numero_documento_entrada || '-'}</td>
+                <td>${doc.numero_documento_salida || '-'}</td>
+                <td>
+                    ${doc.archivo_entrada_url ? 
+                        `<a href="${doc.archivo_entrada_url}">📎 Ver archivo</a>` : '-'}
+                </td>
+                <td>
+                    ${doc.archivo_salida_url ? 
+                        `<a href="${doc.archivo_salida_url}">📎 Ver cargo</a>` : '-'}
+                </td>
+            </tr>
+        `;
+    });
+}
+```
+
+**Resultados:**
+
+| Aspecto | Antes | Después |
+|---------|-------|---------|
+| **Registros por documento** | 2 (duplicado) | 1 (unificado) ✅ |
+| **Vista en interfaz** | Documento aparece 2 veces | Documento aparece 1 vez ✅ |
+| **Estructura BD** | Tabla con enum tipo_operacion | Tabla con boolean flags ✅ |
+| **Triggers** | 2 INSERT separados | 1 INSERT + 1 UPDATE ✅ |
+| **Consultas** | Require JOIN o GROUP BY | Consulta directa ✅ |
+| **Performance** | Más queries | Menos queries ✅ |
+
+**Archivos modificados:**
+- ✅ `SQL/mesa_partes_db_completa_actualizada.sql` - Script unificado
+- ✅ `SQL/fix_trigger_bitacora.sql` - Fix para trigger de salida
+- ✅ `backend/src/main/java/com/pnp/mesadepartes/model/Bitacora.java`
+- ✅ `backend/src/main/java/com/pnp/mesadepartes/repository/BitacoraRepository.java`
+- ✅ `backend/src/main/java/com/pnp/mesadepartes/service/BitacoraService.java`
+- ✅ `backend/src/main/java/com/pnp/mesadepartes/controller/BitacoraController.java`
+- ✅ `frontend/assets/js/pages/admin/bitacora.js`
+
+**Verificación:**
+```bash
+# 1. Ejecutar script actualizado
+mysql -u root -proot < SQL/mesa_partes_db_completa_actualizada.sql
+
+# 2. Verificar estructura
+mysql -u root -proot mesa_partes_db -e "DESCRIBE bitacora;"
+
+# 3. Comprobar registros únicos
+mysql -u root -proot mesa_partes_db -e "
+    SELECT COUNT(*) as total_registros,
+           SUM(tiene_entrada) as con_entrada,
+           SUM(tiene_salida) as con_salida
+    FROM bitacora;"
+
+# 4. Ver triggers activos
+mysql -u root -proot mesa_partes_db -e "SHOW TRIGGERS LIKE 'bitacora';"
+```
+
+**Conclusión:** ✅ Sistema de bitácora **completamente rediseñado y optimizado**. Elimina duplicación, mejora rendimiento y simplifica consultas.
+
+#### 4. ⚠️ **RF05: Agregar cálculo de tiempos de atención (SLA)**
 **Impacto:** ALTO - Reportes incompletos sin métricas de tiempo  
 **Esfuerzo:** 6 horas  
 **Pasos:**
@@ -4538,6 +4775,57 @@ kill -9 [PID]
 ```bash
 mkdir -p uploads/documentos
 ```
+
+---
+
+## 📝 Changelog
+
+### Versión 3.0 - 19 de Noviembre de 2025
+
+#### 🎯 Mejora Crítica: Sistema de Bitácora Unificada
+
+**Problema resuelto:** Eliminación de duplicación de documentos en bitácora
+
+**Cambios implementados:**
+
+1. **Base de datos rediseñada:**
+   - ✅ Nuevo constraint `UNIQUE` en `ID_documento` de tabla `bitacora`
+   - ✅ Campos separados para entrada (`tiene_entrada`, `remitente`, `fecha_entrada`, etc.)
+   - ✅ Campos separados para salida (`tiene_salida`, `destinatario`, `fecha_salida`, etc.)
+   - ✅ Campo `updated_at` con actualización automática
+
+2. **Triggers corregidos:**
+   - ✅ `trg_bitacora_entrada_documento` - INSERT nuevo registro con entrada
+   - ✅ `trg_bitacora_salida_documento` - UPDATE registro existente con salida
+   - ✅ Verificación de existencia antes de INSERT/UPDATE
+
+3. **Backend actualizado:**
+   - ✅ `Bitacora.java` - Modelo con estructura unificada
+   - ✅ `BitacoraRepository.java` - Consultas optimizadas (retorna `Optional<Bitacora>`)
+   - ✅ `BitacoraService.java` - Lógica de actualización inteligente
+   - ✅ `BitacoraController.java` - Endpoints adaptados
+
+4. **Frontend mejorado:**
+   - ✅ `bitacora.js` - Vista unificada con badges informativos
+   - ✅ Muestra "📥 ENTRADA + 📤 SALIDA" cuando tiene ambos
+   - ✅ Muestra "📥 ENTRADA - Sin salida" cuando solo tiene entrada
+   - ✅ Eliminada función `agruparPorDocumento()` (ya no necesaria)
+
+5. **Scripts SQL:**
+   - ✅ `mesa_partes_db_completa_actualizada.sql` - Script completo con bitácora unificada
+   - ✅ `fix_trigger_bitacora.sql` - Fix específico para trigger de salida
+
+**Resultado:**
+- ✅ Cada documento aparece **UNA SOLA VEZ** en la bitácora
+- ✅ Performance mejorada (menos consultas, sin GROUP BY)
+- ✅ Código más limpio y mantenible
+- ✅ Interfaz más clara para usuarios
+
+**Archivos modificados:** 8 archivos (4 backend, 1 frontend, 2 SQL, 1 README)
+
+---
+
+### Versión 2.1 - Noviembre 2025
 
 ---
 
