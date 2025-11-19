@@ -86,8 +86,8 @@ class PermissionsManager {
     redirectIfUnauthorized(currentPage) {
         if (!this.canAccessPage(currentPage)) {
             alert('No tiene permisos para acceder a esta página');
-            // Ruta absoluta al dashboard desde la raíz del servidor
-            window.location.replace('/pages/common/dashboard.html');
+            // Ruta relativa al dashboard
+            window.location.replace('../common/dashboard.html');
             return true;
         }
         return false;

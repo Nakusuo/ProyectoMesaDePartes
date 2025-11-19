@@ -46,7 +46,26 @@ class SidebarManager {
 
     async loadSidebar() {
         try {
-            const response = await fetch('/pages/common/sidebar.html');
+            // Detectar la ubicación actual y ajustar la ruta
+            const currentPath = window.location.pathname;
+            let sidebarPath = '/frontend/pages/common/sidebar.html';
+            
+            // Si estamos en Live Server o servidor local, ajustar la ruta
+            if (currentPath.includes('/pages/')) {
+                const depth = (currentPath.match(/\/pages\//g) || []).length;
+                if (depth === 1) {
+                    // Estamos en /pages/auth/ o /pages/common/
+                    sidebarPath = '../common/sidebar.html';
+                } else if (depth === 2) {
+                    // Estamos en /pages/documents/ o /pages/admin/
+                    sidebarPath = '../common/sidebar.html';
+                }
+            }
+            
+            const response = await fetch(sidebarPath);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             const sidebarHTML = await response.text();
             
             // Insertar el sidebar al inicio del body
@@ -56,7 +75,29 @@ class SidebarManager {
             this.mainContent = document.querySelector('.main-content');
         } catch (error) {
             console.error('Error loading sidebar:', error);
+            // Crear un sidebar mínimo en caso de error
+            this.createFallbackSidebar();
         }
+    }
+    
+    createFallbackSidebar() {
+        const fallbackHTML = `
+            <aside id="sidebar" class="sidebar">
+                <div class="sidebar-header">
+                    <h3>Mesa de Partes PNP</h3>
+                </div>
+                <nav class="sidebar-nav">
+                    <a href="../common/dashboard.html" class="nav-link">Dashboard</a>
+                    <a href="../documents/documentos.html" class="nav-link">Documentos</a>
+                </nav>
+                <div class="sidebar-footer">
+                    <button id="btn-logout" class="btn btn-secondary">Cerrar Sesión</button>
+                </div>
+            </aside>
+        `;
+        document.body.insertAdjacentHTML('afterbegin', fallbackHTML);
+        this.sidebar = document.getElementById('sidebar');
+        this.mainContent = document.querySelector('.main-content');
     }
 
     attachEventListeners() {
@@ -202,9 +243,18 @@ class SidebarManager {
             // Limpiar localStorage
             localStorage.removeItem('token');
             localStorage.removeItem('userInfo');
+            localStorage.removeItem('user');
+            
+            // Detectar ruta relativa al login
+            const currentPath = window.location.pathname;
+            let loginPath = '../auth/login.html';
+            
+            if (currentPath.includes('/auth/')) {
+                loginPath = 'login.html';
+            }
             
             // Redirigir al login
-            window.location.href = 'login.html';
+            window.location.href = loginPath;
         }
     }
 

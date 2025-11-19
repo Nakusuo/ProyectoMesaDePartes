@@ -35,7 +35,7 @@ const APP_CONFIG = {
     
     REQUEST_TIMEOUT: 30000,
     PUBLIC_PAGES: ['login.html', 'index.html'],
-    DEFAULT_DASHBOARD: '/pages/common/dashboard.html'
+    DEFAULT_DASHBOARD: '../../common/dashboard.html'
 };
 
 function getApiUrl(endpoint) {
@@ -58,3 +58,12 @@ function getAuthHeaders() {
     
     return headers;
 }
+
+// Hacer disponible globalmente para compatibilidad con código legacy
+window.APP_CONFIG = APP_CONFIG;
+window.API_URL = APP_CONFIG.API_BASE_URL + '/api'; // Agregar /api al final
+window.getApiUrl = getApiUrl;
+window.getAuthToken = getAuthToken;
+window.getAuthHeaders = getAuthHeaders;
+
+console.log('✅ Config cargado. API_URL:', window.API_URL);

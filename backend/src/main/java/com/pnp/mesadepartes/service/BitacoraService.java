@@ -79,4 +79,36 @@ public class BitacoraService {
         return bitacoraRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Registro de bitácora no encontrado"));
     }
+    
+    /**
+     * Registrar salida de documento en bitácora
+     */
+    public Bitacora registrarSalida(
+            Long idDocumento,
+            String codigoDocumento,
+            String tituloDocumento,
+            String tipoDocumento,
+            String destinatario,
+            String numeroDocumentoSalida,
+            String observaciones,
+            String archivoUrl,
+            Long idUsuario,
+            String nombreUsuario) {
+        
+        Bitacora bitacora = new Bitacora();
+        bitacora.setTipoOperacion(Bitacora.TipoOperacion.SALIDA);
+        bitacora.setIdDocumento(idDocumento);
+        bitacora.setCodigoDocumento(codigoDocumento);
+        bitacora.setTituloDocumento(tituloDocumento);
+        bitacora.setTipoDocumento(tipoDocumento);
+        bitacora.setDestinatario(destinatario);
+        bitacora.setNumeroDocumento(numeroDocumentoSalida);
+        bitacora.setObservaciones(observaciones);
+        bitacora.setArchivoUrl(archivoUrl);
+        bitacora.setFechaOperacion(LocalDateTime.now());
+        bitacora.setIdUsuarioOperacion(idUsuario);
+        bitacora.setUsuarioNombre(nombreUsuario);
+        
+        return bitacoraRepository.save(bitacora);
+    }
 }

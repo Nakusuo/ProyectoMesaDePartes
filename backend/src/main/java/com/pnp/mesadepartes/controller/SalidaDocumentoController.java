@@ -33,6 +33,7 @@ import com.pnp.mesadepartes.repository.DocumentoRepository;
 import com.pnp.mesadepartes.repository.SalidaDocumentoRepository;
 import com.pnp.mesadepartes.repository.TipoDocumentoRepository;
 import com.pnp.mesadepartes.repository.UsuarioRepository;
+import com.pnp.mesadepartes.service.BitacoraService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -50,6 +51,10 @@ public class SalidaDocumentoController {
     
     @Autowired
     private UsuarioRepository usuarioRepository;
+    
+    @Autowired
+    private BitacoraService bitacoraService;
+
 
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarSalida(@RequestBody Map<String, Object> request) {
@@ -97,6 +102,28 @@ public class SalidaDocumentoController {
             
             // Guardar la salida
             SalidaDocumento salidaGuardada = salidaDocumentoRepository.save(salida);
+            
+            // Registrar en bitácora
+            String nombreUsuario = null;
+            if (idUsuarioSalida != null) {
+                Usuario usuario = usuarioRepository.findById(idUsuarioSalida).orElse(null);
+                if (usuario != null) {
+                    nombreUsuario = usuario.getNombre() + " " + usuario.getApellido();
+                }
+            }
+            
+            bitacoraService.registrarSalida(
+                documento.getIdDocumento(),
+                documento.getCodigo(),
+                documento.getTitulo(),
+                documento.getTipoDocumento() != null ? documento.getTipoDocumento().getNombre() : "N/A",
+                destinatarioSalida,
+                numeroDocumentoSalida,
+                observacion,
+                archivoCargoUrl,
+                idUsuarioSalida,
+                nombreUsuario
+            );
             
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Salida de documento registrada exitosamente");

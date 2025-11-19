@@ -2,8 +2,8 @@
 // SALIDA DE DOCUMENTOS - MESA DE PARTES PNP
 // =====================================================
 
-// Constante de API
-const API_URL = 'http://localhost:8080/api';
+// Usar API_URL del config global
+const API_URL = window.API_URL;
 
 let documentoSeleccionado = null;
 let archivoCargoUrl = null;
@@ -48,7 +48,7 @@ function configurarEventos() {
     document.getElementById('buscarBtn').addEventListener('click', buscarDocumento);
     document.getElementById('salidaForm').addEventListener('submit', registrarSalida);
     document.getElementById('limpiarBtn').addEventListener('click', limpiarFormulario);
-    document.getElementById('verHistorialBtn').addEventListener('click', () => window.location.href = 'bitacora.html');
+    // verHistorialBtn removido del HTML - redirección eliminada
     
     // Archivo de cargo
     const inputArchivo = document.getElementById('archivoCargo');
@@ -280,8 +280,14 @@ function limpiarFormulario() {
 // =====================================================
 async function cargarTiposDocumento() {
     try {
+        const token = localStorage.getItem('token');
         console.log('📡 Llamando a: ' + `${API_URL}/tipos-documento`);
-        const response = await fetch(`${API_URL}/tipos-documento`);
+        const response = await fetch(`${API_URL}/tipos-documento`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
         console.log('📡 Response status:', response.status, 'OK:', response.ok);
         
         if (!response.ok) {
@@ -320,7 +326,13 @@ async function cargarTiposDocumento() {
 // =====================================================
 async function cargarDestinatarios() {
     try {
-        const response = await fetch(`${API_URL}/areas`);
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_URL}/areas`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
         
         if (!response.ok) {
             throw new Error('Error al cargar destinatarios');

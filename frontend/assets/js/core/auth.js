@@ -19,9 +19,17 @@ function getUserData() {
 function logout() {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
+  localStorage.removeItem('userInfo');
   
-  // Usar ruta absoluta desde la raíz del servidor
-  window.location.replace('/pages/auth/login.html');
+  // Detectar ruta relativa al login
+  const currentPath = window.location.pathname;
+  let loginPath = '../auth/login.html';
+  
+  if (currentPath.includes('/auth/')) {
+    loginPath = 'login.html';
+  }
+  
+  window.location.replace(loginPath);
 }
 
 /**
@@ -55,6 +63,13 @@ function checkAuth(roleRequerido) {
  * Redirige al login desde cualquier ubicación
  */
 function redirectToLogin() {
-  // Usar ruta absoluta desde la raíz del servidor
-  window.location.replace('/pages/auth/login.html');
+  // Detectar ruta relativa al login
+  const currentPath = window.location.pathname;
+  let loginPath = '../auth/login.html';
+  
+  if (currentPath.includes('/auth/')) {
+    loginPath = 'login.html';
+  }
+  
+  window.location.replace(loginPath);
 }

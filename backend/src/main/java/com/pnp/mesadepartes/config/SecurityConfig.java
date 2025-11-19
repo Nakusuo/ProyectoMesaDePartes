@@ -86,9 +86,23 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+                        // Endpoints públicos
+                        .requestMatchers("/api/auth/**").permitAll()
+                        // Swagger/OpenAPI
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
+                        // Actuator
+                        .requestMatchers("/actuator/**").permitAll()
+                        // Archivos estáticos
+                        .requestMatchers("/uploads/**").permitAll()
+                        // Resto requiere autenticación
+                        .anyRequest().authenticated()
                 );
+        
+        http.authenticationProvider(authenticationProvider());
+        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -39,7 +39,13 @@ const archivoPdfField = document.getElementById('archivo-pdf');
 
 async function cargarTiposDocumento() {
   try {
-    const response = await fetch(`${API_URL}/tipos-documento`);
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_URL}/tipos-documento`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
     if (!response.ok) throw new Error('Error al cargar tipos de documento');
 
     const tipos = await response.json();
@@ -56,7 +62,13 @@ async function cargarTiposDocumento() {
 
 async function cargarUsuariosParaAsignar() {
   try {
-    const response = await fetch(`${API_URL}/usuarios`);
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_URL}/usuarios`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
     if (!response.ok) throw new Error('Error al cargar usuarios');
 
     const usuarios = await response.json();
@@ -80,7 +92,13 @@ async function cargarAreas() {
   console.log('URL:', `${API_URL}/areas`);
   
   try {
-    const response = await fetch(`${API_URL}/areas`);
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_URL}/areas`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
     console.log('Response status:', response.status);
     console.log('Response OK:', response.ok);
     

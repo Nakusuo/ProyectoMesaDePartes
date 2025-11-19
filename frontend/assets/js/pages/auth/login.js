@@ -57,7 +57,7 @@ async function handleLogin(event) {
             localStorage.setItem('userInfo', JSON.stringify(data));
 
             // Redirigir siempre al dashboard
-            window.location.href = APP_CONFIG.DEFAULT_DASHBOARD;
+            window.location.href = '../common/dashboard.html';
 
         } else {
              throw new Error('Respuesta inesperada del servidor.');
