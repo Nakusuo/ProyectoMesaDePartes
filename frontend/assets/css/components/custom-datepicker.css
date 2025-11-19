@@ -1,0 +1,253 @@
+/* ===================================================== */
+/* CUSTOM DATEPICKER - Calendario Personalizado PNP */
+/* ===================================================== */
+
+.custom-datepicker {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 1000;
+    background: #ffffff;
+    border: 2px solid var(--pnp-green);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 100, 46, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    min-width: 320px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Header del calendario */
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e8f5e9;
+}
+
+.calendar-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.calendar-month {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--pnp-green);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.calendar-year {
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.calendar-nav {
+    background: #f0fdf4;
+    border: 2px solid var(--pnp-green);
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--pnp-green);
+}
+
+.calendar-nav:hover {
+    background: var(--pnp-green);
+    color: white;
+    transform: scale(1.1);
+}
+
+.calendar-nav:active {
+    transform: scale(0.95);
+}
+
+/* Días de la semana */
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.calendar-weekdays > div {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--pnp-green);
+    padding: 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: #f0fdf4;
+    border-radius: 6px;
+}
+
+/* Días del mes */
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #1e293b;
+    background: #ffffff;
+    border: 2px solid transparent;
+}
+
+.calendar-day:not(.empty):hover {
+    background: #f0fdf4;
+    border-color: var(--pnp-green);
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0, 100, 46, 0.2);
+}
+
+.calendar-day.empty {
+    cursor: default;
+    pointer-events: none;
+}
+
+.calendar-day.today {
+    background: #fef3c7;
+    border-color: #fbbf24;
+    font-weight: 700;
+    color: #92400e;
+}
+
+.calendar-day.today:hover {
+    background: #fde68a;
+    border-color: #f59e0b;
+}
+
+.calendar-day.selected {
+    background: var(--pnp-green);
+    color: white;
+    font-weight: 700;
+    border-color: var(--pnp-green);
+    box-shadow: 0 4px 12px rgba(0, 100, 46, 0.3);
+}
+
+.calendar-day.selected:hover {
+    background: #008c3c;
+    border-color: #008c3c;
+}
+
+/* Footer con botones */
+.calendar-footer {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 2px solid #e8f5e9;
+}
+
+.calendar-btn-today,
+.calendar-btn-clear {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.calendar-btn-today {
+    background: var(--pnp-green);
+    color: white;
+    border: 2px solid var(--pnp-green);
+}
+
+.calendar-btn-today:hover {
+    background: #008c3c;
+    border-color: #008c3c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 100, 46, 0.3);
+}
+
+.calendar-btn-clear {
+    background: white;
+    color: #64748b;
+    border: 2px solid #e2e8f0;
+}
+
+.calendar-btn-clear:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #475569;
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .custom-datepicker {
+        min-width: 280px;
+        padding: 12px;
+    }
+
+    .calendar-month {
+        font-size: 14px;
+    }
+
+    .calendar-year {
+        font-size: 12px;
+    }
+
+    .calendar-day {
+        font-size: 13px;
+    }
+
+    .calendar-nav {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+/* Animación al seleccionar */
+@keyframes selectPulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.calendar-day.selected {
+    animation: selectPulse 0.3s ease;
+}

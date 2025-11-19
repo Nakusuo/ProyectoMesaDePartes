@@ -194,3 +194,299 @@
     width: 100%;
   }
 }
+
+/* ===================================================== */
+/* ESTILOS PARA FILTRO DE FECHAS */
+/* ===================================================== */
+
+/* Variables para el calendario */
+:root {
+  --calendar-bg: #ffffff;
+  --calendar-border: #e2e8f0;
+  --calendar-header-bg: var(--pnp-green);
+  --calendar-today: #fef3c7;
+  --calendar-selected: var(--pnp-green);
+  --calendar-hover: #f0fdf4;
+  --calendar-text: #1e293b;
+  --calendar-text-muted: #94a3b8;
+}
+
+/* Input de fecha personalizado */
+.form-input[type="date"] {
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #ffffff;
+  color: var(--text-primary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Ocultar calendario nativo cuando se usa el personalizado */
+.form-input[type="date"][data-custom-picker="true"]::-webkit-calendar-picker-indicator {
+  display: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.form-input[type="date"][data-custom-picker="true"]::-webkit-inner-spin-button,
+.form-input[type="date"][data-custom-picker="true"]::-webkit-clear-button {
+  display: none;
+}
+
+/* Agregar ícono personalizado al input */
+.form-input[type="date"][data-custom-picker="true"] {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%2300642e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>');
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 20px;
+  padding-right: 45px;
+}
+
+.form-input[type="date"][data-custom-picker="true"]:hover {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23008c3c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>');
+}
+
+.form-input[type="date"]:hover {
+  border-color: var(--pnp-green);
+  box-shadow: 0 2px 8px rgba(0, 100, 46, 0.1);
+  transform: translateY(-1px);
+}
+
+.form-input[type="date"]:focus {
+  outline: none;
+  border-color: var(--pnp-green);
+  box-shadow: 0 0 0 4px rgba(0, 100, 46, 0.12), 0 4px 12px rgba(0, 100, 46, 0.15);
+  transform: translateY(-1px);
+  background-color: #fafffe;
+}
+
+/* Personalizar calendario en navegadores Webkit (Chrome, Safari, Edge) */
+.form-input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  filter: invert(34%) sepia(85%) saturate(645%) hue-rotate(110deg) brightness(95%) contrast(101%);
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  background-color: transparent;
+}
+
+.form-input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  background-color: rgba(0, 100, 46, 0.15);
+  transform: scale(1.1);
+}
+
+/* Estilos para el calendario desplegable */
+.form-input[type="date"]::-webkit-datetime-edit {
+  padding: 0;
+  font-weight: 500;
+}
+
+.form-input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
+}
+
+.form-input[type="date"]::-webkit-datetime-edit-text {
+  color: var(--text-secondary);
+  padding: 0 4px;
+}
+
+.form-input[type="date"]::-webkit-datetime-edit-month-field,
+.form-input[type="date"]::-webkit-datetime-edit-day-field,
+.form-input[type="date"]::-webkit-datetime-edit-year-field {
+  color: var(--text-primary);
+  font-weight: 600;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background-color: transparent;
+  transition: all 0.2s ease;
+}
+
+.form-input[type="date"]::-webkit-datetime-edit-month-field:hover,
+.form-input[type="date"]::-webkit-datetime-edit-day-field:hover,
+.form-input[type="date"]::-webkit-datetime-edit-year-field:hover {
+  background-color: rgba(0, 100, 46, 0.1);
+  color: var(--pnp-green);
+}
+
+.form-input[type="date"]::-webkit-datetime-edit-month-field:focus,
+.form-input[type="date"]::-webkit-datetime-edit-day-field:focus,
+.form-input[type="date"]::-webkit-datetime-edit-year-field:focus {
+  background-color: rgba(0, 100, 46, 0.15);
+  color: var(--pnp-green);
+  outline: none;
+}
+
+/* Estilo del calendario en modo claro */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%2300642e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 20px;
+  filter: none;
+}
+
+input[type="date"]:hover::-webkit-calendar-picker-indicator {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23008c3c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>');
+}
+
+/* Estilo para el indicador de filtro activo */
+#filtroActivo {
+  animation: slideDown 0.3s ease-out;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border-left: 4px solid var(--pnp-green);
+  box-shadow: 0 2px 8px rgba(0, 100, 46, 0.1);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Botones del filtro */
+#btnAplicarFiltro {
+  background: linear-gradient(135deg, var(--pnp-green) 0%, #008c3c 100%);
+  border: none;
+  color: white;
+  padding: 11px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 100, 46, 0.2);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#btnAplicarFiltro:hover {
+  background: linear-gradient(135deg, #008c3c 0%, var(--pnp-green) 100%);
+  box-shadow: 0 4px 16px rgba(0, 100, 46, 0.3);
+  transform: translateY(-2px);
+}
+
+#btnAplicarFiltro:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 100, 46, 0.25);
+}
+
+#btnLimpiarFiltro {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  color: var(--text-secondary);
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#btnLimpiarFiltro:hover {
+  background: #f8fafc;
+  border-color: var(--pnp-green);
+  color: var(--pnp-green);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+#btnLimpiarFiltro:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Labels de los inputs */
+.form-input[type="date"] + label,
+label[for="fechaDesde"],
+label[for="fechaHasta"] {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+/* Contenedor del card de filtros */
+.card:has(#fechaDesde) {
+  background: linear-gradient(to bottom, #ffffff 0%, #f8fffe 100%);
+  border: 2px solid #e8f5e9;
+  box-shadow: 0 4px 12px rgba(0, 100, 46, 0.08);
+}
+
+.card:has(#fechaDesde) .card-header {
+  background: linear-gradient(135deg, var(--pnp-green) 0%, #008c3c 100%);
+  color: white;
+  border-radius: 8px 8px 0 0;
+  padding: 16px 20px;
+  margin: -1px -1px 0 -1px;
+}
+
+.card:has(#fechaDesde) .card-header .card-title {
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.card:has(#fechaDesde) .card-body {
+  padding: 24px;
+}
+
+/* Responsive para filtros */
+@media (max-width: 768px) {
+  .card-body > div {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  
+  .card-body > div > div {
+    width: 100% !important;
+  }
+  
+  #btnAplicarFiltro,
+  #btnLimpiarFiltro {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .form-input[type="date"] {
+    font-size: 16px; /* Evita zoom en móviles iOS */
+  }
+}
+
+/* Animación para los botones */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+#btnAplicarFiltro.loading {
+  animation: pulse 1.5s ease-in-out infinite;
+  cursor: wait;
+}
+

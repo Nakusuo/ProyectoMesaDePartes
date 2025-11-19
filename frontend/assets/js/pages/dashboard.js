@@ -6,11 +6,96 @@ let chartPorTipo = null;
 let chartPorEstado = null;
 let chartTiempo = null;
 
+// Variables para filtro de fechas
+let fechaDesde = null;
+let fechaHasta = null;
+let documentosOriginales = [];
+
 // Inicializar dashboard
 document.addEventListener('DOMContentLoaded', function() {
     mostrarFechaActual();
+    configurarFiltroFechas();
     cargarDashboard();
 });
+
+// Configurar eventos del filtro de fechas
+function configurarFiltroFechas() {
+    const btnAplicar = document.getElementById('btnAplicarFiltro');
+    const btnLimpiar = document.getElementById('btnLimpiarFiltro');
+    
+    // Establecer fecha hasta como hoy por defecto
+    const hoy = new Date().toISOString().split('T')[0];
+    document.getElementById('fechaHasta').value = hoy;
+    
+    // Establecer fecha desde como hace 30 días por defecto
+    const hace30Dias = new Date();
+    hace30Dias.setDate(hace30Dias.getDate() - 30);
+    document.getElementById('fechaDesde').value = hace30Dias.toISOString().split('T')[0];
+    
+    btnAplicar.addEventListener('click', aplicarFiltroFechas);
+    btnLimpiar.addEventListener('click', limpiarFiltroFechas);
+    
+    // Permitir aplicar con Enter
+    document.getElementById('fechaDesde').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') aplicarFiltroFechas();
+    });
+    document.getElementById('fechaHasta').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') aplicarFiltroFechas();
+    });
+}
+
+// Aplicar filtro de fechas
+function aplicarFiltroFechas() {
+    const desde = document.getElementById('fechaDesde').value;
+    const hasta = document.getElementById('fechaHasta').value;
+    
+    if (!desde || !hasta) {
+        alert('⚠️ Por favor, seleccione ambas fechas');
+        return;
+    }
+    
+    if (new Date(desde) > new Date(hasta)) {
+        alert('⚠️ La fecha desde no puede ser mayor que la fecha hasta');
+        return;
+    }
+    
+    fechaDesde = desde;
+    fechaHasta = hasta;
+    
+    // Mostrar indicador de filtro activo
+    const filtroActivo = document.getElementById('filtroActivo');
+    const rangoFechas = document.getElementById('rangoFechas');
+    rangoFechas.textContent = `${formatearFecha(desde)} - ${formatearFecha(hasta)}`;
+    filtroActivo.style.display = 'block';
+    
+    // Recargar dashboard con filtro
+    cargarDashboard();
+}
+
+// Limpiar filtro de fechas
+function limpiarFiltroFechas() {
+    fechaDesde = null;
+    fechaHasta = null;
+    
+    // Resetear campos
+    const hoy = new Date().toISOString().split('T')[0];
+    document.getElementById('fechaHasta').value = hoy;
+    const hace30Dias = new Date();
+    hace30Dias.setDate(hace30Dias.getDate() - 30);
+    document.getElementById('fechaDesde').value = hace30Dias.toISOString().split('T')[0];
+    
+    // Ocultar indicador
+    document.getElementById('filtroActivo').style.display = 'none';
+    
+    // Recargar dashboard sin filtro
+    cargarDashboard();
+}
+
+// Formatear fecha para mostrar
+function formatearFecha(fecha) {
+    const opciones = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(fecha).toLocaleDateString('es-PE', opciones);
+}
 
 // Mostrar fecha actual
 function mostrarFechaActual() {
@@ -66,7 +151,13 @@ async function cargarMetricas(token) {
         });
 
         if (responseDocumentos.ok) {
-            const documentos = await responseDocumentos.json();
+            let documentos = await responseDocumentos.json();
+            documentosOriginales = documentos;
+            
+            // Aplicar filtro de fechas si está activo
+            if (fechaDesde && fechaHasta) {
+                documentos = filtrarPorFechas(documentos);
+            }
             
             const total = documentos.length;
             const enProceso = documentos.filter(d => 
@@ -104,31 +195,42 @@ async function cargarMetricas(token) {
 // Cargar datos para las gráficas
 async function cargarGraficas(token) {
     try {
-        // Verificar permisos
-        const pm = window.permissionsManager;
-        let url = `${API_URL}/documentos`;
+        // Reutilizar documentosOriginales si ya fueron cargados
+        let documentos = documentosOriginales;
         
-        // Si es trabajador, filtrar por usuario asignado
-        if (pm && pm.shouldFilterDocumentsByUser()) {
-            const userId = pm.getUserId();
-            if (userId) {
-                url = `${API_URL}/documentos/asignados/${userId}`;
+        if (documentos.length === 0) {
+            // Verificar permisos
+            const pm = window.permissionsManager;
+            let url = `${API_URL}/documentos`;
+            
+            // Si es trabajador, filtrar por usuario asignado
+            if (pm && pm.shouldFilterDocumentsByUser()) {
+                const userId = pm.getUserId();
+                if (userId) {
+                    url = `${API_URL}/documentos/asignados/${userId}`;
+                }
             }
+            
+            const response = await fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                console.error('Error al cargar documentos para gráficas');
+                return;
+            }
+
+            documentos = await response.json();
+            documentosOriginales = documentos;
         }
         
-        const response = await fetch(url, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            console.error('Error al cargar documentos para gráficas');
-            return;
+        // Aplicar filtro de fechas si está activo
+        if (fechaDesde && fechaHasta) {
+            documentos = filtrarPorFechas(documentos);
         }
-
-        const documentos = await response.json();
 
         // Gráfica por tipo de documento
         crearGraficaPorTipo(documentos);
@@ -315,30 +417,41 @@ function crearGraficaTiempo(documentos) {
 // Cargar documentos recientes
 async function cargarDocumentosRecientes(token) {
     try {
-        // Verificar permisos
-        const pm = window.permissionsManager;
-        let url = `${API_URL}/documentos`;
+        // Reutilizar documentosOriginales si ya fueron cargados
+        let documentos = documentosOriginales;
         
-        // Si es trabajador, filtrar por usuario asignado
-        if (pm && pm.shouldFilterDocumentsByUser()) {
-            const userId = pm.getUserId();
-            if (userId) {
-                url = `${API_URL}/documentos/asignados/${userId}`;
+        if (documentos.length === 0) {
+            // Verificar permisos
+            const pm = window.permissionsManager;
+            let url = `${API_URL}/documentos`;
+            
+            // Si es trabajador, filtrar por usuario asignado
+            if (pm && pm.shouldFilterDocumentsByUser()) {
+                const userId = pm.getUserId();
+                if (userId) {
+                    url = `${API_URL}/documentos/asignados/${userId}`;
+                }
             }
+            
+            const response = await fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Error al cargar documentos');
+            }
+
+            documentos = await response.json();
+            documentosOriginales = documentos;
         }
         
-        const response = await fetch(url, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Error al cargar documentos');
+        // Aplicar filtro de fechas si está activo
+        if (fechaDesde && fechaHasta) {
+            documentos = filtrarPorFechas(documentos);
         }
-
-        const documentos = await response.json();
         
         const recientes = documentos
             .sort((a, b) => new Date(b.fechaIngreso) - new Date(a.fechaIngreso))
@@ -389,3 +502,26 @@ function mostrarDocumentosRecientes(documentos) {
         `;
     }).join('');
 }
+
+// =====================================================
+// FUNCIÓN DE FILTRADO POR FECHAS
+// =====================================================
+function filtrarPorFechas(documentos) {
+    if (!fechaDesde || !fechaHasta) {
+        return documentos;
+    }
+    
+    const desde = new Date(fechaDesde);
+    desde.setHours(0, 0, 0, 0);
+    
+    const hasta = new Date(fechaHasta);
+    hasta.setHours(23, 59, 59, 999);
+    
+    return documentos.filter(doc => {
+        if (!doc.fechaIngreso) return false;
+        
+        const fechaDoc = new Date(doc.fechaIngreso);
+        return fechaDoc >= desde && fechaDoc <= hasta;
+    });
+}
+

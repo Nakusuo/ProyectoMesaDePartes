@@ -8,7 +8,8 @@
   
   <link rel="stylesheet" href="../../assets/css/core/style.css">
   <link rel="stylesheet" href="../../assets/css/components/sidebar.css">
-  <link rel="stylesheet" href="../../assets/css/pages/dashboard.css">
+  <link rel="stylesheet" href="../../assets/css/components/custom-datepicker.css">
+  <link rel="stylesheet" href="../../assets/css/pages/dashboard.css?v=5">
   
   <!-- Chart.js local (sin tracking de terceros) -->
   <script src="../../assets/js/libs/chart.min.js"></script>
@@ -26,6 +27,36 @@
           <h2 class="card-title">Dashboard - Mesa de Partes PNP</h2>
           <div>
             <span id="fecha-actual" style="color: var(--text-secondary); font-size: 14px;"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filtros por Fecha -->
+      <div class="card" style="margin-top: 20px;">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size: 16px;">📅 Filtrar por Rango de Fechas</h3>
+        </div>
+        <div class="card-body">
+          <div style="display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end;">
+            <div style="flex: 1; min-width: 200px;">
+              <label for="fechaDesde" style="display: block; margin-bottom: 5px; font-size: 14px; font-weight: 500;">Desde:</label>
+              <input type="date" id="fechaDesde" class="form-input" data-custom-picker="true" style="width: 100%;">
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+              <label for="fechaHasta" style="display: block; margin-bottom: 5px; font-size: 14px; font-weight: 500;">Hasta:</label>
+              <input type="date" id="fechaHasta" class="form-input" data-custom-picker="true" style="width: 100%;">
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button id="btnAplicarFiltro" class="btn btn-primary" style="padding: 10px 20px;">
+                🔍 Aplicar Filtro
+              </button>
+              <button id="btnLimpiarFiltro" class="btn" style="padding: 10px 20px; background: var(--bg-secondary); border: 1px solid var(--border-color);">
+                🔄 Limpiar
+              </button>
+            </div>
+          </div>
+          <div id="filtroActivo" style="margin-top: 10px; padding: 8px 12px; background: var(--info-bg); border-left: 3px solid var(--pnp-green); border-radius: 4px; display: none;">
+            <span style="font-size: 14px; color: var(--text-primary);">📌 Filtro activo: <strong id="rangoFechas"></strong></span>
           </div>
         </div>
       </div>
@@ -134,6 +165,7 @@
   <script src="../../assets/js/core/permissions.js"></script>
   <script src="../../assets/js/components/sidebar.js"></script>
   <script src="../../assets/js/core/auth.js"></script>
-  <script src="../../assets/js/pages/dashboard.js"></script>
+  <script src="../../assets/js/components/custom-datepicker.js"></script>
+  <script src="../../assets/js/pages/dashboard.js?v=5"></script>
 </body>
 </html>

@@ -96,9 +96,9 @@ public class DocumentoController {
 
     @GetMapping
     public ResponseEntity<List<Documento>> getAllDocumentos() {
-        System.out.println("📋 Obteniendo todos los documentos");
+        System.out.println(" Obteniendo todos los documentos");
         List<Documento> documentos = documentoRepository.findAll();
-        System.out.println("✅ Total de documentos: " + documentos.size());
+        System.out.println(" Total de documentos: " + documentos.size());
         return ResponseEntity.ok(documentos);
     }
 
