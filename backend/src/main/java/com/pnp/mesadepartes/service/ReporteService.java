@@ -64,17 +64,6 @@ public class ReporteService {
             case "DOCUMENTOS":
                 generarReporteDocumentosExcel(sheet, headerStyle, reporteDTO);
                 break;
-            case "TIEMPOS":
-                generarReporteTiemposExcel(sheet, headerStyle, reporteDTO);
-                break;
-            case "AREAS":
-                generarReporteAreasExcel(sheet, headerStyle, reporteDTO);
-                break;
-            default:
-                generarReporteDocumentosExcel(sheet, headerStyle, reporteDTO);
-        }
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         workbook.write(outputStream);
         workbook.close();
 

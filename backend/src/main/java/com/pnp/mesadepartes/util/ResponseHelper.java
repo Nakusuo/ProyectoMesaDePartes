@@ -7,21 +7,28 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Helper para construir respuestas HTTP estandarizadas.
- * Evita código duplicado en controllers.
+/*
+ Helper para construir respuestas HTTP estandarizadas.
+ Evita código duplicado en controllers.
  */
 public class ResponseHelper {
 
     /**
-     * Respuesta de éxito genérica
+     * Construye una respuesta de éxito genérica con el objeto de datos
+     * 
+     * @param data Objeto de datos a devolver en la respuesta
+     * @return ResponseEntity con status 200 OK y los datos
      */
     public static ResponseEntity<?> success(Object data) {
         return ResponseEntity.ok(data);
     }
 
     /**
-     * Respuesta de éxito con mensaje
+     * Construye una respuesta de éxito con mensaje personalizado y datos
+     * 
+     * @param message Mensaje descriptivo del éxito
+     * @param data Objeto de datos a devolver
+     * @return ResponseEntity con status 200 OK, mensaje, datos y timestamp
      */
     public static ResponseEntity<?> success(String message, Object data) {
         Map<String, Object> response = new HashMap<>();
@@ -33,7 +40,10 @@ public class ResponseHelper {
     }
 
     /**
-     * Respuesta de error genérica (400)
+     * Construye una respuesta de error genérica con status 400
+     * 
+     * @param message Mensaje descriptivo del error
+     * @return ResponseEntity con status 400 Bad Request y detalles del error
      */
     public static ResponseEntity<?> error(String message) {
         Map<String, Object> error = new HashMap<>();
@@ -45,7 +55,11 @@ public class ResponseHelper {
     }
 
     /**
-     * Respuesta de error con excepción (400)
+     * Construye una respuesta de error con excepción y status 400
+     * 
+     * @param message Mensaje descriptivo del contexto del error
+     * @param e Excepción que causó el error
+     * @return ResponseEntity con status 400 Bad Request, mensaje de error y detalles de la excepción
      */
     public static ResponseEntity<?> error(String message, Exception e) {
         Map<String, Object> error = new HashMap<>();
@@ -57,7 +71,10 @@ public class ResponseHelper {
     }
 
     /**
-     * Respuesta de no encontrado (404)
+     * Construye una respuesta de recurso no encontrado con status 404
+     * 
+     * @param entity Nombre de la entidad que no fue encontrada
+     * @return ResponseEntity con status 404 Not Found y mensaje descriptivo
      */
     public static ResponseEntity<?> notFound(String entity) {
         Map<String, Object> error = new HashMap<>();
@@ -69,7 +86,10 @@ public class ResponseHelper {
     }
 
     /**
-     * Respuesta de no autorizado (401)
+     * Construye una respuesta de no autorizado con status 401
+     * 
+     * @param message Mensaje descriptivo del motivo de la falta de autorización
+     * @return ResponseEntity con status 401 Unauthorized y detalles
      */
     public static ResponseEntity<?> unauthorized(String message) {
         Map<String, Object> error = new HashMap<>();
@@ -81,7 +101,10 @@ public class ResponseHelper {
     }
 
     /**
-     * Respuesta de prohibido (403)
+     * Construye una respuesta de acceso prohibido con status 403
+     * 
+     * @param message Mensaje descriptivo del motivo del acceso prohibido
+     * @return ResponseEntity con status 403 Forbidden y detalles
      */
     public static ResponseEntity<?> forbidden(String message) {
         Map<String, Object> error = new HashMap<>();

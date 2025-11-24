@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,13 +23,28 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pnp.mesadepartes.model.Bitacora;
 import com.pnp.mesadepartes.service.BitacoraService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Controlador REST para la gestión de Bitácora
+ * Proporciona endpoints para auditoría y trazabilidad de documentos
+ * 
+ * @author Sistema Mesa de Partes PNP
+ * @version 3.1
+ * @since 2025-11-21
+ */
 @RestController
 @RequestMapping("/api/bitacora")
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+@Tag(name = "Bitácora", description = "API para auditoría y trazabilidad de documentos")
 public class BitacoraController {
+    
+    private static final Logger logger = LoggerFactory.getLogger(BitacoraController.class);
     
     private final BitacoraService bitacoraService;
     
@@ -35,10 +52,13 @@ public class BitacoraController {
      * Obtener todas las entradas de bitácora con paginación
      */
     @GetMapping
+    @Operation(summary = "Listar bitácora", description = "Obtiene todas las entradas de bitácora con paginación")
+    @ApiResponse(responseCode = "200", description = "Lista de bitácora obtenida exitosamente")
     public ResponseEntity<Map<String, Object>> obtenerBitacora(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0") @Parameter(description = "Número de página") int page,
+            @RequestParam(defaultValue = "10") @Parameter(description = "Tamaño de página") int size) {
         
+        logger.info("Obteniendo bitácora - Página: {}, Tamaño: {}", page, size);
         Pageable pageable = PageRequest.of(page, size);
         Page<Bitacora> bitacoraPage = bitacoraService.obtenerTodos(pageable);
         
@@ -48,6 +68,7 @@ public class BitacoraController {
         response.put("totalPages", bitacoraPage.getTotalPages());
         response.put("totalElements", bitacoraPage.getTotalElements());
         
+        logger.info("Bitácora obtenida: {} elementos en {} páginas", bitacoraPage.getTotalElements(), bitacoraPage.getTotalPages());
         return ResponseEntity.ok(response);
     }
     
@@ -56,14 +77,17 @@ public class BitacoraController {
      */
     @GetMapping("/filtrar")
     @PreAuthorize("hasAnyRole('Administrador', 'Jefatura')")
+    @Operation(summary = "Filtrar bitácora", description = "Busca entradas de bitácora con filtros personalizados")
+    @ApiResponse(responseCode = "200", description = "Resultados filtrados obtenidos exitosamente")
     public ResponseEntity<Map<String, Object>> filtrarBitacora(
-            @RequestParam(required = false) Boolean tieneEntrada,
-            @RequestParam(required = false) Boolean tieneSalida,
+            @RequestParam(required = false) @Parameter(description = "Filtrar por entrada") Boolean tieneEntrada,
+            @RequestParam(required = false) @Parameter(description = "Filtrar por salida") Boolean tieneSalida,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         
+        logger.info("Filtrando bitácora - Entrada: {}, Salida: {}, Fechas: {} a {}", tieneEntrada, tieneSalida, fechaInicio, fechaFin);
         Pageable pageable = PageRequest.of(page, size);
         
         Page<Bitacora> bitacoraPage = bitacoraService.buscarConFiltros(tieneEntrada, tieneSalida, fechaInicio, fechaFin, pageable);
@@ -74,6 +98,7 @@ public class BitacoraController {
         response.put("totalPages", bitacoraPage.getTotalPages());
         response.put("totalElements", bitacoraPage.getTotalElements());
         
+        logger.info("Filtrado completado: {} resultados encontrados", bitacoraPage.getTotalElements());
         return ResponseEntity.ok(response);
     }
     
@@ -82,8 +107,13 @@ public class BitacoraController {
      */
     @GetMapping("/documento/{codigo}")
     @PreAuthorize("hasAnyRole('Administrador', 'Jefatura', 'Mesa de Partes')")
-    public ResponseEntity<List<Bitacora>> obtenerPorCodigoDocumento(@PathVariable String codigo) {
+    @Operation(summary = "Buscar por código", description = "Obtiene la bitácora de un documento específico por su código")
+    @ApiResponse(responseCode = "200", description = "Bitácora encontrada")
+    public ResponseEntity<List<Bitacora>> obtenerPorCodigoDocumento(
+            @PathVariable @Parameter(description = "Código del documento") String codigo) {
+        logger.info("Buscando bitácora para documento con código: {}", codigo);
         List<Bitacora> bitacora = bitacoraService.buscarPorCodigoDocumento(codigo);
+        logger.info("Se encontraron {} registros de bitácora para el código: {}", bitacora.size(), codigo);
         return ResponseEntity.ok(bitacora);
     }
     
@@ -92,7 +122,11 @@ public class BitacoraController {
      */
     @GetMapping("/documento/id/{idDocumento}")
     @PreAuthorize("hasAnyRole('Administrador', 'Jefatura', 'Mesa de Partes')")
-    public ResponseEntity<Bitacora> obtenerPorIdDocumento(@PathVariable Long idDocumento) {
+    @Operation(summary = "Buscar por ID de documento", description = "Obtiene la bitácora de un documento por su ID")
+    @ApiResponse(responseCode = "200", description = "Bitácora encontrada")
+    public ResponseEntity<Bitacora> obtenerPorIdDocumento(
+            @PathVariable @Parameter(description = "ID del documento") Long idDocumento) {
+        logger.info("Buscando bitácora para documento con ID: {}", idDocumento);
         Bitacora bitacora = bitacoraService.buscarPorIdDocumento(idDocumento);
         return ResponseEntity.ok(bitacora);
     }
@@ -102,7 +136,11 @@ public class BitacoraController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('Administrador', 'Jefatura')")
-    public ResponseEntity<Bitacora> obtenerPorId(@PathVariable Long id) {
+    @Operation(summary = "Obtener por ID", description = "Obtiene una entrada de bitácora específica por su ID")
+    @ApiResponse(responseCode = "200", description = "Bitácora encontrada")
+    public ResponseEntity<Bitacora> obtenerPorId(
+            @PathVariable @Parameter(description = "ID de la bitácora") Long id) {
+        logger.info("Obteniendo bitácora con ID: {}", id);
         Bitacora bitacora = bitacoraService.obtenerPorId(id);
         return ResponseEntity.ok(bitacora);
     }

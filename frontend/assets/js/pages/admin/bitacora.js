@@ -29,12 +29,12 @@ async function cargarUsuarios() {
                 'Content-Type': 'application/json'
             }
         });
-        
+
         if (response.ok) {
             usuariosDisponibles = await response.json();
             const select = document.getElementById('filtro-usuario');
-            select.innerHTML = '<option value="">Todos</option>' + 
-                usuariosDisponibles.map(u => 
+            select.innerHTML = '<option value="">Todos</option>' +
+                usuariosDisponibles.map(u =>
                     `<option value="${u.idUsuario}">${u.nombre} ${u.apellido}</option>`
                 ).join('');
         }
@@ -46,10 +46,10 @@ async function cargarUsuarios() {
 // Función para cargar todos los documentos con paginación
 async function cargarDocumentos(pagina = 0, tamanio = 10) {
     const tableBody = document.getElementById('bitacora-table-body');
-    
+
     try {
         console.log('📡 Obteniendo bitácora - Página:', pagina);
-        
+
         const token = localStorage.getItem('token');
         const response = await fetch(`${API_URL}/bitacora?page=${pagina}&size=${tamanio}`, {
             headers: {
@@ -57,28 +57,28 @@ async function cargarDocumentos(pagina = 0, tamanio = 10) {
                 'Content-Type': 'application/json'
             }
         });
-        
+
         if (!response.ok) {
             throw new Error(`Error HTTP: ${response.status}`);
         }
-        
+
         const data = await response.json();
         paginaActual = data.currentPage;
         totalPaginas = data.totalPages;
         documentosOriginales = data.content;
-        
+
         console.log('✅ Registros de bitácora recibidos:', documentosOriginales.length);
         console.log('📊 Página actual:', paginaActual, 'de', totalPaginas);
-        
+
         if (documentosOriginales.length === 0) {
             tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999;">No hay registros en la bitácora</td></tr>';
             actualizarControlesPaginacion(data);
             return;
         }
-        
+
         mostrarDocumentos(documentosOriginales);
         actualizarControlesPaginacion(data);
-        
+
     } catch (error) {
         console.error('❌ ERROR al cargar bitácora:', error);
         tableBody.innerHTML = `
@@ -96,7 +96,7 @@ function actualizarControlesPaginacion(data) {
     // Generar botones de página numerados
     let pageButtons = '';
     const maxVisiblePages = 7; // Mostrar máximo 7 botones de página
-    
+
     if (data.totalPages <= maxVisiblePages) {
         // Si hay pocas páginas, mostrar todas
         for (let i = 0; i < data.totalPages; i++) {
@@ -111,23 +111,23 @@ function actualizarControlesPaginacion(data) {
         // Lógica de paginación con puntos suspensivos
         const currentPage = data.currentPage;
         const totalPages = data.totalPages;
-        
+
         // Primera página
         pageButtons += `
             <button class="page-number ${currentPage === 0 ? 'active' : ''}" onclick="cambiarPagina(0)">
                 1
             </button>
         `;
-        
+
         // Puntos suspensivos iniciales
         if (currentPage > 3) {
             pageButtons += `<span class="pagination-ellipsis">...</span>`;
         }
-        
+
         // Páginas del medio
         let startPage = Math.max(1, currentPage - 1);
         let endPage = Math.min(totalPages - 2, currentPage + 1);
-        
+
         for (let i = startPage; i <= endPage; i++) {
             const isActive = i === currentPage ? 'active' : '';
             pageButtons += `
@@ -136,12 +136,12 @@ function actualizarControlesPaginacion(data) {
                 </button>
             `;
         }
-        
+
         // Puntos suspensivos finales
         if (currentPage < totalPages - 4) {
             pageButtons += `<span class="pagination-ellipsis">...</span>`;
         }
-        
+
         // Última página
         if (totalPages > 1) {
             pageButtons += `
@@ -151,7 +151,7 @@ function actualizarControlesPaginacion(data) {
             `;
         }
     }
-    
+
     let paginationHtml = `
         <div class="pagination-controls">
             <div class="pagination-info">
@@ -185,7 +185,7 @@ function actualizarControlesPaginacion(data) {
             </div>
         </div>
     `;
-    
+
     // Agregar o actualizar controles
     let paginationContainer = document.querySelector('.pagination-controls');
     if (paginationContainer) {
@@ -209,16 +209,16 @@ function cambiarTamanioPagina(nuevoTamanio) {
 // Función para mostrar documentos en la tabla
 function mostrarDocumentos(registros) {
     const tableBody = document.getElementById('bitacora-table-body');
-    
+
     if (registros.length === 0) {
         tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999;">No se encontraron registros</td></tr>';
         return;
     }
-    
+
     tableBody.innerHTML = registros.map(reg => {
         // Determinar fecha más reciente
         const fecha = reg.fechaSalida ? formatearFecha(reg.fechaSalida) : formatearFecha(reg.fechaEntrada);
-        
+
         // Construir badges de tipo de operación
         let tiposOperacion = '';
         if (reg.tieneEntrada && reg.tieneSalida) {
@@ -228,7 +228,7 @@ function mostrarDocumentos(registros) {
         } else if (reg.tieneSalida) {
             tiposOperacion = '<span style="color: #dc3545; font-weight: bold;">📤 SALIDA</span><br><small style="color: #999;">Sin entrada</small>';
         }
-        
+
         // Construir información del usuario
         let usuarioInfo = '';
         if (reg.tieneEntrada && reg.tieneSalida) {
@@ -238,9 +238,9 @@ function mostrarDocumentos(registros) {
         } else {
             usuarioInfo = reg.usuarioSalida || 'Sin usuario';
         }
-        
+
         const tipo = reg.tipoDocumento || 'N/A';
-        
+
         // Construir información de remitente/destinatario
         let infoParticipantes = '';
         if (reg.remitente && reg.destinatario) {
@@ -252,7 +252,7 @@ function mostrarDocumentos(registros) {
         } else {
             infoParticipantes = '<em style="color: #999;">Sin información</em>';
         }
-        
+
         // Construir información de números de documento
         let numerosDoc = '';
         if (reg.numeroDocumentoEntrada && reg.numeroDocumentoSalida) {
@@ -264,7 +264,7 @@ function mostrarDocumentos(registros) {
         } else {
             numerosDoc = '<em style="color: #999;">Sin número</em>';
         }
-        
+
         // Construir enlaces de archivos
         let archivosLinks = '';
         if (reg.archivoEntradaUrl) {
@@ -274,7 +274,7 @@ function mostrarDocumentos(registros) {
             if (archivosLinks) archivosLinks += '<br>';
             archivosLinks += `📎 <a href="http://localhost:8080${reg.archivoSalidaUrl}" target="_blank">Ver cargo salida</a>`;
         }
-        
+
         return `
             <tr>
                 <td>${fecha}</td>
@@ -300,7 +300,7 @@ function mostrarDocumentos(registros) {
 function inicializarEventos() {
     document.getElementById('btn-aplicar-filtros').addEventListener('click', aplicarFiltros);
     document.getElementById('btn-limpiar-filtros').addEventListener('click', limpiarFiltros);
-    
+
     // Aplicar filtros al presionar Enter en los inputs
     document.querySelectorAll('#filtro-palabra, #filtro-nro-doc, #filtro-nro-ht').forEach(input => {
         input.addEventListener('keypress', (e) => {
@@ -317,20 +317,20 @@ function aplicarFiltros() {
     const nroDoc = document.getElementById('filtro-nro-doc').value.toLowerCase();
     const nroHt = document.getElementById('filtro-nro-ht').value.toLowerCase();
     const usuario = document.getElementById('filtro-usuario').value;
-    
+
     let documentosFiltrados = documentosOriginales;
-    
+
     // Filtrar por palabra clave (busca en título, descripción, remitente, código)
     if (palabra) {
         documentosFiltrados = documentosFiltrados.filter(item => {
             const doc = item.documento;
             return (doc.titulo && doc.titulo.toLowerCase().includes(palabra)) ||
-                   (doc.descripcion && doc.descripcion.toLowerCase().includes(palabra)) ||
-                   (doc.remitente && doc.remitente.toLowerCase().includes(palabra)) ||
-                   (doc.codigo && doc.codigo.toLowerCase().includes(palabra));
+                (doc.descripcion && doc.descripcion.toLowerCase().includes(palabra)) ||
+                (doc.remitente && doc.remitente.toLowerCase().includes(palabra)) ||
+                (doc.codigo && doc.codigo.toLowerCase().includes(palabra));
         });
     }
-    
+
     // Filtrar por número de documento
     if (nroDoc) {
         documentosFiltrados = documentosFiltrados.filter(item => {
@@ -338,7 +338,7 @@ function aplicarFiltros() {
             return doc.codigo && doc.codigo.toLowerCase().includes(nroDoc);
         });
     }
-    
+
     // Filtrar por número de HT
     if (nroHt) {
         documentosFiltrados = documentosFiltrados.filter(item => {
@@ -346,17 +346,17 @@ function aplicarFiltros() {
             return doc.numeroHt && doc.numeroHt.toLowerCase().includes(nroHt);
         });
     }
-    
+
     // Filtrar por usuario asignado
     if (usuario) {
-        documentosFiltrados = documentosFiltrados.filter(item => 
+        documentosFiltrados = documentosFiltrados.filter(item =>
             item.idUsuarioAsignado === parseInt(usuario)
         );
     }
-    
+
     // Ordenar por fecha (más recientes primero)
     documentosFiltrados.sort((a, b) => new Date(b.documento.fechaIngreso) - new Date(a.documento.fechaIngreso));
-    
+
     mostrarDocumentos(documentosFiltrados);
 }
 
@@ -366,21 +366,21 @@ function limpiarFiltros() {
     document.getElementById('filtro-nro-doc').value = '';
     document.getElementById('filtro-nro-ht').value = '';
     document.getElementById('filtro-usuario').value = '';
-    
+
     mostrarDocumentos(documentosOriginales);
 }
 
 // Función para formatear fecha
 function formatearFecha(fechaISO) {
     if (!fechaISO) return 'N/A';
-    
+
     const fecha = new Date(fechaISO);
     const dia = String(fecha.getDate()).padStart(2, '0');
     const mes = String(fecha.getMonth() + 1).padStart(2, '0');
     const anio = fecha.getFullYear();
     const horas = String(fecha.getHours()).padStart(2, '0');
     const minutos = String(fecha.getMinutes()).padStart(2, '0');
-    
+
     return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
 }
 
@@ -393,133 +393,90 @@ function obtenerEstadoBadge(estado) {
         'RECHAZADO': '<span style="background: #dc3545; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.85rem;">Rechazado</span>',
         'ARCHIVADO': '<span style="background: #6c757d; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.85rem;">Archivado</span>'
     };
-    
+
     return estados[estado] || `<span style="color: #666;">${estado}</span>`;
 }
 
-// ========================================
+// ============================================
 // FUNCIONES DE EXPORTACIÓN
-// ========================================
+// ============================================
 
-// Toggle del menú de exportación
-function toggleExportMenu(event) {
-    event.stopPropagation();
-    const menu = document.getElementById('export-menu');
-    menu.classList.toggle('show');
-}
+// Función para exportar bitácora a PDF
+async function exportarBitacoraPDF() {
+    showToast('Generando PDF...', 'info');
 
-// Cerrar menú al hacer clic fuera
-document.addEventListener('click', function(event) {
-    const menu = document.getElementById('export-menu');
-    const button = document.getElementById('btn-exportar');
-    
-    if (menu && !menu.contains(event.target) && !button.contains(event.target)) {
-        menu.classList.remove('show');
-    }
-});
-
-// Exportar como PDF
-function exportarPDF() {
-    document.getElementById('export-menu').classList.remove('show');
-    generarReportePDF();
-}
-
-// Exportar como Excel
-function exportarExcel() {
-    document.getElementById('export-menu').classList.remove('show');
-    
     try {
-        // Obtener los datos actuales de la tabla
-        const registros = documentosOriginales;
-        
-        if (!registros || registros.length === 0) {
-            alert('⚠️ No hay registros para exportar');
-            return;
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_URL}/reportes/generar`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                tipoReporte: 'BITACORA',
+                formato: 'PDF'
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
         }
-        
-        // Crear estructura de datos para Excel
-        const datosExcel = [];
-        
-        // Encabezados
-        datosExcel.push([
-            'Fecha',
-            'Tipo Operación',
-            'Código Documento',
-            'Título',
-            'Tipo Documento',
-            'Remitente',
-            'Destinatario',
-            'Usuario Entrada',
-            'Usuario Salida',
-            'N° Doc. Entrada',
-            'N° Doc. Salida',
-            'Observaciones'
-        ]);
-        
-        // Datos de cada registro (la estructura es diferente - son objetos Bitacora directamente)
-        registros.forEach(reg => {
-            // Determinar tipo de operación
-            let tipoOp = '';
-            if (reg.tieneEntrada && reg.tieneSalida) {
-                tipoOp = 'ENTRADA + SALIDA';
-            } else if (reg.tieneEntrada) {
-                tipoOp = 'ENTRADA';
-            } else if (reg.tieneSalida) {
-                tipoOp = 'SALIDA';
-            }
-            
-            // Fecha (usar la más reciente)
-            const fecha = reg.fechaSalida ? formatearFecha(reg.fechaSalida) : formatearFecha(reg.fechaEntrada);
-            
-            datosExcel.push([
-                fecha,
-                tipoOp,
-                reg.codigoDocumento || 'N/A',
-                reg.tituloDocumento || 'Sin título',
-                reg.tipoDocumento || 'N/A',
-                reg.remitente || '',
-                reg.destinatario || '',
-                reg.usuarioEntrada || '',
-                reg.usuarioSalida || '',
-                reg.numeroDocumentoEntrada || '',
-                reg.numeroDocumentoSalida || '',
-                reg.observacionesSalida || ''
-            ]);
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `bitacora_${new Date().toISOString().split('T')[0]}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        showToast('PDF generado exitosamente', 'success');
+        document.getElementById('export-menu').style.display = 'none';
+    } catch (error) {
+        console.error('Error al exportar PDF:', error);
+        showToast('Error al generar PDF: ' + error.message, 'error');
+    }
+}
+
+// Función para exportar bitácora a Excel
+async function exportarBitacoraExcel() {
+    showToast('Generando Excel...', 'info');
+
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_URL}/reportes/generar`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                tipoReporte: 'BITACORA',
+                formato: 'EXCEL'
+            })
         });
-        
-        // Crear CSV (Excel lo puede abrir)
-        let csvContent = '\uFEFF'; // BOM para UTF-8
-        datosExcel.forEach(fila => {
-            csvContent += fila.map(campo => {
-                // Escapar comillas y envolver en comillas si contiene comas
-                const campoStr = String(campo || '');
-                if (campoStr.includes(',') || campoStr.includes('"') || campoStr.includes('\n')) {
-                    return '"' + campoStr.replace(/"/g, '""') + '"';
-                }
-                return campoStr;
-            }).join(',') + '\n';
-        });
-        
-        // Crear blob y descargar
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        
-        const fecha = new Date();
-        const nombreArchivo = `Bitacora_Mesa_Partes_${fecha.getFullYear()}${String(fecha.getMonth()+1).padStart(2,'0')}${String(fecha.getDate()).padStart(2,'0')}.csv`;
-        
-        link.setAttribute('href', url);
-        link.setAttribute('download', nombreArchivo);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        console.log('✅ Archivo Excel exportado correctamente');
-        alert('✅ Archivo Excel exportado correctamente');
-        
+
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `bitacora_${new Date().toISOString().split('T')[0]}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        showToast('Excel generado exitosamente', 'success');
+        document.getElementById('export-menu').style.display = 'none';
     } catch (error) {
         console.error('Error al exportar Excel:', error);
-        alert('❌ Error al exportar el archivo Excel: ' + error.message);
+        showToast('Error al generar Excel: ' + error.message, 'error');
     }
 }
