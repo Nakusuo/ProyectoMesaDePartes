@@ -396,3 +396,130 @@ function obtenerEstadoBadge(estado) {
     
     return estados[estado] || `<span style="color: #666;">${estado}</span>`;
 }
+
+// ========================================
+// FUNCIONES DE EXPORTACIÓN
+// ========================================
+
+// Toggle del menú de exportación
+function toggleExportMenu(event) {
+    event.stopPropagation();
+    const menu = document.getElementById('export-menu');
+    menu.classList.toggle('show');
+}
+
+// Cerrar menú al hacer clic fuera
+document.addEventListener('click', function(event) {
+    const menu = document.getElementById('export-menu');
+    const button = document.getElementById('btn-exportar');
+    
+    if (menu && !menu.contains(event.target) && !button.contains(event.target)) {
+        menu.classList.remove('show');
+    }
+});
+
+// Exportar como PDF
+function exportarPDF() {
+    document.getElementById('export-menu').classList.remove('show');
+    generarReportePDF();
+}
+
+// Exportar como Excel
+function exportarExcel() {
+    document.getElementById('export-menu').classList.remove('show');
+    
+    try {
+        // Obtener los datos actuales de la tabla
+        const registros = documentosOriginales;
+        
+        if (!registros || registros.length === 0) {
+            alert('⚠️ No hay registros para exportar');
+            return;
+        }
+        
+        // Crear estructura de datos para Excel
+        const datosExcel = [];
+        
+        // Encabezados
+        datosExcel.push([
+            'Fecha',
+            'Tipo Operación',
+            'Código Documento',
+            'Título',
+            'Tipo Documento',
+            'Remitente',
+            'Destinatario',
+            'Usuario Entrada',
+            'Usuario Salida',
+            'N° Doc. Entrada',
+            'N° Doc. Salida',
+            'Observaciones'
+        ]);
+        
+        // Datos de cada registro (la estructura es diferente - son objetos Bitacora directamente)
+        registros.forEach(reg => {
+            // Determinar tipo de operación
+            let tipoOp = '';
+            if (reg.tieneEntrada && reg.tieneSalida) {
+                tipoOp = 'ENTRADA + SALIDA';
+            } else if (reg.tieneEntrada) {
+                tipoOp = 'ENTRADA';
+            } else if (reg.tieneSalida) {
+                tipoOp = 'SALIDA';
+            }
+            
+            // Fecha (usar la más reciente)
+            const fecha = reg.fechaSalida ? formatearFecha(reg.fechaSalida) : formatearFecha(reg.fechaEntrada);
+            
+            datosExcel.push([
+                fecha,
+                tipoOp,
+                reg.codigoDocumento || 'N/A',
+                reg.tituloDocumento || 'Sin título',
+                reg.tipoDocumento || 'N/A',
+                reg.remitente || '',
+                reg.destinatario || '',
+                reg.usuarioEntrada || '',
+                reg.usuarioSalida || '',
+                reg.numeroDocumentoEntrada || '',
+                reg.numeroDocumentoSalida || '',
+                reg.observacionesSalida || ''
+            ]);
+        });
+        
+        // Crear CSV (Excel lo puede abrir)
+        let csvContent = '\uFEFF'; // BOM para UTF-8
+        datosExcel.forEach(fila => {
+            csvContent += fila.map(campo => {
+                // Escapar comillas y envolver en comillas si contiene comas
+                const campoStr = String(campo || '');
+                if (campoStr.includes(',') || campoStr.includes('"') || campoStr.includes('\n')) {
+                    return '"' + campoStr.replace(/"/g, '""') + '"';
+                }
+                return campoStr;
+            }).join(',') + '\n';
+        });
+        
+        // Crear blob y descargar
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        
+        const fecha = new Date();
+        const nombreArchivo = `Bitacora_Mesa_Partes_${fecha.getFullYear()}${String(fecha.getMonth()+1).padStart(2,'0')}${String(fecha.getDate()).padStart(2,'0')}.csv`;
+        
+        link.setAttribute('href', url);
+        link.setAttribute('download', nombreArchivo);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        console.log('✅ Archivo Excel exportado correctamente');
+        alert('✅ Archivo Excel exportado correctamente');
+        
+    } catch (error) {
+        console.error('Error al exportar Excel:', error);
+        alert('❌ Error al exportar el archivo Excel: ' + error.message);
+    }
+}

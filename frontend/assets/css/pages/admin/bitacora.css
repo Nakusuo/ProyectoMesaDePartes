@@ -99,6 +99,82 @@
     cursor: default;
 }
 
+/* Dropdown de Exportación */
+.export-dropdown-container {
+    position: relative;
+    display: inline-block;
+}
+
+#btn-exportar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dropdown-arrow {
+    font-size: 0.7rem;
+    transition: transform 0.3s ease;
+}
+
+#btn-exportar:hover .dropdown-arrow {
+    transform: translateY(2px);
+}
+
+.export-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 5px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    min-width: 200px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.export-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.export-option {
+    width: 100%;
+    padding: 12px 16px;
+    text-align: left;
+    background: white;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.2s ease;
+}
+
+.export-option:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+.export-option:last-child {
+    border-radius: 0 0 8px 8px;
+}
+
+.export-option:hover {
+    background: #f5f5f5;
+    color: #00642e;
+}
+
+.export-option span {
+    font-size: 1.2rem;
+}
+
 .pagination-buttons .page-number.active:hover {
     transform: none;
 }

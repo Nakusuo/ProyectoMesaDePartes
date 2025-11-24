@@ -22,11 +22,20 @@
       <div class="card">
         <div class="card-header">
           <h2 class="card-title">Dashboard - Bitácora de Eventos</h2>
-          <div>
-            <button class="btn btn-secondary btn-sm" id="btn-exportar-pdf" onclick="generarReportePDF()">
+          <div class="export-dropdown-container">
+            <button class="btn btn-secondary btn-sm" id="btn-exportar" onclick="toggleExportMenu(event)">
               <span>📥</span>
-              Exportar PDF
+              Exportar
+              <span class="dropdown-arrow">▼</span>
             </button>
+            <div class="export-menu" id="export-menu">
+              <button onclick="exportarPDF()" class="export-option">
+                <span>📄</span> Exportar como PDF
+              </button>
+              <button onclick="exportarExcel()" class="export-option">
+                <span>📊</span> Exportar como Excel
+              </button>
+            </div>
           </div>
         </div>
 
