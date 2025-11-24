@@ -2,11 +2,13 @@ package com.pnp.mesadepartes.controller;
 
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -36,10 +38,27 @@ import com.pnp.mesadepartes.repository.DocumentoRepository;
 import com.pnp.mesadepartes.repository.TramiteRepository;
 import com.pnp.mesadepartes.service.ReporteService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+
+/**
+ * Controlador REST para la generación de reportes
+ * 
+ * @author Sistema Mesa de Partes PNP
+ * @version 3.1
+ * @since 2025-11-21
+ */
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/reportes")
+@Tag(name = "Reportes", description = "API para generación de reportes PDF y Excel")
 public class ReporteController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ReporteController.class);
 
     @Autowired
     private ReporteService reporteService;
@@ -50,8 +69,20 @@ public class ReporteController {
     @Autowired
     private TramiteRepository tramiteRepository;
 
+    /**
+     * Genera un reporte en formato PDF o Excel
+     * 
+     * @param reporteDTO Datos del reporte a generar
+     * @return Archivo de reporte en el formato solicitado
+     */
     @PostMapping("/generar")
-    public ResponseEntity<?> generarReporte(@RequestBody ReporteDTO reporteDTO) {
+    @Operation(summary = "Generar reporte", description = "Genera un reporte personalizado en formato PDF o Excel")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Reporte generado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Error al generar el reporte")
+    })
+    public ResponseEntity<?> generarReporte(@Valid @RequestBody @Parameter(description = "Configuración del reporte") ReporteDTO reporteDTO) {
+        logger.info("Generando reporte tipo: {}, formato: {}", reporteDTO.getTipoReporte(), reporteDTO.getFormato());
         try {
             byte[] reporte = reporteService.generarReporte(reporteDTO);
             
@@ -72,22 +103,30 @@ public class ReporteController {
             headers.setPragma("no-cache");
             headers.setExpires(0);
             
+            logger.info("Reporte generado exitosamente: {}", filename);
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(reporte);
                     
         } catch (Exception e) {
+            logger.error("Error al generar reporte: {}", e.getMessage(), e);
             Map<String, String> error = new HashMap<>();
             error.put("error", "Error al generar reporte");
             error.put("message", e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.badRequest().body(error);
         }
     }
     
-    // Endpoint para generar PDF simple con iText 7
+    /**
+     * Genera un reporte PDF general de todos los documentos
+     * 
+     * @return Archivo PDF con el reporte general
+     */
     @GetMapping("/pdf")
+    @Operation(summary = "Generar PDF general", description = "Genera un PDF con el listado completo de documentos")
+    @ApiResponse(responseCode = "200", description = "PDF generado exitosamente")
     public ResponseEntity<byte[]> generarReportePDF() {
+        logger.info("Generando reporte PDF general de documentos");
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             PdfWriter writer = new PdfWriter(baos);
@@ -195,18 +234,27 @@ public class ReporteController {
             headers2.setPragma("no-cache");
             headers2.setExpires(0);
             
+            logger.info("Reporte PDF general generado exitosamente con {} documentos", documentos.size());
             return new ResponseEntity<>(baos.toByteArray(), headers2, HttpStatus.OK);
             
         } catch (Exception e) {
-            System.err.println("Error generando PDF: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error generando PDF: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
+    /**
+     * Obtiene estadísticas generales del sistema
+     * 
+     * @return Mapa con estadísticas del sistema
+     */
     @GetMapping("/estadisticas")
+    @Operation(summary = "Obtener estadísticas", description = "Retorna estadísticas generales del sistema de documentos")
+    @ApiResponse(responseCode = "200", description = "Estadísticas obtenidas exitosamente")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticas() {
+        logger.info("Obteniendo estadísticas generales del sistema");
         Map<String, Object> estadisticas = reporteService.obtenerEstadisticasGenerales();
+        logger.info("Estadísticas obtenidas exitosamente");
         return ResponseEntity.ok(estadisticas);
     }
 }
