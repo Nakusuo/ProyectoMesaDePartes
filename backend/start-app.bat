@@ -1,3 +1,6 @@
 @echo off
 cd /d %~dp0
-mvnw.cmd spring-boot:run
+echo ====================================
+echo Iniciando aplicación en modo LOCAL
+echo ====================================
+mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=dev
