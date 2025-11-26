@@ -6,21 +6,22 @@
 # ============ ETAPA 1: BUILD ============
 FROM maven:3.9-eclipse-temurin-21-alpine AS build
 
-WORKDIR /app
+WORKDIR /build
 
 # Copiar archivos de Maven
-COPY backend/pom.xml .
-COPY backend/mvnw .
-COPY backend/.mvn .mvn
+COPY backend/pom.xml ./
+COPY backend/mvnw ./
+COPY backend/mvnw.cmd ./
+COPY backend/.mvn ./.mvn
 
 # Descargar dependencias (esta capa se cachea)
-RUN mvn dependency:go-offline -B || true
+RUN chmod +x mvnw && ./mvnw dependency:go-offline -B || true
 
 # Copiar código fuente
 COPY backend/src ./src
 
 # Construir la aplicación
-RUN mvn clean package -DskipTests -B
+RUN ./mvnw clean package -DskipTests -B
 
 # ============ ETAPA 2: RUNTIME ============
 FROM eclipse-temurin:21-jre-alpine
@@ -40,7 +41,7 @@ RUN addgroup -S spring && adduser -S spring -G spring
 WORKDIR /app
 
 # Copiar el JAR desde la etapa de build
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /build/target/*.jar app.jar
 
 # Crear directorios necesarios
 RUN mkdir -p /app/uploads/documentos /app/uploads/cargos /app/logs && \

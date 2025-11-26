@@ -1,0 +1,11 @@
+# Archivos a ignorar en Railway
+.git
+.gitignore
+.vscode
+scripts/
+SQL/
+*.md
+!RAILWAY_DEPLOY.md
+.env.example
+iniciar-backend.bat
+preparar-railway.bat
