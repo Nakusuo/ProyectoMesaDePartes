@@ -58,8 +58,8 @@ USER spring:spring
 # Puerto de la aplicación
 EXPOSE ${SERVER_PORT}
 
-# Health check más tolerante
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=5 \
+# Health check más tolerante y con mayor período de inicio
+HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=5 \
   CMD curl --fail http://localhost:${SERVER_PORT}/actuator/health || exit 1
 
 # Ejecutar la aplicación con perfil Railway
