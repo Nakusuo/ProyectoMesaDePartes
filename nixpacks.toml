@@ -1,8 +1,16 @@
+# Configuración para Railway usando Maven directamente
+[providers]
+java = "21"
+
 [phases.setup]
-nixPkgs = ['...', 'docker']
+nixPkgs = ["maven", "openjdk21"]
 
 [phases.build]
-cmds = ['docker build -t app -f Dockerfile .']
+cmds = [
+  "cd backend",
+  "chmod +x mvnw",
+  "./mvnw clean package -DskipTests -B"
+]
 
 [start]
-cmd = 'java -jar app.jar'
+cmd = "cd backend && java -Xms256m -Xmx512m -jar target/*.jar"
