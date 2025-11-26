@@ -31,8 +31,12 @@ LABEL maintainer="Mesa de Partes PNP"
 LABEL version="1.0"
 LABEL description="Sistema de Mesa de Partes Digital - Backend para Railway"
 
+# Instalar herramientas necesarias
+RUN apk add --no-cache curl
+
 # Variables de entorno por defecto
-ENV JAVA_OPTS="-Xms256m -Xmx512m -XX:+UseG1GC"
+ENV JAVA_OPTS="-Xms256m -Xmx512m -XX:+UseG1GC -Djava.security.egd=file:/dev/./urandom"
+ENV SERVER_PORT=8080
 
 # Crear usuario no-root para seguridad
 RUN addgroup -S spring && adduser -S spring -G spring
@@ -43,19 +47,20 @@ WORKDIR /app
 # Copiar el JAR desde la etapa de build
 COPY --from=build /build/target/*.jar app.jar
 
-# Crear directorios necesarios
+# Crear directorios necesarios y dar permisos
 RUN mkdir -p /app/uploads/documentos /app/uploads/cargos /app/logs && \
-    chown -R spring:spring /app
+    chown -R spring:spring /app && \
+    chmod -R 755 /app
 
 # Cambiar a usuario no-root
 USER spring:spring
 
-# Puerto de la aplicación (Railway asigna automáticamente)
-EXPOSE 8080
+# Puerto de la aplicación
+EXPOSE ${SERVER_PORT}
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
+# Health check más tolerante
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=5 \
+  CMD curl --fail http://localhost:${SERVER_PORT}/actuator/health || exit 1
 
-# Ejecutar la aplicación
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+# Ejecutar la aplicación con perfil Railway
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Dspring.profiles.active=railway -Dserver.port=${SERVER_PORT} -jar app.jar"]
