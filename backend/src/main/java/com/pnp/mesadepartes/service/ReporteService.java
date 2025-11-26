@@ -51,6 +51,7 @@ public class ReporteService {
     private byte[] generarReporteExcel(ReporteDTO reporteDTO) throws IOException {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Reporte");
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         // Estilos
         CellStyle headerStyle = workbook.createCellStyle();
@@ -64,6 +65,8 @@ public class ReporteService {
             case "DOCUMENTOS":
                 generarReporteDocumentosExcel(sheet, headerStyle, reporteDTO);
                 break;
+        }
+        
         workbook.write(outputStream);
         workbook.close();
 
