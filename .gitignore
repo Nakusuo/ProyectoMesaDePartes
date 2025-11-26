@@ -1,0 +1,53 @@
+# =====================================================
+# GITIGNORE - Mesa de Partes PNP
+# =====================================================
+
+# Archivos de entorno (NUNCA subir a Git)
+.env
+.env.local
+.env.production
+.env.railway
+.env.*
+
+# Logs
+*.log
+logs/
+backend/logs/
+
+# Archivos temporales
+*.tmp
+*.bak
+*.swp
+*~
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+
+# Backend (Java/Maven)
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+
+# Uploads (archivos de usuarios)
+uploads/
+backend/uploads/
+
+# Base de datos local
+*.db
+*.sqlite
+
+# Node modules (si usas Node para algo)
+node_modules/
+package-lock.json
+yarn.lock

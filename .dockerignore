@@ -1,0 +1,68 @@
+# =====================================================
+# DOCKERIGNORE - Excluir archivos innecesarios
+# =====================================================
+
+# Frontend (no va en el contenedor del backend)
+frontend/
+
+# Directorios de Maven
+backend/target/
+!backend/target/*.jar
+backend/.mvn/wrapper/maven-wrapper.jar
+
+# Archivos de configuración local
+.env
+.env.local
+.env.*
+backend/src/main/resources/application-dev.properties
+
+# Logs
+logs/
+*.log
+
+# Archivos de IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Archivos temporales
+*.tmp
+*.bak
+*.swp
+*~
+
+# Uploads locales (se usará volumen persistente)
+backend/uploads/
+uploads/
+
+# Scripts de desarrollo
+*.bat
+*.sh
+start-app.bat
+iniciar-backend.bat
+
+# Documentación
+README.md
+*.md
+SQL/
+
+# Tests
+backend/src/test/
+
+# Node modules si existen
+node_modules/
