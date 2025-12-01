@@ -1,0 +1,8 @@
+# No subir archivos de backup al repositorio
+*.sql
+*.zip
+*.gz
+*.tar
+
+# Mantener solo el README
+!README.md
