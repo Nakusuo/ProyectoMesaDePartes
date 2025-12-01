@@ -1,8 +1,19 @@
 package com.pnp.mesadepartes.service;
 
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -135,5 +146,70 @@ public class BitacoraService {
         }
         
         return bitacoraRepository.save(bitacora);
+    }
+    
+    /**
+     * Exportar bitácora a PDF
+     */
+    public byte[] exportarPDF() {
+        List<Bitacora> registros = bitacoraRepository.findAll();
+        // Por ahora retornamos un mensaje, implementación completa de PDF requiere más dependencias
+        String mensaje = "Exportación PDF - Total registros: " + registros.size();
+        return mensaje.getBytes();
+    }
+    
+    /**
+     * Exportar bitácora a Excel
+     */
+    public byte[] exportarExcel() {
+        try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            Sheet sheet = workbook.createSheet("Bitácora");
+            
+            // Estilo para encabezados
+            CellStyle headerStyle = workbook.createCellStyle();
+            Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerStyle.setFont(headerFont);
+            headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            
+            // Crear encabezados
+            Row headerRow = sheet.createRow(0);
+            String[] columnas = {"Código", "Título", "Tipo", "Remitente", "Fecha Entrada", 
+                                 "Usuario Entrada", "Destinatario", "Fecha Salida", "Usuario Salida", "Observaciones"};
+            
+            for (int i = 0; i < columnas.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(columnas[i]);
+                cell.setCellStyle(headerStyle);
+                sheet.setColumnWidth(i, 4000);
+            }
+            
+            // Obtener datos
+            List<Bitacora> registros = bitacoraRepository.findAll();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            
+            int rowNum = 1;
+            for (Bitacora reg : registros) {
+                Row row = sheet.createRow(rowNum++);
+                
+                row.createCell(0).setCellValue(reg.getCodigoDocumento() != null ? reg.getCodigoDocumento() : "");
+                row.createCell(1).setCellValue(reg.getTituloDocumento() != null ? reg.getTituloDocumento() : "");
+                row.createCell(2).setCellValue(reg.getTipoDocumento() != null ? reg.getTipoDocumento() : "");
+                row.createCell(3).setCellValue(reg.getRemitente() != null ? reg.getRemitente() : "");
+                row.createCell(4).setCellValue(reg.getFechaEntrada() != null ? reg.getFechaEntrada().format(formatter) : "");
+                row.createCell(5).setCellValue(reg.getUsuarioEntrada() != null ? reg.getUsuarioEntrada() : "");
+                row.createCell(6).setCellValue(reg.getDestinatario() != null ? reg.getDestinatario() : "");
+                row.createCell(7).setCellValue(reg.getFechaSalida() != null ? reg.getFechaSalida().format(formatter) : "");
+                row.createCell(8).setCellValue(reg.getUsuarioSalida() != null ? reg.getUsuarioSalida() : "");
+                row.createCell(9).setCellValue(reg.getObservacionesSalida() != null ? reg.getObservacionesSalida() : "");
+            }
+            
+            workbook.write(out);
+            return out.toByteArray();
+            
+        } catch (Exception e) {
+            throw new RuntimeException("Error al generar Excel: " + e.getMessage(), e);
+        }
     }
 }

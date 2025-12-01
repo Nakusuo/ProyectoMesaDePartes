@@ -97,6 +97,8 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/**").permitAll()
                         // Archivos estáticos
                         .requestMatchers("/uploads/**").permitAll()
+                        // Frontend - Páginas HTML y assets
+                        .requestMatchers("/pages/**", "/assets/**", "/*.html", "/*.css", "/*.js").permitAll()
                         // Resto requiere autenticación
                         .anyRequest().authenticated()
                 );

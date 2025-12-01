@@ -1,11 +1,15 @@
-# Sistema Web de Mesa de Partes Digital - PNP
-
-[![Java](https://img.shields.io/badge/Java-17+-orange?style=flat-square&logo=java)](https://www.oracle.com/java/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen?style=flat-square&logo=springboot)](https://spring.io/projects/spring-boot)
-[![MySQL](https://img.shields.io/badge/MySQL-8.0+-blue?style=flat-square&logo=mysql)](https://www.mysql.com/)
-[![License](https://img.shields.io/badge/License-Academic-purple?style=flat-square)](LICENSE)
-
-> Sistema de gestión documental desarrollado para la Policía Nacional del Perú como parte del Curso Integrador I de la Universidad Tecnológica del Perú
+<div align="center">
+  <img src="imagenes/logoPNP.png" alt="Logo PNP" width="200"/>
+  
+  # Sistema Web de Mesa de Partes Digital - PNP
+  
+  [![Java](https://img.shields.io/badge/Java-17+-orange?style=flat-square&logo=java)](https://www.oracle.com/java/)
+  [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen?style=flat-square&logo=springboot)](https://spring.io/projects/spring-boot)
+  [![MySQL](https://img.shields.io/badge/MySQL-8.0+-blue?style=flat-square&logo=mysql)](https://www.mysql.com/)
+  [![License](https://img.shields.io/badge/License-Academic-purple?style=flat-square)](LICENSE)
+  
+  > Sistema de gestión documental desarrollado para la Policía Nacional del Perú como parte del Curso Integrador I de la Universidad Tecnológica del Perú
+</div>
 
 ---
 

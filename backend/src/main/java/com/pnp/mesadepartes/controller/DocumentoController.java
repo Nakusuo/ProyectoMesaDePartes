@@ -64,6 +64,89 @@ public class DocumentoController {
     @Autowired private TramiteRepository tramiteRepository;
     @Autowired private HojaTramiteRepository hojaTramiteRepository;
 
+    // =====================================================
+    // ENDPOINTS PARA HOJAS DE TRÁMITE
+    // =====================================================
+    
+    /**
+     * Obtiene la hoja de trámite de un documento
+     */
+    @GetMapping("/hojas-tramite/documento/{idDocumento}")
+    public ResponseEntity<?> obtenerHojaTramitePorDocumento(@PathVariable Long idDocumento) {
+        try {
+            List<HojaTramite> hojasTramite = hojaTramiteRepository.findByIdDocumento(idDocumento);
+            return ResponseEntity.ok(hojasTramite);
+        } catch (Exception e) {
+            logger.error("Error al obtener hoja de trámite: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al obtener hoja de trámite: " + e.getMessage()));
+        }
+    }
+    
+    /**
+     * Crea una nueva hoja de trámite
+     */
+    @PostMapping("/hojas-tramite")
+    public ResponseEntity<?> crearHojaTramite(@RequestBody Map<String, Object> payload) {
+        try {
+            Long idDocumento = Long.valueOf(payload.get("idDocumento").toString());
+            String numeroHt = payload.get("numeroHt").toString();
+            
+            // Buscar el documento
+            Optional<Documento> docOpt = documentoRepository.findById(idDocumento);
+            if (docOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "Documento no encontrado"));
+            }
+            
+            HojaTramite hojaTramite = new HojaTramite();
+            hojaTramite.setDocumento(docOpt.get());
+            hojaTramite.setNumeroHt(numeroHt);
+            
+            HojaTramite htGuardada = hojaTramiteRepository.save(hojaTramite);
+            return ResponseEntity.status(HttpStatus.CREATED).body(htGuardada);
+        } catch (Exception e) {
+            logger.error("Error al crear hoja de trámite: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al crear hoja de trámite: " + e.getMessage()));
+        }
+    }
+    
+    /**
+     * Actualiza una hoja de trámite existente
+     */
+    @PutMapping("/hojas-tramite/{id}")
+    public ResponseEntity<?> actualizarHojaTramite(
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> payload) {
+        try {
+            Optional<HojaTramite> htExistente = hojaTramiteRepository.findById(id);
+            if (htExistente.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "Hoja de trámite no encontrada"));
+            }
+            
+            HojaTramite ht = htExistente.get();
+            ht.setNumeroHt(payload.get("numeroHt").toString());
+            
+            // Actualizar documento si se proporciona
+            if (payload.containsKey("idDocumento")) {
+                Long idDocumento = Long.valueOf(payload.get("idDocumento").toString());
+                Optional<Documento> docOpt = documentoRepository.findById(idDocumento);
+                if (docOpt.isPresent()) {
+                    ht.setDocumento(docOpt.get());
+                }
+            }
+            
+            HojaTramite htActualizada = hojaTramiteRepository.save(ht);
+            return ResponseEntity.ok(htActualizada);
+        } catch (Exception e) {
+            logger.error("Error al actualizar hoja de trámite: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al actualizar hoja de trámite: " + e.getMessage()));
+        }
+    }
+
     /**
      * Registra un nuevo documento en el sistema
      * 

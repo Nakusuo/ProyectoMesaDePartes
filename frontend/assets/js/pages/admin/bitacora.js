@@ -33,9 +33,10 @@ async function cargarUsuarios() {
         if (response.ok) {
             usuariosDisponibles = await response.json();
             const select = document.getElementById('filtro-usuario');
+            const nombreCompleto = u => `${u.nombre} ${u.apellido}`;
             select.innerHTML = '<option value="">Todos</option>' +
                 usuariosDisponibles.map(u =>
-                    `<option value="${u.idUsuario}">${u.nombre} ${u.apellido}</option>`
+                    `<option value="${nombreCompleto(u)}">${nombreCompleto(u)}</option>`
                 ).join('');
         }
     } catch (error) {
@@ -314,48 +315,106 @@ function inicializarEventos() {
 // Función para aplicar filtros
 function aplicarFiltros() {
     const palabra = document.getElementById('filtro-palabra').value.toLowerCase();
-    const nroDoc = document.getElementById('filtro-nro-doc').value.toLowerCase();
-    const nroHt = document.getElementById('filtro-nro-ht').value.toLowerCase();
+    let nroDoc = document.getElementById('filtro-nro-doc').value.trim();
+    let nroHt = document.getElementById('filtro-nro-ht').value.trim();
     const usuario = document.getElementById('filtro-usuario').value;
+
+    // Formatear automáticamente el número de documento (igual que en salida-documento)
+    if (nroDoc) {
+        if (/^\d+$/.test(nroDoc)) {
+            // Solo números, convertir a formato DOC-000000
+            const numero = parseInt(nroDoc);
+            nroDoc = `DOC-${numero.toString().padStart(6, '0')}`;
+            console.log(`✨ Formato automático Nº Doc: "${document.getElementById('filtro-nro-doc').value}" → "${nroDoc}"`);
+        } else if (!/^DOC-\d{6}$/.test(nroDoc)) {
+            // Si no es formato DOC-000000 ni solo números, intentar extraer números
+            const numeros = nroDoc.match(/\d+/);
+            if (numeros) {
+                const numero = parseInt(numeros[0]);
+                nroDoc = `DOC-${numero.toString().padStart(6, '0')}`;
+                console.log(`✨ Números extraídos Nº Doc: "${document.getElementById('filtro-nro-doc').value}" → "${nroDoc}"`);
+            }
+        }
+    }
+
+    // Formatear automáticamente el número de HT (formato HT-0000)
+    if (nroHt) {
+        if (/^\d+$/.test(nroHt)) {
+            // Solo números, convertir a formato HT-0000
+            const numero = parseInt(nroHt);
+            nroHt = `HT-${numero.toString().padStart(4, '0')}`;
+            console.log(`✨ Formato automático Nº HT: "${document.getElementById('filtro-nro-ht').value}" → "${nroHt}"`);
+        } else if (!/^HT-\d{4}$/.test(nroHt)) {
+            // Si no es formato HT-0000 ni solo números, intentar extraer números
+            const numeros = nroHt.match(/\d+/);
+            if (numeros) {
+                const numero = parseInt(numeros[0]);
+                nroHt = `HT-${numero.toString().padStart(4, '0')}`;
+                console.log(`✨ Números extraídos Nº HT: "${document.getElementById('filtro-nro-ht').value}" → "${nroHt}"`);
+            }
+        }
+    }
 
     let documentosFiltrados = documentosOriginales;
 
-    // Filtrar por palabra clave (busca en título, descripción, remitente, código)
+    // Filtrar por palabra clave (busca en remitente, destinatario, tipo, título)
     if (palabra) {
         documentosFiltrados = documentosFiltrados.filter(item => {
-            const doc = item.documento;
-            return (doc.titulo && doc.titulo.toLowerCase().includes(palabra)) ||
-                (doc.descripcion && doc.descripcion.toLowerCase().includes(palabra)) ||
-                (doc.remitente && doc.remitente.toLowerCase().includes(palabra)) ||
-                (doc.codigo && doc.codigo.toLowerCase().includes(palabra));
+            return (item.remitente && item.remitente.toLowerCase().includes(palabra)) ||
+                (item.destinatario && item.destinatario.toLowerCase().includes(palabra)) ||
+                (item.tipoDocumento && item.tipoDocumento.toLowerCase().includes(palabra)) ||
+                (item.tituloDocumento && item.tituloDocumento.toLowerCase().includes(palabra)) ||
+                (item.codigoDocumento && item.codigoDocumento.toLowerCase().includes(palabra)) ||
+                (item.numeroDocumentoEntrada && item.numeroDocumentoEntrada.toLowerCase().includes(palabra)) ||
+                (item.numeroDocumentoSalida && item.numeroDocumentoSalida.toLowerCase().includes(palabra));
         });
     }
 
-    // Filtrar por número de documento
+    // Filtrar por número de documento (busca en código y números de entrada/salida)
     if (nroDoc) {
         documentosFiltrados = documentosFiltrados.filter(item => {
-            const doc = item.documento;
-            return doc.codigo && doc.codigo.toLowerCase().includes(nroDoc);
+            return (item.codigoDocumento && item.codigoDocumento.toLowerCase().includes(nroDoc.toLowerCase())) ||
+                (item.numeroDocumentoEntrada && item.numeroDocumentoEntrada.toLowerCase().includes(nroDoc.toLowerCase())) ||
+                (item.numeroDocumentoSalida && item.numeroDocumentoSalida.toLowerCase().includes(nroDoc.toLowerCase()));
         });
     }
 
     // Filtrar por número de HT
     if (nroHt) {
         documentosFiltrados = documentosFiltrados.filter(item => {
-            const doc = item.documento;
-            return doc.numeroHt && doc.numeroHt.toLowerCase().includes(nroHt);
+            return (item.numeroDocumentoEntrada && item.numeroDocumentoEntrada.toLowerCase().includes(nroHt.toLowerCase())) ||
+                (item.numeroDocumentoSalida && item.numeroDocumentoSalida.toLowerCase().includes(nroHt.toLowerCase()));
         });
     }
 
-    // Filtrar por usuario asignado
+    // Filtrar por usuario
     if (usuario) {
-        documentosFiltrados = documentosFiltrados.filter(item =>
-            item.idUsuarioAsignado === parseInt(usuario)
-        );
+        console.log('🔍 Filtrando por usuario:', usuario);
+        const usuarioBuscado = usuario.toLowerCase().trim();
+        documentosFiltrados = documentosFiltrados.filter(item => {
+            const entradaMatch = item.usuarioEntrada && item.usuarioEntrada.toLowerCase().trim().includes(usuarioBuscado);
+            const salidaMatch = item.usuarioSalida && item.usuarioSalida.toLowerCase().trim().includes(usuarioBuscado);
+            
+            if (entradaMatch || salidaMatch) {
+                console.log('✅ Coincidencia encontrada:', {
+                    codigo: item.codigoDocumento,
+                    usuarioEntrada: item.usuarioEntrada,
+                    usuarioSalida: item.usuarioSalida,
+                    buscado: usuario
+                });
+            }
+            
+            return entradaMatch || salidaMatch;
+        });
+        console.log('📊 Documentos después de filtrar por usuario:', documentosFiltrados.length);
     }
 
-    // Ordenar por fecha (más recientes primero)
-    documentosFiltrados.sort((a, b) => new Date(b.documento.fechaIngreso) - new Date(a.documento.fechaIngreso));
+    // Ordenar por fecha (más recientes primero) - usar fechaSalida o fechaEntrada
+    documentosFiltrados.sort((a, b) => {
+        const fechaA = new Date(a.fechaSalida || a.fechaEntrada || 0);
+        const fechaB = new Date(b.fechaSalida || b.fechaEntrada || 0);
+        return fechaB - fechaA;
+    });
 
     mostrarDocumentos(documentosFiltrados);
 }
@@ -401,26 +460,23 @@ function obtenerEstadoBadge(estado) {
 // FUNCIONES DE EXPORTACIÓN
 // ============================================
 
-// Función para exportar bitácora a PDF
-async function exportarBitacoraPDF() {
+// Función para exportar bitácora a PDF (disponible globalmente)
+window.exportarBitacoraPDF = async function() {
+    console.log('🔵 Exportando PDF...');
     showToast('Generando PDF...', 'info');
 
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_URL}/reportes/generar`, {
-            method: 'POST',
+        const response = await fetch(`${API_URL}/bitacora/exportar/pdf`, {
+            method: 'GET',
             headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                tipoReporte: 'BITACORA',
-                formato: 'PDF'
-            })
+                'Authorization': `Bearer ${token}`
+            }
         });
 
         if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
+            const errorText = await response.text();
+            throw new Error(`Error HTTP: ${response.status} - ${errorText}`);
         }
 
         const blob = await response.blob();
@@ -436,31 +492,28 @@ async function exportarBitacoraPDF() {
         showToast('PDF generado exitosamente', 'success');
         document.getElementById('export-menu').style.display = 'none';
     } catch (error) {
-        console.error('Error al exportar PDF:', error);
+        console.error('❌ Error al exportar PDF:', error);
         showToast('Error al generar PDF: ' + error.message, 'error');
     }
 }
 
-// Función para exportar bitácora a Excel
-async function exportarBitacoraExcel() {
+// Función para exportar bitácora a Excel (disponible globalmente)
+window.exportarBitacoraExcel = async function() {
+    console.log('🔵 Exportando Excel...');
     showToast('Generando Excel...', 'info');
 
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_URL}/reportes/generar`, {
-            method: 'POST',
+        const response = await fetch(`${API_URL}/bitacora/exportar/excel`, {
+            method: 'GET',
             headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                tipoReporte: 'BITACORA',
-                formato: 'EXCEL'
-            })
+                'Authorization': `Bearer ${token}`
+            }
         });
 
         if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
+            const errorText = await response.text();
+            throw new Error(`Error HTTP: ${response.status} - ${errorText}`);
         }
 
         const blob = await response.blob();
@@ -476,7 +529,7 @@ async function exportarBitacoraExcel() {
         showToast('Excel generado exitosamente', 'success');
         document.getElementById('export-menu').style.display = 'none';
     } catch (error) {
-        console.error('Error al exportar Excel:', error);
+        console.error('❌ Error al exportar Excel:', error);
         showToast('Error al generar Excel: ' + error.message, 'error');
     }
 }

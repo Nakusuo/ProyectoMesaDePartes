@@ -174,6 +174,63 @@ async function cargarHojaTramite(idDocumento) {
 }
 
 // =====================================================
+// ACTUALIZAR O CREAR HOJA DE TRÁMITE
+// =====================================================
+async function actualizarHojaTramite(idDocumento, numeroHT) {
+    try {
+        // Primero verificar si ya existe una HT para este documento
+        const getResponse = await fetch(`${API_URL}/hojas-tramite/documento/${idDocumento}`, {
+            headers: {
+                'Authorization': `Bearer ${getToken()}`
+            }
+        });
+
+        if (getResponse.ok) {
+            // Ya existe, actualizar
+            const hojasTramite = await getResponse.json();
+            if (hojasTramite && hojasTramite.length > 0) {
+                const htExistente = hojasTramite[0];
+                const updateResponse = await fetch(`${API_URL}/hojas-tramite/${htExistente.idHojaTramite}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getToken()}`
+                    },
+                    body: JSON.stringify({
+                        numeroHt: numeroHT,
+                        idDocumento: idDocumento
+                    })
+                });
+                
+                if (!updateResponse.ok) {
+                    console.error('Error al actualizar HT');
+                }
+            }
+        } else {
+            // No existe, crear nueva
+            const createResponse = await fetch(`${API_URL}/hojas-tramite`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}`
+                },
+                body: JSON.stringify({
+                    numeroHt: numeroHT,
+                    idDocumento: idDocumento
+                })
+            });
+            
+            if (!createResponse.ok) {
+                console.error('Error al crear HT');
+            }
+        }
+    } catch (error) {
+        console.error('Error al actualizar/crear HT:', error);
+        // No lanzar error para no interrumpir el registro de salida
+    }
+}
+
+// =====================================================
 // SUBIR ARCHIVO DE CARGO
 // =====================================================
 async function subirArchivoCargo(file) {
@@ -221,6 +278,7 @@ async function registrarSalida(e) {
     }
 
     const usuario = getUserData();
+    const numeroHT = document.getElementById('numeroHT').value.trim();
     
     const salidaData = {
         idDocumento: documentoSeleccionado.idDocumento,
@@ -234,6 +292,11 @@ async function registrarSalida(e) {
 
     try {
         showToast('Registrando salida...', 'loading');
+        
+        // Si hay número de HT, actualizar o crear la hoja de trámite
+        if (numeroHT) {
+            await actualizarHojaTramite(documentoSeleccionado.idDocumento, numeroHT);
+        }
         
         const response = await fetch(`${API_URL}/salidas/registrar`, {
             method: 'POST',

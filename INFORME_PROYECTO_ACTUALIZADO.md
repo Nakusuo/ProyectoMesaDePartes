@@ -1,13 +1,17 @@
-# Sistema Web de Mesa de Partes Digital - PNP
-## Informe Académico del Proyecto
-
-**Facultad de Ingeniería de Sistemas e Informática**  
-**Universidad Tecnológica del Perú**  
-**Curso Integrador I: Sistemas Software**  
+<div align="center">
+  <img src="imagenes/logoPNP.png" alt="Logo PNP" width="250"/>
+  
+  # Sistema Web de Mesa de Partes Digital - PNP
+  ## Informe Académico del Proyecto
+  
+  **Facultad de Ingeniería de Sistemas e Informática**  
+  **Universidad Tecnológica del Perú**  
+  **Curso Integrador I: Sistemas Software**  
+</div>
 
 ---
 
-## 👥 Equipo de Desarrollo
+## ![Usuarios](imagenes/usuarios.png) Equipo de Desarrollo
 
 | Integrante | Rol | Contribución |
 |------------|-----|--------------|
@@ -21,7 +25,7 @@
 
 ---
 
-## 📑 Índice
+## ![Documento](imagenes/hoja.png) Índice
 
 ### Capítulo 1
 1. [Presentación de la Empresa](#1-presentación-de-la-empresa)
@@ -189,8 +193,8 @@ El sistema cuenta con:
 
 - 🔐 Cifrado de contraseñas con BCrypt
 - 🔑 Autenticación y control de accesos mediante Spring Security
-- 📋 Registro de auditoría (bitácora de acciones)
-- 💾 **Copias de seguridad automatizadas**:
+- ![Bitácora](imagenes/bitacora.png) Registro de auditoría (bitácora de acciones)
+- ![Descargar](imagenes/descargarBitacora.png) **Copias de seguridad automatizadas**:
   - Ejecución diaria a las 2:00 AM
   - Retención de 30 días
   - Backups manuales mediante API REST
@@ -366,9 +370,9 @@ El proceso manual actual incluye:
 5. **Almacenamiento físico** en archivadores
 
 **Problemas identificados**:
-- ⏱️ Tiempo promedio de derivación: 2-3 días
-- 📄 Riesgo de extravío: Alto
-- 🔍 Trazabilidad: Inexistente
+- ![Calendario](imagenes/calendario.png) Tiempo promedio de derivación: 2-3 días
+- ![Documento](imagenes/hoja.png) Riesgo de extravío: Alto
+- ![Bitácora](imagenes/bitacora.png) Trazabilidad: Inexistente
 - 💰 Costos operativos: Elevados
 
 ---
@@ -387,8 +391,8 @@ El nuevo flujo digitalizado incluye:
 **Mejoras logradas**:
 - ⚡ Tiempo de derivación: Inmediato
 - 🔒 Seguridad: Alta (cifrado + autenticación)
-- 📊 Trazabilidad: 100% completa
-- 💾 Backups: Automatizados
+- ![Dashboard](imagenes/dashboard.png) Trazabilidad: 100% completa
+- ![Descargar](imagenes/descargarBitacora.png) Backups: Automatizados
 
 ---
 

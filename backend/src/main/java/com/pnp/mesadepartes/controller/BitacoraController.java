@@ -144,4 +144,46 @@ public class BitacoraController {
         Bitacora bitacora = bitacoraService.obtenerPorId(id);
         return ResponseEntity.ok(bitacora);
     }
+    
+    /**
+     * Exportar bitácora a PDF
+     */
+    @GetMapping("/exportar/pdf")
+    @PreAuthorize("hasAnyRole('Administrador', 'Jefatura')")
+    @Operation(summary = "Exportar a PDF", description = "Exporta la bitácora completa a formato PDF")
+    @ApiResponse(responseCode = "200", description = "PDF generado exitosamente")
+    public ResponseEntity<byte[]> exportarPDF() {
+        logger.info("Exportando bitácora a PDF");
+        try {
+            byte[] pdfBytes = bitacoraService.exportarPDF();
+            return ResponseEntity.ok()
+                    .header("Content-Type", "application/pdf")
+                    .header("Content-Disposition", "attachment; filename=bitacora.pdf")
+                    .body(pdfBytes);
+        } catch (Exception e) {
+            logger.error("Error al exportar bitácora a PDF", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * Exportar bitácora a Excel
+     */
+    @GetMapping("/exportar/excel")
+    @PreAuthorize("hasAnyRole('Administrador', 'Jefatura')")
+    @Operation(summary = "Exportar a Excel", description = "Exporta la bitácora completa a formato Excel")
+    @ApiResponse(responseCode = "200", description = "Excel generado exitosamente")
+    public ResponseEntity<byte[]> exportarExcel() {
+        logger.info("Exportando bitácora a Excel");
+        try {
+            byte[] excelBytes = bitacoraService.exportarExcel();
+            return ResponseEntity.ok()
+                    .header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    .header("Content-Disposition", "attachment; filename=bitacora.xlsx")
+                    .body(excelBytes);
+        } catch (Exception e) {
+            logger.error("Error al exportar bitácora a Excel", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

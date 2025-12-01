@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salida de Documento - Mesa de Partes PNP</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+    <link rel="icon" type="image/png" href="../../assets/images/logoPNP.png">
     <link rel="stylesheet" href="../../assets/css/core/style.css">
     <link rel="stylesheet" href="../../assets/css/components/sidebar.css">
     <link rel="stylesheet" href="../../assets/css/pages/auth/registro.css">
@@ -19,14 +19,14 @@
     <div class="main-content">
         <div class="content-wrapper">
             <div class="header">
-                <h1>📤 Salida de Documentos</h1>
+                <h1><img src="../../assets/images/salida.png" style="width: 28px; height: 28px; vertical-align: middle; margin-right: 8px;"> Salida de Documentos</h1>
                 <p>Registrar documentos que salen del sistema</p>
             </div>
 
             <div class="form-container">
                 <form id="salidaForm">
                     <div class="form-section">
-                        <h3>📄 Información del Documento</h3>
+                        <h3><img src="../../assets/images/hoja.png" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 5px;"> Información del Documento</h3>
                         
                         <div class="form-group">
                             <label for="codigoDocumento">Código de Documento<span class="required">*</span></label>
@@ -52,7 +52,7 @@
                     </div>
 
                     <div class="form-section">
-                        <h3>📝 Datos de Salida</h3>
+                        <h3><img src="../../assets/images/registro.png" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 5px;"> Datos de Salida</h3>
 
                         <div class="form-group">
                             <label for="tipoDocumentoSalida">Tipo de Documento de Salida</label>
@@ -77,9 +77,9 @@
 
                         <div class="form-group">
                             <label for="numeroHT">Número de Hoja de Trámite (HT)</label>
-                            <input type="text" id="numeroHT" readonly 
-                                   placeholder="Se muestra si el documento tiene HT">
-                            <small>Si el documento tiene HT, se muestra aquí automáticamente</small>
+                            <input type="text" id="numeroHT" 
+                                   placeholder="Ingrese o modifique el número de HT">
+                            <small>Si el documento tiene HT se muestra automáticamente. Puede modificarla si es necesario.</small>
                         </div>
 
                         <div class="form-group">
@@ -108,7 +108,7 @@
 
                     <div class="form-actions">
                         <button type="submit" class="btn-primary" id="submitBtn">
-                            📤 Registrar Salida
+                            <img src="../../assets/images/salida.png" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 5px;"> Registrar Salida
                         </button>
                         <button type="button" class="btn-secondary" id="limpiarBtn">
                             🔄 Limpiar Formulario
@@ -119,7 +119,7 @@
 
             <!-- Tabla de Salidas Recientes -->
             <div class="form-container" style="margin-top: 30px;">
-                <h3>📋 Salidas Recientes</h3>
+                <h3><img src="../../assets/images/registro.png" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 5px;"> Salidas Recientes</h3>
                 <div id="tablaSalidas">
                     <!-- Se llenará con JavaScript -->
                 </div>
