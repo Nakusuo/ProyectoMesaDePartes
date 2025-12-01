@@ -20,7 +20,7 @@ CREATE TABLE areas (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
--- TABLA: ROLES
+-- TABLA: ROLESUSUARUIS
 -- =====================================================
 CREATE TABLE roles (
     ID_rol INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
