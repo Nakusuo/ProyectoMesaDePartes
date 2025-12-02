@@ -57,6 +57,9 @@ public class Bitacora {
     @Column(name = "archivo_entrada_url", length = 255)
     private String archivoEntradaUrl;
     
+    @Column(name = "numero_ht_entrada", length = 50)
+    private String numeroHtEntrada;
+    
     // ========== DATOS DE SALIDA ==========
     @Column(name = "tiene_salida", nullable = false)
     private Boolean tieneSalida = false;
@@ -78,6 +81,9 @@ public class Bitacora {
     
     @Column(name = "archivo_salida_url", length = 255)
     private String archivoSalidaUrl;
+    
+    @Column(name = "numero_ht_salida", length = 50)
+    private String numeroHtSalida;
     
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

@@ -254,7 +254,7 @@ function mostrarDocumentos(registros) {
             infoParticipantes = '<em style="color: #999;">Sin información</em>';
         }
 
-        // Construir información de números de documento
+        // Construir información de números de documento y HT
         let numerosDoc = '';
         if (reg.numeroDocumentoEntrada && reg.numeroDocumentoSalida) {
             numerosDoc = `<strong>N° Entrada:</strong> ${reg.numeroDocumentoEntrada}<br><strong>N° Salida:</strong> ${reg.numeroDocumentoSalida}`;
@@ -264,6 +264,14 @@ function mostrarDocumentos(registros) {
             numerosDoc = `<strong>N° Doc:</strong> ${reg.numeroDocumentoSalida}`;
         } else {
             numerosDoc = '<em style="color: #999;">Sin número</em>';
+        }
+        
+        // Agregar información de HT
+        const htEntrada = reg.numeroHtEntrada || 'S/N';
+        const htSalida = reg.numeroHtSalida || (reg.tieneSalida ? 'S/N' : '-');
+        let htInfo = `<strong>HT Entrada:</strong> ${htEntrada}`;
+        if (reg.tieneSalida) {
+            htInfo += `<br><strong>HT Salida:</strong> ${htSalida}`;
         }
 
         // Construir enlaces de archivos
@@ -286,7 +294,8 @@ function mostrarDocumentos(registros) {
                 <td>
                     <strong>Título:</strong> ${reg.tituloDocumento}<br>
                     ${infoParticipantes}<br>
-                    ${numerosDoc}
+                    ${numerosDoc}<br>
+                    ${htInfo}
                     ${archivosLinks ? '<br>' + archivosLinks : ''}
                 </td>
                 <td>${reg.observacionesSalida || '-'}</td>

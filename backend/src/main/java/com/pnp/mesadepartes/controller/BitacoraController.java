@@ -149,7 +149,7 @@ public class BitacoraController {
      * Exportar bitácora a PDF
      */
     @GetMapping("/exportar/pdf")
-    @PreAuthorize("hasAnyRole('Administrador', 'Jefatura')")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Exportar a PDF", description = "Exporta la bitácora completa a formato PDF")
     @ApiResponse(responseCode = "200", description = "PDF generado exitosamente")
     public ResponseEntity<byte[]> exportarPDF() {
@@ -170,7 +170,7 @@ public class BitacoraController {
      * Exportar bitácora a Excel
      */
     @GetMapping("/exportar/excel")
-    @PreAuthorize("hasAnyRole('Administrador', 'Jefatura')")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Exportar a Excel", description = "Exporta la bitácora completa a formato Excel")
     @ApiResponse(responseCode = "200", description = "Excel generado exitosamente")
     public ResponseEntity<byte[]> exportarExcel() {

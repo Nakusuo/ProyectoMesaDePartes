@@ -1,8 +1,8 @@
 -- =====================================================
 -- BASE DE DATOS MESA DE PARTES PNP - VERSIÓN COMPLETA Y ACTUALIZADA
--- Fecha: 19 de Noviembre de 2025
+-- Fecha: 2 de Diciembre de 2025
 -- Incluye: Derivaciones, Notificaciones, Trazabilidad, Reportes y BITÁCORA UNIFICADA
--- IMPORTANTE: Bitácora ahora tiene un solo registro por documento con entrada y salida
+-- IMPORTANTE: Bitácora con usuario asignado y números de HT
 -- =====================================================
 
 DROP DATABASE IF EXISTS mesa_partes_db;
@@ -215,6 +215,7 @@ CREATE TABLE bitacora (
     usuario_entrada VARCHAR(200),
     numero_documento_entrada VARCHAR(100),
     archivo_entrada_url VARCHAR(255),
+    numero_ht_entrada VARCHAR(50),
     
     -- Datos de SALIDA
     tiene_salida BOOLEAN DEFAULT FALSE,
@@ -224,6 +225,7 @@ CREATE TABLE bitacora (
     numero_documento_salida VARCHAR(100),
     observaciones_salida TEXT,
     archivo_salida_url VARCHAR(255),
+    numero_ht_salida VARCHAR(50),
     
     -- Metadatos
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -505,12 +507,13 @@ DELIMITER ;
 
 -- =====================================================
 -- TRIGGER: Registrar ENTRADA en bitácora UNIFICADA
+-- IMPORTANTE: Usa el usuario ASIGNADO del trámite, no el usuario que registró
 -- =====================================================
 DROP TRIGGER IF EXISTS trg_bitacora_entrada_documento;
 
 DELIMITER //
 CREATE TRIGGER trg_bitacora_entrada_documento
-AFTER INSERT ON documentos
+AFTER INSERT ON tramites
 FOR EACH ROW
 BEGIN
     INSERT INTO bitacora (
@@ -523,22 +526,26 @@ BEGIN
         fecha_entrada,
         usuario_entrada,
         numero_documento_entrada,
-        archivo_entrada_url
+        archivo_entrada_url,
+        numero_ht_entrada
     )
     SELECT 
-        NEW.ID_documento,
-        NEW.codigo,
-        NEW.titulo,
+        d.ID_documento,
+        d.codigo,
+        d.titulo,
         td.nombre,
         TRUE,
-        NEW.remitente,
-        NEW.fecha_ingreso,
+        d.remitente,
+        d.fecha_ingreso,
         CONCAT(u.nombre, ' ', u.apellido),
-        NEW.numero_documento,
-        NEW.archivo_url
-    FROM tipos_documento td
-    LEFT JOIN usuarios u ON NEW.ID_usuario_registro = u.ID_usuario
-    WHERE td.ID_tipo_documento = NEW.ID_tipo_documento;
+        d.numero_documento,
+        d.archivo_url,
+        ht.numero_ht
+    FROM documentos d
+    LEFT JOIN tipos_documento td ON d.ID_tipo_documento = td.ID_tipo_documento
+    LEFT JOIN usuarios u ON NEW.ID_usuario_asignado = u.ID_usuario
+    LEFT JOIN hojas_tramite ht ON d.ID_documento = ht.ID_documento
+    WHERE d.ID_documento = NEW.ID_documento;
 END //
 DELIMITER ;
 
@@ -553,6 +560,13 @@ AFTER INSERT ON salidas_documento
 FOR EACH ROW
 BEGIN
     DECLARE existe_registro INT;
+    DECLARE ht_salida_numero VARCHAR(50);
+    
+    -- Obtener el número de HT (puede ser el mismo de entrada o uno nuevo)
+    SELECT numero_ht INTO ht_salida_numero
+    FROM hojas_tramite
+    WHERE ID_documento = NEW.ID_documento
+    LIMIT 1;
     
     -- Verificar si ya existe un registro para este documento
     SELECT COUNT(*) INTO existe_registro
@@ -570,7 +584,8 @@ BEGIN
             b.usuario_salida = CONCAT(IFNULL(u.nombre, ''), ' ', IFNULL(u.apellido, '')),
             b.numero_documento_salida = NEW.numero_documento_salida,
             b.observaciones_salida = NEW.observacion,
-            b.archivo_salida_url = NEW.archivo_cargo_url
+            b.archivo_salida_url = NEW.archivo_cargo_url,
+            b.numero_ht_salida = ht_salida_numero
         WHERE b.ID_documento = NEW.ID_documento;
     ELSE
         -- Crear nuevo registro solo con datos de salida (caso excepcional)
@@ -586,7 +601,8 @@ BEGIN
             usuario_salida,
             numero_documento_salida,
             observaciones_salida,
-            archivo_salida_url
+            archivo_salida_url,
+            numero_ht_salida
         )
         SELECT 
             d.ID_documento,
@@ -600,7 +616,8 @@ BEGIN
             CONCAT(u.nombre, ' ', u.apellido),
             NEW.numero_documento_salida,
             NEW.observacion,
-            NEW.archivo_cargo_url
+            NEW.archivo_cargo_url,
+            ht_salida_numero
         FROM documentos d
         LEFT JOIN tipos_documento td ON d.ID_tipo_documento = td.ID_tipo_documento
         LEFT JOIN usuarios u ON NEW.ID_usuario_salida = u.ID_usuario
@@ -611,6 +628,7 @@ DELIMITER ;
 
 -- =====================================================
 -- POBLAR BITÁCORA CON DOCUMENTOS EXISTENTES
+-- IMPORTANTE: Usa el usuario ASIGNADO del trámite, no el usuario que registró
 -- =====================================================
 
 -- Insertar todos los documentos que ya existen como ENTRADA
@@ -624,7 +642,8 @@ INSERT IGNORE INTO bitacora (
     fecha_entrada,
     usuario_entrada,
     numero_documento_entrada,
-    archivo_entrada_url
+    archivo_entrada_url,
+    numero_ht_entrada
 )
 SELECT 
     d.ID_documento,
@@ -636,15 +655,19 @@ SELECT
     d.fecha_ingreso,
     CONCAT(u.nombre, ' ', u.apellido),
     d.numero_documento,
-    d.archivo_url
+    d.archivo_url,
+    ht.numero_ht
 FROM documentos d
 LEFT JOIN tipos_documento td ON d.ID_tipo_documento = td.ID_tipo_documento
-LEFT JOIN usuarios u ON d.ID_usuario_registro = u.ID_usuario;
+LEFT JOIN tramites t ON d.ID_documento = t.ID_documento
+LEFT JOIN usuarios u ON t.ID_usuario_asignado = u.ID_usuario
+LEFT JOIN hojas_tramite ht ON d.ID_documento = ht.ID_documento;
 
 -- Actualizar con información de SALIDA donde exista
 UPDATE bitacora b
 INNER JOIN salidas_documento s ON b.ID_documento = s.ID_documento
 LEFT JOIN usuarios u ON s.ID_usuario_salida = u.ID_usuario
+LEFT JOIN hojas_tramite ht ON b.ID_documento = ht.ID_documento
 SET 
     b.tiene_salida = TRUE,
     b.destinatario = s.destinatario_salida,
@@ -652,7 +675,8 @@ SET
     b.usuario_salida = CONCAT(u.nombre, ' ', u.apellido),
     b.numero_documento_salida = s.numero_documento_salida,
     b.observaciones_salida = s.observacion,
-    b.archivo_salida_url = s.archivo_cargo_url;
+    b.archivo_salida_url = s.archivo_cargo_url,
+    b.numero_ht_salida = ht.numero_ht;
 
 -- =====================================================
 -- MENSAJES DE CONFIRMACIÓN Y VERIFICACIÓN

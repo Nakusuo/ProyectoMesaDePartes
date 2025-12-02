@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="../../assets/css/core/style.css?v=2">
   <link rel="stylesheet" href="../../assets/css/core/toast.css?v=2">
   <link rel="stylesheet" href="../../assets/css/components/sidebar.css?v=2">
-  <link rel="stylesheet" href="../../assets/css/pages/admin/bitacora.css?v=2">
+  <link rel="stylesheet" href="../../assets/css/pages/admin/bitacora.css?v=7">
 
 </head>
 
@@ -22,62 +22,62 @@
   <main class="main-content">
     <div class="container">
       <div class="card">
-        <div class="card-header" style="overflow: visible !important;">
+        <div class="card-header" style="position: relative; overflow: visible !important;">
           <h2 class="card-title">Dashboard - Bitácora de Eventos</h2>
-          <div class="export-dropdown" style="position: relative; display: inline-block; z-index: 10000;">
-            <button class="btn btn-secondary btn-sm" id="btn-exportar" onclick="toggleExportMenu(event)">
+          <div style="position: relative; display: inline-block;">
+            <button class="btn btn-secondary btn-sm" id="btn-exportar">
               <span>📥</span>
               Exportar
               <span style="margin-left: 5px;">▼</span>
             </button>
-            <div class="export-menu" id="export-menu" style="
+            <div id="export-menu" style="
               display: none;
               position: absolute;
-              top: calc(100% + 4px);
+              top: 100%;
               right: 0;
+              margin-top: 5px;
               background: white;
               border: 2px solid #2563eb;
               border-radius: 8px;
-              box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-              min-width: 220px;
-              max-width: 220px;
-              z-index: 10001;
-              overflow: visible;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+              min-width: 200px;
+              z-index: 9999;
             ">
-              <button onclick="exportarBitacoraPDF(); event.stopPropagation();" style="
+              <button id="btn-export-pdf" style="
                 display: block;
                 width: 100%;
-                padding: 14px 18px;
+                padding: 12px 16px;
                 border: none;
-                background: #ffffff;
+                background: white;
                 text-align: left;
                 cursor: pointer;
-                font-size: 15px;
-                font-weight: 500;
-                border-bottom: 1px solid #e5e7eb;
+                font-size: 14px;
                 color: #1f2937;
-                transition: all 0.2s;
-              " onmouseover="this.style.background='#f3f4f6'; this.style.color='#2563eb';" onmouseout="this.style.background='#ffffff'; this.style.color='#1f2937';">
-                <span style="margin-right: 8px;"><img src="../../assets/images/hoja.png" style="width: 18px; height: 18px; vertical-align: middle;"></span>Exportar como PDF
-              </button>
-              <button onclick="exportarBitacoraExcel(); event.stopPropagation();" style="
+                border-radius: 6px 6px 0 0;
+              ">📄 Exportar PDF</button>
+              <button id="btn-export-excel" style="
                 display: block;
                 width: 100%;
-                padding: 14px 18px;
+                padding: 12px 16px;
                 border: none;
-                background: #ffffff;
+                background: white;
                 text-align: left;
                 cursor: pointer;
-                font-size: 15px;
-                font-weight: 500;
+                font-size: 14px;
                 color: #1f2937;
-                transition: all 0.2s;
-              " onmouseover="this.style.background='#f3f4f6'; this.style.color='#2563eb';" onmouseout="this.style.background='#ffffff'; this.style.color='#1f2937';">
-                <span style="margin-right: 8px;">📊</span>Exportar como Excel
-              </button>
+                border-radius: 0 0 6px 6px;
+              ">📊 Exportar Excel</button>
             </div>
           </div>
         </div>
+        
+        <style>
+          #btn-export-pdf:hover,
+          #btn-export-excel:hover {
+            background: #f3f4f6 !important;
+            color: #2563eb !important;
+          }
+        </style>
 
         <div style="margin-bottom: 20px;">
           <p style="color: var(--text-secondary);">Registro de acciones realizadas en el sistema de Mesa de Partes.</p>
@@ -154,31 +154,48 @@
   <script src="../../assets/js/components/sidebar.js?v=4"></script>
   <script src="../../assets/js/core/auth.js?v=4"></script>
   <script src="../../assets/js/modules/reportes-global.js?v=4"></script>
-  <script src="../../assets/js/pages/admin/bitacora.js?v=9"></script>
+  <script src="../../assets/js/pages/admin/bitacora.js?v=11"></script>
   <script>
     // Verificar permisos al cargar la página
     document.addEventListener('DOMContentLoaded', function () {
       if (window.permissionsManager) {
         window.permissionsManager.redirectIfUnauthorized('bitacora.html');
       }
-    });
 
-    // Función para toggle del menú exportar (disponible globalmente)
-    window.toggleExportMenu = function(event) {
-      event.stopPropagation(); // Evitar propagación del click
+      // Menú de exportación
+      const btnExportar = document.getElementById('btn-exportar');
       const menu = document.getElementById('export-menu');
-      const currentDisplay = menu.style.display;
-      menu.style.display = currentDisplay === 'none' || currentDisplay === '' ? 'block' : 'none';
-      console.log('🔵 Menu toggle:', menu.style.display);
-    }
+      const btnPdf = document.getElementById('btn-export-pdf');
+      const btnExcel = document.getElementById('btn-export-excel');
 
-    // Cerrar menú al hacer click fuera
-    document.addEventListener('click', function (event) {
-      const dropdown = document.querySelector('.export-dropdown');
-      const menu = document.getElementById('export-menu');
-      if (dropdown && menu && !dropdown.contains(event.target)) {
+      // Abrir/cerrar menú
+      btnExportar.addEventListener('click', function(e) {
+        e.stopPropagation();
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+      });
+
+      // Cerrar al hacer clic fuera
+      document.addEventListener('click', function() {
         menu.style.display = 'none';
-      }
+      });
+
+      // Exportar PDF
+      btnPdf.addEventListener('click', function(e) {
+        e.stopPropagation();
+        menu.style.display = 'none';
+        if (typeof exportarBitacoraPDF === 'function') {
+          exportarBitacoraPDF();
+        }
+      });
+
+      // Exportar Excel
+      btnExcel.addEventListener('click', function(e) {
+        e.stopPropagation();
+        menu.style.display = 'none';
+        if (typeof exportarBitacoraExcel === 'function') {
+          exportarBitacoraExcel();
+        }
+      });
     });
   </script>
 </body>
