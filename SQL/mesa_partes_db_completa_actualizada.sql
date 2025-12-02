@@ -678,25 +678,6 @@ SET
     b.archivo_salida_url = s.archivo_cargo_url,
     b.numero_ht_salida = ht.numero_ht;
 
--- =====================================================
--- MENSAJES DE CONFIRMACIÓN Y VERIFICACIÓN
--- =====================================================
-SELECT '✅ Base de datos creada exitosamente con BITÁCORA UNIFICADA' AS mensaje;
-SELECT '' AS separador;
-
-SELECT '🔐 CREDENCIALES DE ACCESO' AS titulo;
-SELECT 'Todos los usuarios tienen la contraseña: 123456' AS info;
-SELECT '' AS separador;
-
-SELECT '📊 ESTADÍSTICAS DE LA BASE DE DATOS' AS titulo;
-SELECT COUNT(*) AS Total_Areas FROM areas;
-SELECT COUNT(*) AS Total_Usuarios FROM usuarios;
-SELECT COUNT(*) AS Total_Documentos FROM documentos;
-SELECT '' AS separador;
-
-SELECT '✅ Tabla bitácora UNIFICADA creada exitosamente' AS mensaje;
-SELECT '✅ Triggers configurados correctamente (derivación + bitácora unificada)' AS mensaje;
-SELECT CONCAT('📊 ', COUNT(*), ' registros insertados en bitácora') AS mensaje FROM bitacora;
 
 -- Estadísticas de bitácora
 SELECT 
@@ -707,10 +688,3 @@ SELECT
     SUM(tiene_entrada AND NOT tiene_salida) AS solo_entrada,
     SUM(NOT tiene_entrada AND tiene_salida) AS solo_salida
 FROM bitacora;
-
-SELECT '' AS separador;
-SELECT '🎉 ¡TODO LISTO! Sistema completo con BITÁCORA UNIFICADA funcionando' AS mensaje_final;
-SELECT '💡 Usuario Administrador: nakusu / 123456' AS tip_1;
-SELECT '💡 Usuario Mesa de Partes: accori / 123456' AS tip_2;
-SELECT '💡 NUEVO: Bitácora ahora tiene UN SOLO REGISTRO por documento' AS tip_3;
-SELECT '💡 NUEVO: Entrada y Salida en la misma fila' AS tip_4;
