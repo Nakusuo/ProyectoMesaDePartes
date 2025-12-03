@@ -327,8 +327,6 @@ async function registrarSalida(e) {
     };
 
     try {
-        showToast('Registrando salida...', 'loading');
-        
         // Si hay número de HT, actualizar o crear la hoja de trámite
         if (numeroHT) {
             await actualizarHojaTramite(documentoSeleccionado.idDocumento, numeroHT);
@@ -349,7 +347,14 @@ async function registrarSalida(e) {
             throw new Error(data.error || 'Error al registrar salida');
         }
 
-        showToast('✅ Salida de documento registrada exitosamente', 'success');
+        // Mostrar toast de notificación estilo sistema
+        if (typeof mostrarNotificacionToast === 'function') {
+            mostrarNotificacionToast(
+                '📤 Documento Enviado',
+                `El documento ${documentoSeleccionado.codigo} ha sido registrado como salida`,
+                'success'
+            );
+        }
         
         // Limpiar formulario y recargar tabla
         setTimeout(() => {

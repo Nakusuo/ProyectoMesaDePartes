@@ -34,6 +34,7 @@ import com.pnp.mesadepartes.repository.SalidaDocumentoRepository;
 import com.pnp.mesadepartes.repository.TipoDocumentoRepository;
 import com.pnp.mesadepartes.repository.UsuarioRepository;
 import com.pnp.mesadepartes.service.BitacoraService;
+import com.pnp.mesadepartes.service.NotificacionService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -54,6 +55,9 @@ public class SalidaDocumentoController {
     
     @Autowired
     private BitacoraService bitacoraService;
+    
+    @Autowired
+    private NotificacionService notificacionService;
 
 
     @PostMapping("/registrar")
@@ -124,6 +128,36 @@ public class SalidaDocumentoController {
                 idUsuarioSalida,
                 nombreUsuario
             );
+            
+            // Crear notificaciones
+            // 1. Notificar al usuario que registró la salida
+            if (idUsuarioSalida != null) {
+                String tituloNotif = "Salida Registrada - " + documento.getCodigo();
+                String mensajeNotif = "Se ha registrado la salida del documento '" + documento.getTitulo() + 
+                                     "' con destino a: " + destinatarioSalida;
+                notificacionService.crearNotificacion(
+                    idUsuarioSalida, 
+                    documento.getIdDocumento(), 
+                    tituloNotif, 
+                    mensajeNotif, 
+                    "DOCUMENTO_SALIDA"
+                );
+            }
+            
+            // 2. Notificar al usuario que originalmente registró el documento (si es diferente)
+            if (documento.getUsuarioCreador() != null && 
+                !documento.getUsuarioCreador().getIdUsuario().equals(idUsuarioSalida)) {
+                String tituloNotif = "Documento Enviado - " + documento.getCodigo();
+                String mensajeNotif = "El documento '" + documento.getTitulo() + 
+                                     "' que usted registró ha sido enviado a: " + destinatarioSalida;
+                notificacionService.crearNotificacion(
+                    documento.getUsuarioCreador().getIdUsuario(), 
+                    documento.getIdDocumento(), 
+                    tituloNotif, 
+                    mensajeNotif, 
+                    "DOCUMENTO_SALIDA"
+                );
+            }
             
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Salida de documento registrada exitosamente");

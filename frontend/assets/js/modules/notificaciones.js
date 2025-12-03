@@ -155,7 +155,11 @@ const NotificacionModule = {
             'REGISTRO': 'fas fa-file-alt',
             'DERIVACION': 'fas fa-share',
             'CAMBIO_ESTADO': 'fas fa-sync',
-            'ASIGNACION': 'fas fa-user-check'
+            'ASIGNACION': 'fas fa-user-check',
+            'success': '✓',
+            'error': '✕',
+            'warning': '⚠',
+            'info': 'ℹ'
         };
         return iconos[tipo] || 'fas fa-bell';
     },
@@ -254,6 +258,14 @@ const NotificacionModule = {
             setTimeout(() => toast.remove(), 300);
         }, 5000);
     }
+};
+
+// Alias global para facilitar el uso
+window.NotificacionManager = NotificacionModule;
+
+// Función global para mostrar toast rápidamente
+window.mostrarNotificacionToast = function(titulo, mensaje, tipo = 'info') {
+    NotificacionModule.mostrarNotificacionToast(titulo, mensaje, tipo);
 };
 
 // Inicializar al cargar la página

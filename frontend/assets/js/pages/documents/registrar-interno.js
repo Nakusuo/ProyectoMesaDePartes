@@ -219,7 +219,15 @@ async function handleSubmitRegistro(event) {
 
     const docGuardado = await response.json();
 
-    alert(`Documento registrado con éxito.\nCódigo: ${docGuardado.codigo}`);
+    // Mostrar toast de notificación estilo sistema
+    if (typeof mostrarNotificacionToast === 'function') {
+      mostrarNotificacionToast(
+        '📄 Documento Registrado',
+        `El documento ${docGuardado.codigo} ha sido registrado exitosamente`,
+        'success'
+      );
+    }
+    
     registroForm.reset();
 
   } catch (error) {
