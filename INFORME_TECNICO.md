@@ -7,7 +7,7 @@
 
 ---
 
-## 1. RESUMEN EJECUTIVO
+## 1. RSUMEN EJECUTIVO
 
 El Sistema de Mesa de Partes Digital es una plataforma web diseñada para modernizar y digitalizar la gestión documental de la Policía Nacional del Perú (PNP). El sistema permite el registro, seguimiento, derivación y control de documentos administrativos, reemplazando el proceso manual tradicional por una solución digital eficiente, trazable y segura.
 

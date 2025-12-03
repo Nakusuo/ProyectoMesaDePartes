@@ -1,1278 +1,1176 @@
-# 📋 GUÍA PARA INFORME ACADÉMICO
+# INFORME TÉCNICO DEL PROYECTO
 ## Sistema de Mesa de Partes Digital - PNP
 
----
-
-## 📌 Capítulo 1: Presentación de la Empresa
-
-### 🏛️ Policía Nacional del Perú (PNP)
-
-La Policía Nacional del Perú (PNP) es la institución estatal responsable de mantener el orden interno, garantizar el cumplimiento de las leyes y proteger los derechos fundamentales de los ciudadanos en todo el territorio nacional. Además de sus funciones operativas en materia de seguridad ciudadana, la PNP desarrolla importantes actividades administrativas que permiten el funcionamiento eficiente de la institución.
-
-Dentro de estas funciones administrativas, la **gestión documental** ocupa un papel crucial, ya que involucra la recepción, registro, clasificación, derivación y seguimiento de documentos oficiales, tanto internos como externos. Una adecuada gestión de documentos no solo garantiza la transparencia institucional, sino que también optimiza la atención a la ciudadanía y el cumplimiento de procedimientos legales.
-
-### 🎯 Misión
-
-Garantizar la seguridad ciudadana y el cumplimiento de la ley, ofreciendo servicios eficientes, confiables y transparentes en todos los procesos administrativos y operativos, en beneficio de la población y el fortalecimiento institucional.
-
-### 🔭 Visión
-
-Ser una institución moderna, digitalizada y reconocida a nivel nacional e internacional por la eficiencia, transparencia y calidad de sus procesos administrativos y operativos, apoyada en herramientas tecnológicas innovadoras.
-
-### 🌍 Entorno
-
-Actualmente, gran parte de la recepción y gestión documental en la PNP se realiza de manera presencial y mediante registros manuales en papel. Este método tradicional presenta limitaciones importantes:
-
-- ⏱️ **Retrasos** en el procesamiento y derivación de documentos
-- 📄 Mayor **riesgo de extravío**, duplicidad o pérdida de información
-- 🔍 **Dificultad** para realizar un seguimiento en tiempo real del estado de cada trámite
-- 🌳 **Alto consumo** de recursos físicos (papel, tinta, almacenamiento)
-
-Este contexto evidencia la necesidad de digitalizar y automatizar el proceso para reducir errores, mejorar la trazabilidad y optimizar los tiempos de respuesta tanto para el personal interno como para los ciudadanos.
-
-### 📊 Estrategias
-
-Para atender esta necesidad, la PNP plantea implementar soluciones tecnológicas que permitan:
-
-1. ✅ Digitalizar la recepción y registro de documentos
-2. 🔄 Automatizar el flujo de derivación y seguimiento
-3. 🔐 Garantizar la trazabilidad de cada trámite mediante códigos únicos
-4. 🛡️ Proteger la información sensible mediante estándares de seguridad
-
-### 📈 Planes de la Empresa
-
-Dentro de su estrategia de modernización institucional, la PNP busca optimizar los procesos administrativos a través de herramientas tecnológicas que permitan:
-
-- 🚀 Acceso más rápido y seguro a la información
-- 🔗 Integración con otros sistemas internos
-- 📉 Reducción de la dependencia de procedimientos manuales
-- 🎖️ Mejora de la atención al ciudadano y fortalecimiento de la transparencia institucional
+**Fecha:** 3 de Diciembre de 2025  
+**Versión:** 1.0  
+**Autor:** Equipo de Desarrollo  
 
 ---
 
-## 🎯 Descripción del Problema
+## 1. RESUMEN EJECUTIVO
 
-En la actualidad, la Policía Nacional del Perú recibe diariamente un gran volumen de documentos provenientes de ciudadanos, instituciones públicas y privadas, así como de sus propias áreas internas. 
+El Sistema de Mesa de Partes Digital es una plataforma web diseñada para modernizar y digitalizar la gestión documental de la Policía Nacional del Perú (PNP). El sistema permite el registro, seguimiento, derivación y control de documentos administrativos, reemplazando el proceso manual tradicional por una solución digital eficiente, trazable y segura.
 
-### 🔴 Problemas Identificados:
-
-1. **Retrasos en derivación**: Los documentos tardan en llegar a las áreas correspondientes
-2. **Visibilidad limitada**: Falta de información sobre el estado actual de los trámites
-3. **Riesgo de extravío**: El manejo físico incrementa pérdida o duplicación de documentos
-4. **Falta de trazabilidad**: Dificulta auditorías y verificaciones posteriores
-5. **Atención deficiente**: Demoras que afectan la satisfacción ciudadana
-
----
-
-## 💡 Alternativas de Solución
-
-### ✅ **Opción 1: Sistema Web Desarrollado a Medida** (SELECCIONADA)
-
-**Descripción**: Diseñar y programar una plataforma web adaptada a las necesidades específicas de la PNP.
-
-**Ventajas**:
-- ✔️ Personalización total según procesos institucionales
-- ✔️ No depende de licencias externas
-- ✔️ Control total del código fuente
-- ✔️ Escalabilidad a futuro
-- ✔️ Integración con sistemas existentes
-
-**Tecnologías empleadas**:
-- **Backend**: Java 21 + Spring Boot 3.5.7
-- **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
-- **Base de Datos**: MySQL 8.0
-- **Seguridad**: Spring Security con JWT
-- **Build Tool**: Maven 3.9
-
-### ⚠️ Opción 2: Software Comercial
-
-**Descripción**: Adquirir una solución existente en el mercado.
-
-**Desventajas**:
-- ❌ Limitaciones en personalización
-- ❌ Costos recurrentes de licenciamiento
-- ❌ Dependencia de proveedor externo
-- ❌ Dificultad para integrar con sistemas PNP
-
-### ❌ Opción 3: Mantener Sistema Manual
-
-**Descripción**: Continuar con proceso manual reforzando personal.
-
-**Desventajas**:
-- ❌ No resuelve problemas de trazabilidad
-- ❌ Mantiene lentitud en atención
-- ❌ Persiste riesgo de extravío
-- ❌ No aprovecha transformación digital
+### 1.1 Objetivos del Sistema
+- Digitalizar el proceso de recepción y registro de documentos
+- Automatizar el flujo de derivaciones entre áreas
+- Proporcionar trazabilidad completa del ciclo de vida de los documentos
+- Generar reportes y estadísticas en tiempo real
+- Mejorar la eficiencia operativa y reducir tiempos de respuesta
 
 ---
 
-## 📐 Alcances del Proyecto
+## 2. ARQUITECTURA DEL SISTEMA
 
-### ✅ Funcionalidades Implementadas
-
-1. **Gestión de Usuarios**
-   - Registro y autenticación con Spring Security
-   - Control de roles (Administrador, Usuario)
-   - Cifrado de contraseñas con BCrypt
-
-2. **Registro de Documentos**
-   - Formulario de ingreso con validación
-   - Generación automática de código único
-   - Carga de archivos PDF
-   - Registro en base de datos MySQL
-
-3. **Derivación de Documentos**
-   - Asignación a áreas específicas
-   - Notificación al responsable
-   - Historial de derivaciones
-
-4. **Seguimiento y Trazabilidad**
-   - Consulta de estado en tiempo real
-   - Visualización de historial completo
-   - Estados: Registrado, En Proceso, Atendido, Finalizado
-
-5. **Generación de Reportes**
-   - Reportes en Excel (Apache POI)
-   - Reportes en PDF (iText)
-   - Filtros por fecha, estado, área
-
-6. **Bitácora de Auditoría**
-   - Registro de todas las acciones
-   - Información: Usuario, Acción, Fecha/Hora, IP
-
-### 🔒 Seguridad Implementada
-
-- **Autenticación JWT**: Tokens de sesión seguros
-- **Cifrado BCrypt**: Protección de contraseñas
-- **CORS Configurado**: Control de orígenes permitidos
-- **Validación de Datos**: Backend y Frontend
-- **Auditoría**: Registro de eventos críticos
-
----
-
-## 🚧 Limitaciones del Proyecto
-
-### 🔌 Técnicas
-
-1. **Dependencia de Internet**: Requiere conexión estable
-2. **Alcance Inicial**: Implementado para una unidad (puede escalarse)
-3. **Capacidad de Servidor**: Recursos limitados en fase inicial
-4. **Integración Externa**: No conectado con otros sistemas gubernamentales (futuro)
-
-### 👥 Organizacionales
-
-1. **Capacitación**: Requiere entrenamiento del personal
-2. **Resistencia al Cambio**: Adaptación de usuarios tradicionales
-3. **Recursos Humanos**: Personal técnico limitado para soporte
-
----
-
-## 📋 Requerimientos
-
-### ⚙️ Requerimientos Funcionales (RF)
-
-| ID | Requisito | Prioridad | Estado |
-|----|-----------|-----------|--------|
-| RF1 | Registrar documentos con código único | Alta | ✅ Implementado |
-| RF2 | Derivar documentos a áreas | Alta | ✅ Implementado |
-| RF3 | Consultar estado y trazabilidad | Alta | ✅ Implementado |
-| RF4 | Gestión de roles y permisos | Alta | ✅ Implementado |
-| RF5 | Generar reportes Excel/PDF | Media | ✅ Implementado |
-| RF6 | Registro de bitácora/auditoría | Alta | ✅ Implementado |
-
-### 🔧 Requerimientos No Funcionales (RNF)
-
-| ID | Requisito | Métrica | Estado |
-|----|-----------|---------|--------|
-| RNF1 | Rendimiento | Respuesta < 3 segundos | ✅ Cumplido |
-| RNF2 | Seguridad | JWT + BCrypt + HTTPS | ✅ Cumplido |
-| RNF3 | Disponibilidad | 99% uptime | ✅ Cumplido |
-| RNF4 | Escalabilidad | Arquitectura modular | ✅ Cumplido |
-| RNF5 | Usabilidad | Interfaz intuitiva | ✅ Cumplido |
-| RNF6 | Mantenibilidad | Código documentado | ✅ Cumplido |
-
----
-
-## 📊 Lean Canvas
-
-```mermaid
-graph LR
-    A[Problema:<br/>Gestión manual<br/>Extravío<br/>Falta trazabilidad] --> B[Solución:<br/>Sistema Web<br/>Digitalización<br/>Trazabilidad]
-    B --> C[Métricas:<br/>Tiempo reducción<br/>Documentos procesados<br/>Satisfacción usuario]
-    C --> D[Propuesta Valor:<br/>Transparencia<br/>Eficiencia<br/>Seguridad]
-    D --> E[Ventaja:<br/>Código propio<br/>Personalizado<br/>Sin licencias]
-```
-
----
-
-## 📅 Diagrama de Gantt
-
-```mermaid
-gantt
-    title Planificación del Proyecto
-    dateFormat  YYYY-MM-DD
-    section Análisis
-    Levantamiento de requisitos           :2024-09-01, 7d
-    Análisis de alternativas              :2024-09-08, 5d
-    section Diseño
-    Diseño de arquitectura                :2024-09-13, 7d
-    Diseño de base de datos               :2024-09-20, 5d
-    Mockups y prototipos                  :2024-09-25, 5d
-    section Desarrollo
-    Implementación Backend                :2024-10-01, 21d
-    Implementación Frontend               :2024-10-15, 14d
-    Integración BD                        :2024-10-29, 7d
-    section Pruebas
-    Pruebas unitarias                     :2024-11-05, 7d
-    Pruebas de integración                :2024-11-12, 5d
-    section Despliegue
-    Configuración servidor                :2024-11-17, 3d
-    Capacitación usuarios                 :2024-11-20, 3d
-    Puesta en producción                  :2024-11-23, 2d
-```
-
----
-
-## 🗂️ Work Breakdown Structure (WBS)
-
-```mermaid
-graph TD
-    A[Sistema Mesa de Partes Digital] --> B[1. Análisis]
-    A --> C[2. Diseño]
-    A --> D[3. Desarrollo]
-    A --> E[4. Pruebas]
-    A --> F[5. Despliegue]
-    
-    B --> B1[1.1 Requisitos]
-    B --> B2[1.2 Alternativas]
-    
-    C --> C1[2.1 Arquitectura]
-    C --> C2[2.2 Base Datos]
-    C --> C3[2.3 Interfaces]
-    
-    D --> D1[3.1 Backend]
-    D --> D2[3.2 Frontend]
-    D --> D3[3.3 Integración]
-    
-    D1 --> D1A[3.1.1 Autenticación]
-    D1 --> D1B[3.1.2 Documentos]
-    D1 --> D1C[3.1.3 Reportes]
-    
-    E --> E1[4.1 Unitarias]
-    E --> E2[4.2 Integración]
-    E --> E3[4.3 UAT]
-    
-    F --> F1[5.1 Servidor]
-    F --> F2[5.2 Capacitación]
-    F --> F3[5.3 Producción]
-```
-
----
-
-## 🔄 Diagrama de Proceso Actual (Manual)
-
-```mermaid
-flowchart TD
-    A[Ciudadano llega<br/>con documento] --> B[Mesa de Partes<br/>recibe físicamente]
-    B --> C[Registro manual<br/>en libro físico]
-    C --> D{¿Tiene<br/>cargo?}
-    D -->|Sí| E[Sella cargo<br/>y entrega]
-    D -->|No| F[Genera cargo<br/>manuscrito]
-    F --> E
-    E --> G[Deriva físicamente<br/>a área]
-    G --> H[Área recibe<br/>documento]
-    H --> I[Procesa trámite]
-    I --> J[Devuelve a<br/>Mesa de Partes]
-    J --> K{¿Necesita<br/>salida?}
-    K -->|Sí| L[Registra salida<br/>en libro]
-    K -->|No| M[Archiva]
-    L --> N[Envía documento]
-    
-    style A fill:#ff9999
-    style C fill:#ffcc99
-    style G fill:#ffcc99
-    style L fill:#ffcc99
-```
-
-**Problemas identificados**:
-- ❌ Registro manual propenso a errores
-- ❌ Sin trazabilidad en tiempo real
-- ❌ Riesgo de extravío
-- ❌ Proceso lento
-
----
-
-## ✅ Diagrama de Proceso Propuesto (Digital)
-
-```mermaid
-flowchart TD
-    A[Usuario accede<br/>al sistema web] --> B{¿Autenticado?}
-    B -->|No| C[Login JWT]
-    B -->|Sí| D[Dashboard]
-    C --> D
-    
-    D --> E[Registrar<br/>Documento]
-    E --> F[Completa formulario:<br/>Remitente, Asunto,<br/>Tipo, Archivo PDF]
-    F --> G[Sistema genera<br/>código único]
-    G --> H[Almacena en BD<br/>+ Archivo servidor]
-    
-    H --> I[Administrador<br/>deriva a área]
-    I --> J[Notificación<br/>automática]
-    J --> K[Trabajador accede<br/>y actualiza estado]
-    
-    K --> L{¿Estado?}
-    L -->|Recibido| M[Marca recibido]
-    L -->|En Proceso| N[Actualiza progreso]
-    L -->|Atendido| O[Finaliza trámite]
-    
-    M --> P[Bitácora registra<br/>cada acción]
-    N --> P
-    O --> P
-    
-    P --> Q[Consulta trazabilidad<br/>en tiempo real]
-    Q --> R[Genera reportes<br/>Excel/PDF]
-    
-    style G fill:#99ff99
-    style H fill:#99ff99
-    style J fill:#99ccff
-    style P fill:#ffff99
-    style R fill:#ff99ff
-```
-
-**Ventajas implementadas**:
-- ✅ Código único automático
-- ✅ Trazabilidad completa
-- ✅ Notificaciones instantáneas
-- ✅ Reportes automáticos
-
----
-
-## 🎨 Mockups del Sistema
-
-### 1. Pantalla de Login
+### 2.1 Arquitectura General
+El sistema implementa una arquitectura cliente-servidor de tres capas:
 
 ```
-┌─────────────────────────────────────┐
-│   🏛️ POLICÍA NACIONAL DEL PERÚ     │
-│     Sistema Mesa de Partes Digital  │
-├─────────────────────────────────────┤
-│                                     │
-│   👤 Usuario: [____________]        │
-│                                     │
-│   🔒 Contraseña: [____________]     │
-│                                     │
-│   ┌───────────────┐                │
-│   │   INGRESAR    │                │
-│   └───────────────┘                │
-│                                     │
-│   🔐 Autenticación segura con JWT  │
-└─────────────────────────────────────┘
+┌─────────────────────────────────────────────┐
+│         CAPA DE PRESENTACIÓN                │
+│    (Frontend - Vanilla JavaScript)          │
+│  - HTML5, CSS3, JavaScript ES6+             │
+│  - Interface responsive                     │
+└─────────────────────────────────────────────┘
+                    ↕ HTTP/REST
+┌─────────────────────────────────────────────┐
+│         CAPA DE LÓGICA DE NEGOCIO           │
+│      (Backend - Spring Boot 3.5.7)          │
+│  - API REST                                 │
+│  - Autenticación JWT                        │
+│  - Lógica de negocio                        │
+└─────────────────────────────────────────────┘
+                    ↕ JDBC
+┌─────────────────────────────────────────────┐
+│         CAPA DE DATOS                       │
+│         (MySQL 8.0+)                        │
+│  - Base de datos relacional                 │
+│  - Almacenamiento persistente               │
+└─────────────────────────────────────────────┘
 ```
 
-### 2. Dashboard Principal
+### 2.2 Stack Tecnológico
 
-```
-┌──────────────────────────────────────────────────┐
-│ 🏠 Inicio  📄 Documentos  📊 Reportes  ⚙️ Admin │
-├──────────────────────────────────────────────────┤
-│                                                  │
-│  Bienvenido, [Nombre Usuario] 👤               │
-│  Rol: Administrador                             │
-│                                                  │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐     │
-│  │   125    │  │    45    │  │    32    │     │
-│  │Registrados│  │En Proceso│  │Atendidos │     │
-│  └──────────┘  └──────────┘  └──────────┘     │
-│                                                  │
-│  📋 Últimos Documentos:                         │
-│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  │
-│  • DOC-2024-001 - Solicitud...  [En Proceso]   │
-│  • DOC-2024-002 - Oficio...     [Atendido]     │
-│  • DOC-2024-003 - Memorándum... [Registrado]   │
-└──────────────────────────────────────────────────┘
-```
-
-### 3. Formulario de Registro
-
-```
-┌──────────────────────────────────────────────────┐
-│ 📝 Registrar Nuevo Documento                     │
-├──────────────────────────────────────────────────┤
-│                                                  │
-│  Remitente: [_______________________________]   │
-│                                                  │
-│  Asunto: [___________________________________]   │
-│                                                  │
-│  Tipo de Documento:                             │
-│  ┌─────────────────────┐                        │
-│  │ Seleccionar ▼       │                        │
-│  └─────────────────────┘                        │
-│                                                  │
-│  Archivo PDF: [Seleccionar archivo] 📎         │
-│                                                  │
-│  ┌────────────┐  ┌────────────┐                │
-│  │  REGISTRAR │  │  CANCELAR  │                │
-│  └────────────┘  └────────────┘                │
-└──────────────────────────────────────────────────┘
-```
-
----
-
-## 📜 Project Charter
-
-### 📌 Información General
-
-| Campo | Valor |
-|-------|-------|
-| **Nombre del Proyecto** | Sistema de Mesa de Partes Digital - PNP |
-| **Responsable** | Marcela Rodriguez Munaylla |
-| **Fecha de Inicio** | 01/09/2024 |
-| **Fecha de Fin** | 25/11/2024 |
-| **Presupuesto** | S/ 15,000 |
-| **Patrocinador** | Dirección de Gestión Administrativa PNP |
-
-### 🎯 Propósito
-
-Digitalizar el proceso de gestión documental en la Policía Nacional del Perú, mejorando la eficiencia, transparencia y trazabilidad de los trámites administrativos.
-
-### 📊 Métricas de Desempeño
-
-| Métrica | Línea Base | Meta |
-|---------|------------|------|
-| Tiempo de registro | 15 min | 3 min |
-| Documentos extraviados | 5% | 0% |
-| Satisfacción usuario | 60% | 90% |
-| Trazabilidad | 30% | 100% |
-
-### 🎁 Beneficios Esperados
-
-1. ⏱️ Reducción del 80% en tiempo de registro
-2. 📉 Eliminación total de extravíos
-3. 📈 Mejora del 50% en satisfacción ciudadana
-4. 🔍 100% de trazabilidad en trámites
-
-### 🚧 Riesgos Identificados
-
-| Riesgo | Probabilidad | Impacto | Mitigación |
-|--------|--------------|---------|------------|
-| Resistencia al cambio | Alta | Medio | Capacitación intensiva |
-| Fallas de conectividad | Media | Alto | Modo offline básico |
-| Falta de soporte técnico | Baja | Alto | Manual técnico detallado |
-
----
-
-## 📖 Capítulo 2: Marco Teórico
-
-### 🌐 Transformación Digital en el Sector Público
-
-La implementación de una Mesa de Partes Digital (MDP) se inserta en el marco de la **transformación digital** promovida en Perú, que busca modernizar la gestión pública a través de plataformas interoperables, firma electrónica y trazabilidad documental (PCM, 2025).
-
-Según la **Agenda Digital al Bicentenario**, la interoperabilidad y gobierno digital son pilares estratégicos para agilizar los trámites y mejorar el acceso ciudadano a los servicios públicos (SGTD, 2020).
-
-### 📊 Evidencia Empírica
-
-Un análisis empírico en Lima reveló una **correlación significativa (r = 0.863)** entre gobernanza digital y gestión documental, lo cual refuerza la eficacia de implementar sistemas como la MDP (Fernández-Bedoya & Baldeon-Ccellccascca, 2025).
-
-### 🔐 Prototipo de Documento Registrado
-
-El documento registrado constituye la constancia digital generada por el sistema al momento en que un trámite ingresa o egresa de la unidad.
-
-#### 📥 Documentos de Entrada
-
-| Campo | Descripción | Ejemplo |
-|-------|-------------|---------|
-| Número de Registro | Generado automáticamente | DOC-2024-001 |
-| Hoja de Trámite (HT) | Opcional | HT-2024-456 |
-| Tipo de Documento | Oficio, Memorándum, Carta | Oficio |
-| Número y Fecha | Del documento original | OF-123-2024 |
-| Fecha de Ingreso | Timestamp del sistema | 25/11/2024 10:30 |
-| Procedencia | Unidad origen | Mesa de Partes Central |
-| Asunto | Descripción breve | Solicitud de información |
-
-#### 📤 Documentos de Salida
-
-| Campo | Descripción | Ejemplo |
-|-------|-------------|---------|
-| Tipo de Documento | Usualmente Oficio | Oficio |
-| Número de Salida | Correlativo anual | OF-SAL-789-2024 |
-| Destino | Unidad/Entidad destino | SUNAT |
-| Fecha de Envío | Timestamp | 25/11/2024 15:00 |
-| Responsable | Quien recibió | Juan Pérez |
-
----
-
-## 🔄 Proceso de Registro y Derivación Detallado
-
-### 1️⃣ Recepción y Registro
-
-```mermaid
-sequenceDiagram
-    participant U as Usuario
-    participant S as Sistema
-    participant BD as Base de Datos
-    participant FS as File Storage
-    
-    U->>S: Accede a formulario
-    S->>U: Muestra campos
-    U->>S: Completa formulario + PDF
-    S->>S: Valida datos
-    S->>BD: Genera código único (DOC-YYYY-###)
-    BD-->>S: Retorna ID
-    S->>FS: Almacena archivo PDF
-    FS-->>S: Confirma guardado
-    S->>BD: Inserta registro completo
-    S->>U: Muestra código generado
-```
-
-**Código Java implementado**:
-
-```java
-@PostMapping("/registrar")
-public ResponseEntity<?> registrarDocumento(
-    @Valid @RequestBody DocumentoRegistroDTO dto,
-    @RequestParam("archivo") MultipartFile file) {
-    
-    // Generar código único
-    String codigo = generarCodigoUnico();
-    
-    // Guardar archivo
-    String rutaArchivo = fileService.guardarArchivo(file);
-    
-    // Crear entidad
-    Documento documento = new Documento();
-    documento.setCodigo(codigo);
-    documento.setRemitente(dto.getRemitente());
-    documento.setAsunto(dto.getAsunto());
-    documento.setRutaArchivo(rutaArchivo);
-    documento.setFechaIngreso(LocalDateTime.now());
-    documento.setEstado(EstadoDocumento.REGISTRADO);
-    
-    // Guardar en BD
-    documentoRepository.save(documento);
-    
-    return ResponseEntity.ok(documento);
-}
-
-private String generarCodigoUnico() {
-    int year = LocalDateTime.now().getYear();
-    long count = documentoRepository.countByYear(year);
-    return String.format("DOC-%d-%03d", year, count + 1);
-}
-```
-
-### 2️⃣ Asignación y Notificación
-
-```mermaid
-sequenceDiagram
-    participant A as Administrador
-    participant S as Sistema
-    participant BD as Base de Datos
-    participant N as Servicio Notificación
-    participant T as Trabajador
-    
-    A->>S: Selecciona documento
-    A->>S: Asigna a trabajador
-    S->>BD: Crea derivación
-    S->>N: Genera notificación
-    N->>T: Envía alerta (email/interna)
-    S->>BD: Registra en bitácora
-    S->>A: Confirma asignación
-```
-
-**Código Java implementado**:
-
-```java
-@PostMapping("/derivar/{id}")
-public ResponseEntity<?> derivarDocumento(
-    @PathVariable Long id,
-    @RequestParam Long idUsuarioDestino) {
-    
-    // Obtener documento
-    Documento doc = documentoRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Documento no encontrado"));
-    
-    // Crear derivación
-    Derivacion derivacion = new Derivacion();
-    derivacion.setDocumento(doc);
-    derivacion.setUsuarioDestino(usuarioRepository.findById(idUsuarioDestino).get());
-    derivacion.setFechaDerivacion(LocalDateTime.now());
-    derivacion.setEstado("PENDIENTE");
-    
-    derivacionRepository.save(derivacion);
-    
-    // Actualizar estado documento
-    doc.setEstado(EstadoDocumento.EN_PROCESO);
-    documentoRepository.save(doc);
-    
-    // Registrar en bitácora
-    bitacoraService.registrar("DERIVACION", "Documento derivado a usuario " + idUsuarioDestino);
-    
-    // Enviar notificación (implementar según necesidad)
-    // notificacionService.enviar(idUsuarioDestino, "Nuevo documento asignado");
-    
-    return ResponseEntity.ok(derivacion);
-}
-```
-
-### 3️⃣ Atención y Trazabilidad
-
-```mermaid
-stateDiagram-v2
-    [*] --> Registrado
-    Registrado --> En_Proceso: Asignar
-    En_Proceso --> Recibido: Trabajador acepta
-    Recibido --> En_Revision: Inicia revisión
-    En_Revision --> Atendido: Completa trámite
-    Atendido --> Finalizado: Admin cierra
-    Finalizado --> [*]
-    
-    En_Proceso --> Rechazado: Rechazar
-    Rechazado --> Registrado: Reasignar
-```
-
-**Código Java implementado**:
-
-```java
-@PutMapping("/actualizar-estado/{id}")
-public ResponseEntity<?> actualizarEstado(
-    @PathVariable Long id,
-    @RequestParam EstadoDocumento nuevoEstado,
-    @RequestParam(required = false) String observacion) {
-    
-    Documento doc = documentoRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Documento no encontrado"));
-    
-    // Guardar estado anterior
-    EstadoDocumento estadoAnterior = doc.getEstado();
-    
-    // Actualizar estado
-    doc.setEstado(nuevoEstado);
-    doc.setObservacion(observacion);
-    doc.setFechaActualizacion(LocalDateTime.now());
-    
-    documentoRepository.save(doc);
-    
-    // Registrar cambio en bitácora
-    bitacoraService.registrar(
-        "CAMBIO_ESTADO",
-        String.format("Documento %s: %s → %s", doc.getCodigo(), estadoAnterior, nuevoEstado)
-    );
-    
-    return ResponseEntity.ok(doc);
-}
-```
-
-### 4️⃣ Cierre y Salida
-
-```mermaid
-flowchart LR
-    A[Trabajador<br/>finaliza trámite] --> B[Marca como<br/>Atendido]
-    B --> C[Devuelve a<br/>Administrador]
-    C --> D[Admin registra<br/>salida]
-    D --> E[Vincula con<br/>doc. entrada]
-    E --> F[Sistema<br/>archiva]
-    F --> G[Disponible para<br/>consulta histórica]
-```
-
----
-
-## 🛠️ Capítulo 3: Desarrollo de la Solución
-
-### 🏗️ Arquitectura del Sistema
-
-```mermaid
-graph TB
-    subgraph "Capa de Presentación"
-        A[HTML5]
-        B[CSS3]
-        C[JavaScript]
-    end
-    
-    subgraph "Capa de Negocio"
-        D[Spring Boot 3.5.7]
-        E[Spring Security]
-        F[Spring Data JPA]
-    end
-    
-    subgraph "Capa de Datos"
-        G[MySQL 8.0]
-        H[File System]
-    end
-    
-    A --> D
-    B --> D
-    C --> D
-    D --> E
-    D --> F
-    F --> G
-    D --> H
-```
-
-### 🔧 Stack Tecnológico Implementado
-
-#### Backend (65% del proyecto)
-
+#### **Backend**
 | Tecnología | Versión | Propósito |
 |------------|---------|-----------|
-| **Java** | 21 LTS | Lenguaje principal |
-| **Spring Boot** | 3.5.7 | Framework backend |
-| **Spring Security** | 6.x | Autenticación/Autorización |
-| **Spring Data JPA** | 3.x | ORM y persistencia |
-| **Hibernate** | 6.x | Mapeo objeto-relacional |
-| **Maven** | 3.9 | Gestión de dependencias |
-| **JWT** | 0.11.5 | Tokens de autenticación |
-| **BCrypt** | - | Cifrado de contraseñas |
-| **Apache POI** | 5.2.3 | Generación Excel |
-| **iText** | 7.2.5 | Generación PDF |
-| **Lombok** | 1.18.30 | Reducción código boilerplate |
+| Java | 21 LTS | Lenguaje de programación |
+| Spring Boot | 3.5.7 | Framework principal |
+| Spring Security | 6.x | Autenticación y autorización |
+| Spring Data JPA | 3.x | Persistencia de datos |
+| MySQL Connector | 8.x | Driver de base de datos |
+| JWT (JJWT) | 0.12.6 | Generación de tokens |
+| Lombok | Latest | Reducción de código boilerplate |
+| Apache POI | 5.3.0 | Generación de archivos Excel |
+| iText 7 | 7.2.5 | Generación de archivos PDF |
+| SpringDoc OpenAPI | 2.3.0 | Documentación API |
+| Spring Boot Mail | 3.x | Notificaciones por email |
+| Spring Boot Actuator | 3.x | Monitoreo y métricas |
 
-**Estructura de paquetes**:
+#### **Frontend**
+| Tecnología | Versión | Propósito |
+|------------|---------|-----------|
+| HTML5 | - | Estructura de páginas |
+| CSS3 | - | Estilos y diseño responsive |
+| JavaScript | ES6+ | Lógica del cliente |
+| Chart.js | 4.x | Gráficas y visualización |
+| Fetch API | Nativa | Comunicación HTTP |
+
+#### **Base de Datos**
+| Componente | Especificación |
+|------------|----------------|
+| DBMS | MySQL 8.0+ |
+| Motor de almacenamiento | InnoDB |
+| Charset | utf8mb4 |
+| Collation | utf8mb4_unicode_ci |
+
+---
+
+## 3. ESTRUCTURA DEL PROYECTO
+
+### 3.1 Organización del Backend
 
 ```
-com.pnp.mesadepartes/
-├── config/              # Configuraciones
-│   ├── SecurityConfig.java
-│   └── CorsConfig.java
-├── controller/          # Controladores REST
-│   ├── DocumentoController.java
-│   ├── UsuarioController.java
-│   └── ReporteController.java
-├── service/             # Lógica de negocio
-│   ├── DocumentoService.java
-│   ├── UsuarioService.java
-│   └── ReporteService.java
-├── repository/          # Acceso a datos
-│   ├── DocumentoRepository.java
-│   └── UsuarioRepository.java
-├── model/               # Entidades JPA
-│   ├── Documento.java
-│   ├── Usuario.java
-│   └── Derivacion.java
-├── dto/                 # Objetos de transferencia
-│   └── DocumentoDTO.java
-├── security/            # Seguridad
-│   ├── JwtUtil.java
-│   └── UserDetailsServiceImpl.java
-└── exception/           # Manejo de excepciones
-    └── GlobalExceptionHandler.java
+backend/
+├── src/
+│   ├── main/
+│   │   ├── java/com/pnp/mesadepartes/
+│   │   │   ├── config/          # Configuración Spring
+│   │   │   │   ├── SecurityConfig.java
+│   │   │   │   ├── CorsConfig.java
+│   │   │   │   ├── SwaggerConfig.java
+│   │   │   │   └── BackupScheduler.java
+│   │   │   ├── controller/      # Controladores REST
+│   │   │   │   ├── AuthController.java
+│   │   │   │   ├── DocumentoController.java
+│   │   │   │   ├── UsuarioController.java
+│   │   │   │   ├── DerivacionController.java
+│   │   │   │   ├── SalidaDocumentoController.java
+│   │   │   │   ├── BitacoraController.java
+│   │   │   │   ├── NotificacionController.java
+│   │   │   │   ├── ReporteController.java
+│   │   │   │   ├── BackupController.java
+│   │   │   │   └── AreaController.java
+│   │   │   ├── model/           # Entidades JPA
+│   │   │   │   ├── Usuario.java
+│   │   │   │   ├── Rol.java
+│   │   │   │   ├── Documento.java
+│   │   │   │   ├── TipoDocumento.java
+│   │   │   │   ├── HojaTramite.java
+│   │   │   │   ├── Derivacion.java
+│   │   │   │   ├── SalidaDocumento.java
+│   │   │   │   ├── Bitacora.java
+│   │   │   │   ├── Notificacion.java
+│   │   │   │   └── Area.java
+│   │   │   ├── repository/      # Repositorios JPA
+│   │   │   ├── service/         # Lógica de negocio
+│   │   │   ├── security/        # JWT y autenticación
+│   │   │   ├── dto/             # Objetos de transferencia
+│   │   │   └── exception/       # Manejo de excepciones
+│   │   └── resources/
+│   │       ├── application.properties
+│   │       ├── application-dev.properties
+│   │       ├── application-railway.properties
+│   │       └── logback-spring.xml
+│   └── test/                    # Tests unitarios
+├── pom.xml                      # Dependencias Maven
+└── uploads/                     # Archivos subidos
 ```
 
-#### Frontend (20% del proyecto)
-
-| Tecnología | Propósito |
-|------------|-----------|
-| **HTML5** | Estructura semántica |
-| **CSS3** | Estilos y diseño responsive |
-| **JavaScript (Vanilla)** | Interactividad y validaciones |
-| **Fetch API** | Consumo de servicios REST |
-
-**Estructura de archivos**:
+### 3.2 Organización del Frontend
 
 ```
 frontend/
 ├── assets/
 │   ├── css/
-│   │   ├── core/style.css
-│   │   ├── pages/dashboard.css
-│   │   └── components/sidebar.css
+│   │   ├── core/               # Estilos base
+│   │   │   ├── style.css       # Estilos globales
+│   │   │   └── toast.css       # Notificaciones
+│   │   ├── components/         # Componentes reutilizables
+│   │   │   ├── sidebar.css
+│   │   │   └── custom-datepicker.css
+│   │   ├── pages/              # Estilos por página
+│   │   │   ├── dashboard.css
+│   │   │   ├── admin/
+│   │   │   └── documents/
+│   │   └── features/           # Funcionalidades específicas
 │   └── js/
-│       ├── core/auth.js
-│       ├── pages/documentos.js
-│       └── modules/reportes.js
+│       ├── core/               # Configuración base
+│       │   ├── config.js       # URLs y constantes
+│       │   ├── auth.js         # Autenticación
+│       │   ├── logger.js       # Sistema de logs
+│       │   └── permissions.js  # Control de permisos
+│       ├── components/         # Componentes JS
+│       │   ├── sidebar.js
+│       │   ├── toast.js
+│       │   └── custom-datepicker.js
+│       ├── modules/            # Módulos funcionales
+│       │   ├── reportes.js
+│       │   ├── reportes-global.js
+│       │   └── notificaciones.js
+│       └── pages/              # Lógica por página
+│           ├── dashboard.js
+│           ├── admin/
+│           │   ├── gestion-usuarios.js
+│           │   └── bitacora.js
+│           ├── auth/
+│           │   ├── login.js
+│           │   └── registro.js
+│           └── documents/
+│               ├── documentos.js
+│               ├── registro-usuario.js
+│               └── salida-documento.js
 └── pages/
-    ├── auth/login.html
-    ├── common/dashboard.html
-    └── documents/documentos.html
+    ├── auth/                   # Autenticación
+    ├── common/                 # Páginas comunes
+    ├── admin/                  # Administración
+    └── documents/              # Gestión documental
 ```
 
-#### Base de Datos (10% del proyecto)
+---
 
-| Tecnología | Versión | Propósito |
-|------------|---------|-----------|
-| **MySQL** | 8.0 | RDBMS principal |
-| **MySQL Connector/J** | 8.0.33 | Driver JDBC |
+## 4. MODELO DE DATOS
 
-**Esquema de BD implementado**:
+### 4.1 Diagrama Entidad-Relación (Simplificado)
 
-```sql
--- Usuarios
-CREATE TABLE usuarios (
-    id_usuario BIGINT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    nombre VARCHAR(100) NOT NULL,
-    correo VARCHAR(100),
-    rol ENUM('ADMIN', 'USUARIO') DEFAULT 'USUARIO',
-    activo BOOLEAN DEFAULT TRUE,
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Documentos
-CREATE TABLE documentos (
-    id_documento BIGINT PRIMARY KEY AUTO_INCREMENT,
-    codigo VARCHAR(20) UNIQUE NOT NULL,
-    remitente VARCHAR(200) NOT NULL,
-    asunto TEXT NOT NULL,
-    tipo_documento VARCHAR(50),
-    ruta_archivo VARCHAR(500),
-    estado ENUM('REGISTRADO', 'EN_PROCESO', 'ATENDIDO', 'FINALIZADO'),
-    fecha_ingreso TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    id_usuario_registro BIGINT,
-    FOREIGN KEY (id_usuario_registro) REFERENCES usuarios(id_usuario)
-);
-
--- Derivaciones
-CREATE TABLE derivaciones (
-    id_derivacion BIGINT PRIMARY KEY AUTO_INCREMENT,
-    id_documento BIGINT NOT NULL,
-    id_usuario_origen BIGINT,
-    id_usuario_destino BIGINT,
-    fecha_derivacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    observacion TEXT,
-    estado VARCHAR(20),
-    FOREIGN KEY (id_documento) REFERENCES documentos(id_documento),
-    FOREIGN KEY (id_usuario_origen) REFERENCES usuarios(id_usuario),
-    FOREIGN KEY (id_usuario_destino) REFERENCES usuarios(id_usuario)
-);
-
--- Bitácora
-CREATE TABLE bitacora (
-    id_bitacora BIGINT PRIMARY KEY AUTO_INCREMENT,
-    id_usuario BIGINT,
-    accion VARCHAR(100),
-    descripcion TEXT,
-    ip VARCHAR(45),
-    fecha_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
-);
+```
+┌─────────────┐       ┌──────────────┐       ┌─────────────┐
+│   ROLES     │───────│USUARIO_ROLES │───────│  USUARIOS   │
+└─────────────┘   N:M └──────────────┘   N:M └─────────────┘
+                                                    │
+                                                    │ 1:N
+                                                    ↓
+┌─────────────┐       ┌──────────────┐       ┌─────────────┐
+│   AREAS     │───────│  DOCUMENTOS  │───────│ TIPO_DOC    │
+└─────────────┘   1:N └──────────────┘   N:1 └─────────────┘
+                           │      │
+                    ┌──────┘      └──────┐
+                    │ 1:1                │ 1:N
+                    ↓                    ↓
+            ┌──────────────┐     ┌─────────────┐
+            │HOJA_TRAMITE  │     │DERIVACIONES │
+            └──────────────┘     └─────────────┘
+                                        │ 1:N
+                                        ↓
+                                 ┌─────────────┐
+                                 │  BITACORA   │
+                                 └─────────────┘
 ```
 
-### 🔐 Implementación de Seguridad
+### 4.2 Tablas Principales
 
-#### 1. Autenticación JWT
+#### **usuarios**
+Almacena información de los usuarios del sistema.
+- **Campos clave:** ID_usuario, username, password_hash, email, tipo_contrato (CAS/LOCADOR/PNP)
+- **Relaciones:** N:M con roles, N:1 con areas
+- **Índices:** username, email, activo
 
-```java
-@Service
-public class JwtUtil {
-    
-    @Value("${jwt.secret}")
-    private String SECRET_KEY;
-    
-    public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails.getUsername());
-    }
-    
-    private String createToken(Map<String, Object> claims, String subject) {
-        return Jwts.builder()
-            .setClaims(claims)
-            .setSubject(subject)
-            .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 horas
-            .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-            .compact();
-    }
-    
-    public boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-    }
-}
+#### **documentos**
+Registro central de todos los documentos del sistema.
+- **Campos clave:** ID_documento, codigo (único), titulo, estado, remitente, destinatario
+- **Estados:** Asignado, Recibido, En_Proceso, Observado, Finalizado, Salida
+- **Relaciones:** N:1 con tipos_documento, 1:1 con hojas_tramite, 1:N con derivaciones
+
+#### **hojas_tramite**
+Hojas de trámite asociadas a documentos de entrada.
+- **Campos clave:** ID_hoja_tramite, numero_ht, ID_documento
+- **Formato HT:** AñoNúmeros (ej: 20250235689)
+- **Relación:** 1:1 con documentos
+
+#### **derivaciones**
+Trazabilidad de movimientos de documentos entre áreas.
+- **Campos clave:** ID_derivacion, origen, destino, estado, prioridad
+- **Estados:** Pendiente, Aceptada, Rechazada, En_Proceso, Finalizada
+- **Relaciones:** N:1 con documentos, N:1 con usuarios (asignado_a)
+
+#### **salidas_documento**
+Registro de salida de documentos del sistema.
+- **Campos clave:** ID_salida, codigo_salida, destino_externo, fecha_salida
+- **Relaciones:** N:1 con documentos, N:1 con usuarios (registrado_por)
+
+#### **bitacora**
+Auditoría unificada de todas las operaciones del sistema.
+- **Campos clave:** ID_bitacora, accion, detalles, IP_usuario, fecha_hora
+- **Tipos de acción:** LOGIN, LOGOUT, REGISTRO_DOC, DERIVACION, etc.
+- **Relaciones:** N:1 con usuarios
+
+#### **notificaciones**
+Sistema de notificaciones en tiempo real.
+- **Campos clave:** ID_notificacion, tipo, mensaje, leida
+- **Tipos:** DERIVACION, ASIGNACION, CAMBIO_ESTADO, ALERTA
+- **Relaciones:** N:1 con usuarios, N:1 con documentos
+
+---
+
+## 5. FUNCIONALIDADES PRINCIPALES
+
+### 5.1 Módulo de Autenticación y Seguridad
+
+#### **Características:**
+- ✅ Login con JWT (JSON Web Tokens)
+- ✅ Sesiones con expiración configurable (8 horas por defecto)
+- ✅ Hash de contraseñas con BCrypt
+- ✅ Control de acceso basado en roles (RBAC)
+- ✅ Roles disponibles: Administrador, Jefatura, Digitador, Usuario
+
+#### **Endpoints principales:**
+```
+POST /api/auth/login          # Autenticación
+POST /api/auth/registro       # Registro de nuevos usuarios
+POST /api/auth/logout         # Cierre de sesión
+GET  /api/auth/validate       # Validación de token
 ```
 
-#### 2. Configuración Spring Security
-
-```java
-@Configuration
-@EnableWebSecurity
-public class SecurityConfig {
-    
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
-            )
-            .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-        
-        return http.build();
-    }
-    
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-}
+#### **Flujo de autenticación:**
+```
+1. Usuario ingresa credenciales
+2. Backend valida usuario/contraseña (BCrypt)
+3. Genera token JWT con roles y permisos
+4. Frontend almacena token en localStorage
+5. Cada petición incluye token en header Authorization
+6. Backend valida token antes de procesar request
 ```
 
-#### 3. Cifrado de Contraseñas
+### 5.2 Módulo de Gestión Documental
 
-```java
-@Service
-public class UsuarioService {
-    
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    
-    public Usuario registrarUsuario(UsuarioDTO dto) {
-        Usuario usuario = new Usuario();
-        usuario.setUsername(dto.getUsername());
-        usuario.setPassword(passwordEncoder.encode(dto.getPassword())); // BCrypt
-        usuario.setNombre(dto.getNombre());
-        usuario.setRol(Rol.USUARIO);
-        
-        return usuarioRepository.save(usuario);
-    }
-}
+#### **Características:**
+- ✅ Registro de documentos con información detallada
+- ✅ Generación automática de códigos únicos (DOC-XXXXXX)
+- ✅ Carga de archivos adjuntos (PDF, imágenes, Office)
+- ✅ Búsqueda avanzada por múltiples criterios
+- ✅ Filtros por estado, fecha, tipo, remitente
+- ✅ Visualización de historial completo de movimientos
+- ✅ Edición y actualización de documentos
+
+#### **Estados del documento:**
+1. **Asignado:** Documento registrado y asignado a un usuario
+2. **Recibido:** Usuario confirma recepción
+3. **En_Proceso:** Documento en revisión/procesamiento
+4. **Observado:** Documento con observaciones que requieren corrección
+5. **Finalizado:** Procesamiento completo con informe final
+6. **Salida:** Documento ha salido del sistema
+
+#### **Endpoints principales:**
+```
+POST   /api/documentos                    # Crear documento
+GET    /api/documentos                    # Listar documentos
+GET    /api/documentos/{id}               # Detalle de documento
+PUT    /api/documentos/{id}               # Actualizar documento
+DELETE /api/documentos/{id}               # Eliminar documento
+GET    /api/documentos/buscar/{codigo}    # Buscar por código
+POST   /api/documentos/{id}/upload        # Subir archivo adjunto
 ```
 
-### 📊 Generación de Reportes
+### 5.3 Módulo de Hojas de Trámite
 
-#### Reporte Excel con Apache POI
+#### **Características:**
+- ✅ Generación automática de números de HT
+- ✅ Formato: AñoNúmeros (ej: 20250235689)
+- ✅ Vinculación 1:1 con documento de entrada
+- ✅ Autocarga de HT en registro de salida
+- ✅ Campo editable manualmente
+- ✅ Validación de formato (solo números)
 
-```java
-@Service
-public class ReporteService {
-    
-    public byte[] generarReporteExcel(ReporteDTO dto) throws IOException {
-        Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Reporte Documentos");
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        
-        // Crear encabezados
-        Row headerRow = sheet.createRow(0);
-        String[] columnas = {"Código", "Remitente", "Asunto", "Estado", "Fecha"};
-        
-        for (int i = 0; i < columnas.length; i++) {
-            Cell cell = headerRow.createCell(i);
-            cell.setCellValue(columnas[i]);
-        }
-        
-        // Obtener datos
-        List<Documento> documentos = documentoRepository.findAll();
-        
-        // Llenar filas
-        int rowNum = 1;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        
-        for (Documento doc : documentos) {
-            Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(doc.getCodigo());
-            row.createCell(1).setCellValue(doc.getRemitente());
-            row.createCell(2).setCellValue(doc.getAsunto());
-            row.createCell(3).setCellValue(doc.getEstado().toString());
-            row.createCell(4).setCellValue(doc.getFechaIngreso().format(formatter));
-        }
-        
-        workbook.write(outputStream);
-        workbook.close();
-        
-        return outputStream.toByteArray();
-    }
-}
+#### **Flujo de trabajo:**
+```
+1. Usuario registra documento de entrada
+2. Sistema genera HT automáticamente (formato: año+secuencia)
+3. Al registrar salida, HT se carga automáticamente
+4. Usuario puede editar HT si es necesario
+5. HT se guarda en registro de salida
 ```
 
-#### Reporte PDF con iText
-
-```java
-public byte[] generarReportePDF(ReporteDTO dto) throws IOException {
-    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    PdfWriter writer = new PdfWriter(outputStream);
-    PdfDocument pdf = new PdfDocument(writer);
-    Document document = new Document(pdf);
-    
-    // Título
-    document.add(new Paragraph("REPORTE DE DOCUMENTOS")
-        .setBold()
-        .setFontSize(18));
-    
-    // Crear tabla
-    Table table = new Table(new float[]{2, 4, 3, 2, 3});
-    table.setWidth(UnitValue.createPercentValue(100));
-    
-    // Encabezados
-    table.addHeaderCell(new Cell().add(new Paragraph("Código").setBold()));
-    table.addHeaderCell(new Cell().add(new Paragraph("Remitente").setBold()));
-    table.addHeaderCell(new Cell().add(new Paragraph("Asunto").setBold()));
-    table.addHeaderCell(new Cell().add(new Paragraph("Estado").setBold()));
-    table.addHeaderCell(new Cell().add(new Paragraph("Fecha").setBold()));
-    
-    // Datos
-    List<Documento> documentos = documentoRepository.findAll();
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-    
-    for (Documento doc : documentos) {
-        table.addCell(doc.getCodigo());
-        table.addCell(doc.getRemitente());
-        table.addCell(doc.getAsunto());
-        table.addCell(doc.getEstado().toString());
-        table.addCell(doc.getFechaIngreso().format(formatter));
-    }
-    
-    document.add(table);
-    document.close();
-    
-    return outputStream.toByteArray();
-}
+#### **Endpoints principales:**
+```
+POST /api/documentos/hojas-tramite          # Crear HT
+GET  /api/documentos/hojas-tramite/documento/{id}  # Obtener HT por documento
 ```
 
-### 🔍 Sistema de Bitácora/Auditoría
+### 5.4 Módulo de Derivaciones
 
-```java
-@Service
-public class BitacoraService {
-    
-    @Autowired
-    private BitacoraRepository bitacoraRepository;
-    
-    @Autowired
-    private HttpServletRequest request;
-    
-    public void registrar(String accion, String descripcion) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth != null ? auth.getName() : "SYSTEM";
-        
-        Usuario usuario = usuarioRepository.findByUsername(username).orElse(null);
-        
-        Bitacora bitacora = new Bitacora();
-        bitacora.setUsuario(usuario);
-        bitacora.setAccion(accion);
-        bitacora.setDescripcion(descripcion);
-        bitacora.setIp(getClientIp());
-        bitacora.setFechaHora(LocalDateTime.now());
-        
-        bitacoraRepository.save(bitacora);
-    }
-    
-    private String getClientIp() {
-        String xfHeader = request.getHeader("X-Forwarded-For");
-        if (xfHeader == null) {
-            return request.getRemoteAddr();
-        }
-        return xfHeader.split(",")[0];
-    }
-}
+#### **Características:**
+- ✅ Derivación de documentos entre áreas/usuarios
+- ✅ Sistema de prioridades (BAJA, MEDIA, ALTA, URGENTE)
+- ✅ Campos de instrucciones y observaciones
+- ✅ Seguimiento de estado de derivación
+- ✅ Notificaciones automáticas al destinatario
+- ✅ Historial completo de derivaciones
+
+#### **Estados de derivación:**
+- **Pendiente:** Derivación creada, esperando aceptación
+- **Aceptada:** Destinatario acepta la derivación
+- **Rechazada:** Destinatario rechaza con motivo
+- **En_Proceso:** Documento en procesamiento
+- **Finalizada:** Derivación completada
+
+#### **Endpoints principales:**
+```
+POST /api/derivaciones                     # Crear derivación
+GET  /api/derivaciones/usuario/{id}        # Derivaciones de usuario
+GET  /api/derivaciones/pendientes          # Derivaciones pendientes
+PUT  /api/derivaciones/{id}/aceptar        # Aceptar derivación
+PUT  /api/derivaciones/{id}/rechazar       # Rechazar derivación
 ```
 
-### 🧪 Pruebas Implementadas
+### 5.5 Módulo de Salida de Documentos
 
-#### 1. Pruebas Unitarias con JUnit
+#### **Características:**
+- ✅ Registro de salida con destino externo
+- ✅ Generación automática de código de salida (SALIDA-XXXXXX)
+- ✅ Campos: destinatario, cargo, dependencia, motivo
+- ✅ Autocarga de información del documento
+- ✅ Autocarga de HT si existe
+- ✅ Registro de usuario y fecha de salida
 
-```java
-@SpringBootTest
-class DocumentoServiceTest {
-    
-    @Autowired
-    private DocumentoService documentoService;
-    
-    @MockBean
-    private DocumentoRepository documentoRepository;
-    
-    @Test
-    void testGenerarCodigoUnico() {
-        when(documentoRepository.countByYear(2024)).thenReturn(5L);
-        
-        String codigo = documentoService.generarCodigoUnico();
-        
-        assertEquals("DOC-2024-006", codigo);
-    }
-    
-    @Test
-    void testRegistrarDocumento() {
-        DocumentoDTO dto = new DocumentoDTO();
-        dto.setRemitente("Juan Pérez");
-        dto.setAsunto("Solicitud de información");
-        
-        Documento documento = documentoService.registrar(dto);
-        
-        assertNotNull(documento.getCodigo());
-        assertEquals(EstadoDocumento.REGISTRADO, documento.getEstado());
-    }
-}
+#### **Endpoints principales:**
+```
+POST /api/salidas-documento              # Registrar salida
+GET  /api/salidas-documento              # Listar salidas
+GET  /api/salidas-documento/{id}         # Detalle de salida
 ```
 
-#### 2. Pruebas de Integración
+### 5.6 Módulo de Reportes y Estadísticas
 
-```java
-@SpringBootTest
-@AutoConfigureMockMvc
-class DocumentoControllerIntegrationTest {
-    
-    @Autowired
-    private MockMvc mockMvc;
-    
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void testRegistrarDocumento() throws Exception {
-        mockMvc.perform(post("/api/documentos/registrar")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"remitente\":\"Test\",\"asunto\":\"Test\"}"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.codigo").exists());
-    }
-}
+#### **Características:**
+- ✅ Dashboard con métricas en tiempo real
+- ✅ Gráficos de documentos por estado
+- ✅ Gráficos de documentos por tipo
+- ✅ Estadísticas de derivaciones
+- ✅ Reporte de productividad por usuario
+- ✅ Exportación a PDF y Excel
+- ✅ Filtros por rango de fechas
+
+#### **Métricas del dashboard:**
+- Total de documentos en el sistema
+- Documentos por estado (con porcentajes)
+- Derivaciones pendientes
+- Documentos procesados hoy
+- Tiempo promedio de procesamiento
+- Top usuarios más activos
+
+#### **Endpoints principales:**
+```
+GET /api/reportes/dashboard                # Datos del dashboard
+GET /api/reportes/estadisticas             # Estadísticas generales
+GET /api/reportes/documentos-por-estado    # Reporte por estado
+GET /api/reportes/documentos-por-tipo      # Reporte por tipo
+GET /api/reportes/exportar/pdf             # Exportar reporte PDF
+GET /api/reportes/exportar/excel           # Exportar reporte Excel
 ```
 
-### 📦 Despliegue
+### 5.7 Módulo de Bitácora y Auditoría
 
-#### Configuración Railway (application.properties)
+#### **Características:**
+- ✅ Registro automático de TODAS las operaciones
+- ✅ Captura de IP de usuario
+- ✅ Timestamp con milisegundos
+- ✅ Detalles completos de cada acción
+- ✅ Búsqueda y filtrado avanzado
+- ✅ Exportación a PDF y Excel
+- ✅ Visualización en tabla paginada
 
+#### **Tipos de acciones registradas:**
+- LOGIN / LOGOUT
+- REGISTRO_DOCUMENTO / EDICION_DOCUMENTO / ELIMINACION_DOCUMENTO
+- DERIVACION / ACEPTACION_DERIVACION / RECHAZO_DERIVACION
+- CAMBIO_ESTADO_DOCUMENTO
+- REGISTRO_SALIDA
+- CREACION_USUARIO / EDICION_USUARIO
+- BACKUP_REALIZADO
+
+#### **Endpoints principales:**
+```
+GET  /api/bitacora                      # Listar bitácora (paginada)
+GET  /api/bitacora/exportar/pdf         # Exportar bitácora PDF
+GET  /api/bitacora/exportar/excel       # Exportar bitácora Excel
+```
+
+### 5.8 Módulo de Notificaciones
+
+#### **Características:**
+- ✅ Notificaciones en tiempo real
+- ✅ Tipos: DERIVACION, ASIGNACION, CAMBIO_ESTADO, ALERTA
+- ✅ Badge con contador de notificaciones no leídas
+- ✅ Marcar como leída
+- ✅ Marcar todas como leídas
+- ✅ Redirección automática al documento relacionado
+
+#### **Endpoints principales:**
+```
+GET  /api/notificaciones/usuario/{id}          # Notificaciones del usuario
+GET  /api/notificaciones/no-leidas/{id}        # Notificaciones no leídas
+PUT  /api/notificaciones/{id}/marcar-leida     # Marcar como leída
+PUT  /api/notificaciones/marcar-todas-leidas   # Marcar todas como leídas
+```
+
+### 5.9 Módulo de Gestión de Usuarios (Admin)
+
+#### **Características:**
+- ✅ CRUD completo de usuarios
+- ✅ Asignación de roles
+- ✅ Activación/desactivación de cuentas
+- ✅ Cambio de contraseñas
+- ✅ Búsqueda y filtrado de usuarios
+- ✅ Visualización de usuarios por área
+
+#### **Endpoints principales:**
+```
+GET    /api/usuarios                 # Listar usuarios
+POST   /api/usuarios                 # Crear usuario
+PUT    /api/usuarios/{id}            # Actualizar usuario
+DELETE /api/usuarios/{id}            # Eliminar usuario
+PUT    /api/usuarios/{id}/roles      # Asignar roles
+```
+
+### 5.10 Módulo de Backups Automáticos
+
+#### **Características:**
+- ✅ Backups automáticos programados (2:00 AM diario)
+- ✅ Backup manual bajo demanda
+- ✅ Retención configurable (30 días por defecto)
+- ✅ Eliminación automática de backups antiguos
+- ✅ Compresión de archivos
+- ✅ Logs de respaldo
+
+#### **Configuración:**
 ```properties
-# Configuración de Base de Datos
-spring.datasource.url=${DB_URL}
-spring.datasource.username=${DB_USERNAME}
-spring.datasource.password=${DB_PASSWORD}
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-
-# JPA/Hibernate
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=false
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
-
-# JWT
-jwt.secret=${JWT_SECRET}
-jwt.expiration=36000000
-
-# Puerto
-server.port=${PORT:8080}
-
-# Uploads
-file.upload-dir=./uploads
+backup.enabled=true
+backup.directory=../backups
+backup.schedule=0 0 2 * * ?          # CRON: 2:00 AM diario
+backup.retention.days=30
 ```
 
-#### Dockerfile
-
-```dockerfile
-# Etapa 1: Build
-FROM maven:3.9-eclipse-temurin-21-alpine AS build
-WORKDIR /build
-COPY backend/pom.xml ./
-COPY backend/src ./src
-RUN mvn clean package -DskipTests -B
-
-# Etapa 2: Runtime
-FROM eclipse-temurin:21-jre-alpine
-WORKDIR /app
-COPY --from=build /build/target/*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+#### **Endpoints principales:**
 ```
-
-### 📊 Métricas del Proyecto
-
-| Métrica | Valor |
-|---------|-------|
-| **Líneas de código Java** | ~3,500 |
-| **Líneas de código Frontend** | ~1,200 |
-| **Clases Java** | 45 |
-| **Controladores REST** | 8 |
-| **Endpoints API** | 28 |
-| **Tablas BD** | 6 |
-| **Tiempo de desarrollo** | 12 semanas |
-| **Pruebas unitarias** | 35 |
-| **Cobertura de código** | 78% |
-
----
-
-## 📚 Anexos
-
-### 📄 SRS - Especificación de Requisitos de Software
-
-#### Casos de Uso Detallados
-
-**CDU1: Registrar Usuario**
-
-```mermaid
-graph LR
-    A[Administrador] -->|Accede a| B[Gestión Usuarios]
-    B --> C[Completa formulario]
-    C --> D{Validación}
-    D -->|OK| E[Guarda usuario]
-    D -->|Error| F[Muestra errores]
-    E --> G[Envía credenciales]
-```
-
-**CDU2: Registrar Documento**
-
-```mermaid
-sequenceDiagram
-    Usuario->>Sistema: Accede a formulario
-    Sistema->>Usuario: Muestra campos
-    Usuario->>Sistema: Completa + adjunta PDF
-    Sistema->>Sistema: Valida datos
-    Sistema->>BD: Genera código único
-    Sistema->>Storage: Guarda archivo
-    Sistema->>Usuario: Retorna código
+POST /api/backup/manual              # Ejecutar backup manual
+GET  /api/backup/listar              # Listar backups disponibles
+POST /api/backup/restaurar/{archivo} # Restaurar backup
 ```
 
 ---
 
-## 🎓 Conclusiones
+## 6. SEGURIDAD
 
-### ✅ Logros Alcanzados
+### 6.1 Autenticación y Autorización
 
-1. **Sistema Funcional**: Implementación completa de Mesa de Partes Digital
-2. **Seguridad Robusta**: JWT + BCrypt + Spring Security
-3. **Trazabilidad Total**: 100% de seguimiento de documentos
-4. **Reportes Automáticos**: Excel y PDF implementados
-5. **Auditoría Completa**: Bitácora de todas las acciones
+#### **JWT (JSON Web Tokens):**
+- Token firmado con algoritmo HMAC-SHA512
+- Clave secreta configurada en `application.properties`
+- Expiración: 8 horas (28800000 ms)
+- Claims: username, roles, fecha de emisión
 
-### 📈 Resultados Medibles
+#### **Control de Acceso Basado en Roles:**
+```java
+@PreAuthorize("hasRole('Administrador')")        // Solo Admin
+@PreAuthorize("hasAnyRole('Administrador', 'Jefatura')")  // Admin o Jefatura
+@PreAuthorize("isAuthenticated()")               // Cualquier usuario autenticado
+```
 
-- ⏱️ **Reducción de tiempo de registro**: 80% (15 min → 3 min)
-- 📉 **Extravíos eliminados**: 100%
-- 📊 **Trazabilidad mejorada**: De 30% a 100%
-- 👥 **Satisfacción de usuarios**: Aumentó de 60% a 85%
+#### **Permisos por rol:**
 
-### 🚀 Recomendaciones Futuras
+| Funcionalidad | Administrador | Jefatura | Digitador | Usuario |
+|---------------|---------------|----------|-----------|---------|
+| Gestión de usuarios | ✅ | ❌ | ❌ | ❌ |
+| Ver bitácora | ✅ | ✅ | ❌ | ❌ |
+| Exportar reportes | ✅ | ✅ | ✅ | ❌ |
+| Registrar documentos | ✅ | ✅ | ✅ | ❌ |
+| Derivar documentos | ✅ | ✅ | ✅ | ✅ |
+| Ver documentos asignados | ✅ | ✅ | ✅ | ✅ |
+| Cambiar estado documentos | ✅ | ✅ | ✅ | ✅ |
 
-1. **Escalabilidad**: Implementar en más unidades PNP
-2. **Integración**: Conectar con otros sistemas gubernamentales
-3. **Mobile**: Desarrollar aplicación móvil
-4. **IA**: Implementar clasificación automática de documentos
-5. **Firma Digital**: Integrar firma electrónica
+### 6.2 Protección de Datos
 
----
+#### **Hash de contraseñas:**
+- Algoritmo: BCrypt con salt aleatorio
+- Factor de costo: 10 rondas
+- Nunca se almacenan contraseñas en texto plano
 
-## 📖 Referencias Bibliográficas
+#### **Validaciones:**
+- Validación de entrada en backend con Bean Validation
+- Sanitización de datos para prevenir SQL Injection
+- Validación de tipos de archivo permitidos
+- Límite de tamaño de archivos (10 MB)
 
-1. **PCM (2025)**. Decreto Legislativo N.° 1412 - Ley de Gobierno Digital.  
-   https://www.gob.pe/institucion/pcm/normas-legales/289706-1412
+#### **CORS (Cross-Origin Resource Sharing):**
+```properties
+mesadepartes.app.allowedOrigins=http://localhost:5500,http://127.0.0.1:5500
+```
 
-2. **SGTD (2020)**. Agenda Digital al Bicentenario.  
-   Secretaría de Gobierno y Transformación Digital.
+### 6.3 Auditoría
 
-3. **Fernández-Bedoya & Baldeon-Ccellccascca (2025)**.  
-   Correlación entre gobernanza digital y gestión documental en Lima.  
-   Revista de Gestión Pública Digital, Vol. 12, pp. 45-67.
-
-4. **Spring Framework Documentation (2024)**.  
-   https://spring.io/projects/spring-boot
-
-5. **MySQL Documentation (2024)**.  
-   https://dev.mysql.com/doc/
-
----
-
-## 📌 Información del Proyecto
-
-**Título**: Sistema de Mesa de Partes Digital para la Policía Nacional del Perú
-
-**Desarrolladores**:
-- Marcela Natalie Rodriguez Munaylla (Backend/Frontend)
-- Shayuri Kiara Garcia Ortega (Documentación)
-- Maryafernanda López Díaz (Testing)
-- Walter Mantari Licapa (Backend)
-
-**Institución**: Universidad [Nombre]  
-**Curso**: Proyecto de Tesis  
-**Fecha**: Noviembre 2024
+- **Bitácora completa:** Registro de todas las operaciones
+- **Captura de IP:** Identificación del origen de cada acción
+- **Timestamps precisos:** Fecha y hora con milisegundos
+- **No editable:** Bitácora de solo lectura para integridad
 
 ---
 
-**© 2024 - Todos los derechos reservados**
+## 7. API REST
+
+### 7.1 Especificaciones
+
+- **Protocolo:** HTTP/HTTPS
+- **Formato:** JSON
+- **Autenticación:** Bearer Token (JWT)
+- **Base URL:** `http://localhost:8080/api`
+- **Documentación:** Swagger UI en `/swagger-ui.html`
+
+### 7.2 Convenciones
+
+#### **Estructura de respuesta exitosa:**
+```json
+{
+  "idDocumento": 1,
+  "codigo": "DOC-000001",
+  "titulo": "Documento de ejemplo",
+  "estado": "Asignado"
+}
+```
+
+#### **Estructura de respuesta con error:**
+```json
+{
+  "timestamp": "2025-12-03T10:30:00",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "El campo 'titulo' es obligatorio",
+  "path": "/api/documentos"
+}
+```
+
+#### **Códigos HTTP utilizados:**
+- `200 OK` - Operación exitosa
+- `201 Created` - Recurso creado exitosamente
+- `400 Bad Request` - Error en los datos enviados
+- `401 Unauthorized` - No autenticado o token inválido
+- `403 Forbidden` - Sin permisos para la operación
+- `404 Not Found` - Recurso no encontrado
+- `500 Internal Server Error` - Error interno del servidor
+
+### 7.3 Autenticación de Requests
+
+Todas las peticiones (excepto `/api/auth/login` y `/api/auth/registro`) requieren token JWT:
+
+```http
+GET /api/documentos HTTP/1.1
+Host: localhost:8080
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJuYWt1c3UiLCJyb2xlcyI6WyJBZG1pbmlzdHJhZG9yIl0sImlhdCI6MTczMzIzMjAwMCwiZXhwIjoxNzMzMjYwODAwfQ...
+Content-Type: application/json
+```
+
+---
+
+## 8. FLUJOS DE TRABAJO PRINCIPALES
+
+### 8.1 Flujo: Registro de Documento de Entrada
+
+```
+┌──────────────┐
+│  1. Usuario  │
+│   Digitador  │
+│  inicia      │
+│  sesión      │
+└──────┬───────┘
+       │
+       ↓
+┌──────────────────────────────────┐
+│  2. Accede a "Registrar         │
+│     Documento"                   │
+└──────┬───────────────────────────┘
+       │
+       ↓
+┌──────────────────────────────────┐
+│  3. Llena formulario:            │
+│     - Tipo de documento          │
+│     - Título                     │
+│     - Remitente                  │
+│     - Descripción                │
+│     - Archivo adjunto (opcional) │
+└──────┬───────────────────────────┘
+       │
+       ↓
+┌──────────────────────────────────┐
+│  4. Sistema genera:              │
+│     - Código único (DOC-XXXXXX)  │
+│     - Hoja de Trámite (HT)       │
+│     - Fecha de ingreso           │
+└──────┬───────────────────────────┘
+       │
+       ↓
+┌──────────────────────────────────┐
+│  5. Documento queda en estado    │
+│     "Asignado"                   │
+└──────┬───────────────────────────┘
+       │
+       ↓
+┌──────────────────────────────────┐
+│  6. Sistema registra en bitácora │
+│     Acción: REGISTRO_DOCUMENTO   │
+└──────────────────────────────────┘
+```
+
+### 8.2 Flujo: Derivación de Documento
+
+```
+┌──────────────┐
+│  1. Usuario  │
+│  con doc     │
+│  asignado    │
+└──────┬───────┘
+       │
+       ↓
+┌──────────────────────────────────┐
+│  2. Selecciona "Derivar"         │
+└──────┬───────────────────────────┘
+       │
+       ↓
+┌──────────────────────────────────┐
+│  3. Llena formulario derivación: │
+│     - Usuario destino            │
+│     - Prioridad                  │
+│     - Instrucciones              │
+└──────┬───────────────────────────┘
+       │
+       ↓
+┌──────────────────────────────────┐
+│  4. Sistema crea derivación      │
+│     Estado: "Pendiente"          │
+└──────┬───────────────────────────┘
+       │
+       ↓
+┌──────────────────────────────────┐
+│  5. Sistema envía notificación   │
+│     al usuario destino           │
+└──────┬───────────────────────────┘
+       │
+       ↓
+┌──────────────────────────────────┐
+│  6. Usuario destino recibe       │
+│     notificación                 │
+└──────┬───────────────────────────┘
+       │
+       ├──────────┬──────────┐
+       │          │          │
+       ↓          ↓          ↓
+┌──────────┐ ┌──────────┐ ┌──────────┐
+│ Acepta   │ │ Rechaza  │ │ Ignora   │
+└────┬─────┘ └────┬─────┘ └────┬─────┘
+     │            │            │
+     ↓            ↓            ↓
+Estado:      Estado:      Estado:
+"Aceptada"   "Rechazada"  "Pendiente"
+```
+
+### 8.3 Flujo: Registro de Salida de Documento
+
+```
+┌──────────────┐
+│  1. Usuario  │
+│  busca doc   │
+│  por código  │
+└──────┬───────┘
+       │
+       ↓
+┌──────────────────────────────────┐
+│  2. Sistema carga:               │
+│     - Información del documento  │
+│     - HT automáticamente (si hay)│
+└──────┬───────────────────────────┘
+       │
+       ↓
+┌──────────────────────────────────┐
+│  3. Usuario completa:            │
+│     - Destinatario externo       │
+│     - Cargo                      │
+│     - Dependencia                │
+│     - Motivo de salida           │
+│     - HT (editable)              │
+└──────┬───────────────────────────┘
+       │
+       ↓
+┌──────────────────────────────────┐
+│  4. Sistema genera código:       │
+│     SALIDA-XXXXXX                │
+└──────┬───────────────────────────┘
+       │
+       ↓
+┌──────────────────────────────────┐
+│  5. Documento cambia a estado    │
+│     "Salida"                     │
+└──────┬───────────────────────────┘
+       │
+       ↓
+┌──────────────────────────────────┐
+│  6. Registro en bitácora         │
+│     Acción: REGISTRO_SALIDA      │
+└──────────────────────────────────┘
+```
+
+---
+
+## 9. DESPLIEGUE Y CONFIGURACIÓN
+
+### 9.1 Requisitos del Sistema
+
+#### **Servidor de Aplicación:**
+- **Sistema Operativo:** Windows Server 2019+, Linux (Ubuntu 20.04+), macOS
+- **Java Runtime:** OpenJDK 21 LTS o superior
+- **RAM:** Mínimo 2 GB, recomendado 4 GB
+- **Almacenamiento:** Mínimo 10 GB (para aplicación y uploads)
+- **Conectividad:** Puerto 8080 abierto para HTTP
+
+#### **Base de Datos:**
+- **MySQL:** 8.0 o superior
+- **RAM:** Mínimo 2 GB dedicados
+- **Almacenamiento:** Mínimo 5 GB (escalable según volumen)
+
+#### **Cliente (Navegador):**
+- Google Chrome 90+
+- Mozilla Firefox 88+
+- Microsoft Edge 90+
+- Safari 14+
+
+### 9.2 Instalación Local
+
+#### **Paso 1: Base de Datos**
+```sql
+-- Ejecutar script de base de datos
+mysql -u root -p < SQL/mesa_partes_db_completa_actualizada.sql
+```
+
+#### **Paso 2: Configuración Backend**
+```properties
+# Editar: backend/src/main/resources/application.properties
+
+# Base de datos
+spring.datasource.url=jdbc:mysql://localhost:3306/mesa_partes_db
+spring.datasource.username=root
+spring.datasource.password=tu_contraseña
+
+# Puerto del servidor
+server.port=8080
+
+# JWT Secret (cambiar en producción)
+mesadepartes.app.jwtSecret=TuClaveSecretaMuySegura
+```
+
+#### **Paso 3: Compilar y Ejecutar Backend**
+```bash
+cd backend
+mvnw clean package
+java -jar target/mesadepartes-0.0.1-SNAPSHOT.jar
+```
+
+O usar el batch de Windows:
+```cmd
+cd backend
+start-app.bat
+```
+
+#### **Paso 4: Configurar Frontend**
+```javascript
+// Editar: frontend/assets/js/core/config.js
+
+const API_URL = 'http://localhost:8080/api';
+```
+
+#### **Paso 5: Servir Frontend**
+```bash
+# Opción 1: Live Server (VS Code)
+# Click derecho en index.html -> Open with Live Server
+
+# Opción 2: Python
+cd frontend
+python -m http.server 5500
+
+# Opción 3: Node.js
+npx http-server -p 5500
+```
+
+#### **Paso 6: Acceso al Sistema**
+```
+URL: http://localhost:5500/pages/auth/login.html
+Usuario por defecto: nakusu
+Contraseña: 123456
+```
+
+### 9.3 Despliegue en Producción
+
+#### **Railway (Recomendado para Demo):**
+1. Crear cuenta en Railway.app
+2. Conectar repositorio de GitHub
+3. Configurar variables de entorno
+4. Desplegar automáticamente
+
+**Variables de entorno necesarias:**
+```env
+DB_HOST=containers-us-west-xxx.railway.app
+DB_PORT=3306
+DB_NAME=railway
+DB_USERNAME=root
+DB_PASSWORD=xxxxx
+JWT_SECRET=ClaveSecretaProductiva
+ALLOWED_ORIGINS=https://tupagina.com
+```
+
+#### **Configuración SSL/HTTPS:**
+```properties
+# application-production.properties
+server.ssl.enabled=true
+server.ssl.key-store=classpath:keystore.p12
+server.ssl.key-store-password=${SSL_KEYSTORE_PASSWORD}
+server.ssl.key-store-type=PKCS12
+```
+
+### 9.4 Scripts de Utilidad
+
+#### **Windows:**
+- `iniciar-backend.bat` - Inicia el servidor backend
+- `preparar-railway.bat` - Prepara el proyecto para Railway
+- `verificar-railway.bat` - Verifica la configuración de Railway
+- `scripts/backup_windows.bat` - Ejecuta backup manual de BD
+- `scripts/restaurar_backup_windows.bat` - Restaura un backup
+
+#### **Linux:**
+- `scripts/backup_linux.sh` - Backup manual de BD en Linux
+
+---
+
+## 10. MONITOREO Y MANTENIMIENTO
+
+### 10.1 Spring Boot Actuator
+
+Endpoints de monitoreo disponibles en `/actuator`:
+
+```
+GET /actuator/health          # Estado de salud de la aplicación
+GET /actuator/info            # Información de la aplicación
+GET /actuator/metrics         # Métricas de rendimiento
+```
+
+### 10.2 Logs del Sistema
+
+#### **Configuración de logging:**
+```properties
+# Nivel de logs
+logging.level.root=INFO
+logging.level.com.pnp.mesadepartes=DEBUG
+
+# Archivo de logs
+logging.file.name=logs/mesa-partes.log
+
+# Rotación de logs
+logging.logback.rollingpolicy.max-file-size=10MB
+logging.logback.rollingpolicy.max-history=30
+```
+
+#### **Ubicación de logs:**
+- Aplicación: `logs/mesa-partes.log`
+- Errores: Incluidos en el log principal con nivel ERROR
+- Backups: `backups/backup-YYYYMMDD-HHMMSS.log`
+
+### 10.3 Backups
+
+#### **Backups automáticos:**
+- Frecuencia: Diaria a las 2:00 AM
+- Retención: 30 días
+- Ubicación: `../backups/`
+- Formato: `backup-mesa-partes-YYYYMMDD-HHMMSS.sql`
+
+#### **Backup manual:**
+```bash
+# Windows
+cd scripts
+backup_windows.bat
+
+# Linux
+cd scripts
+./backup_linux.sh
+```
+
+#### **Restaurar backup:**
+```bash
+# Windows
+cd scripts
+restaurar_backup_windows.bat nombre_archivo.sql
+
+# Linux
+mysql -u root -p mesa_partes_db < ../backups/nombre_archivo.sql
+```
+
+---
+
+## 11. RENDIMIENTO Y ESCALABILIDAD
+
+### 11.1 Optimizaciones Implementadas
+
+#### **Base de Datos:**
+- ✅ Índices en campos de búsqueda frecuente (username, email, codigo)
+- ✅ Motor InnoDB para transacciones ACID
+- ✅ Charset utf8mb4 para soporte Unicode completo
+- ✅ Queries optimizadas con JPQL y @Query
+
+#### **Backend:**
+- ✅ Connection pooling de HikariCP (por defecto en Spring Boot)
+- ✅ Lazy loading de relaciones JPA
+- ✅ DTOs para evitar serialización de entidades completas
+- ✅ Cache de configuración en memoria
+
+#### **Frontend:**
+- ✅ Carga asíncrona con Fetch API
+- ✅ Minimización de requests con batching
+- ✅ Cache de datos estáticos en localStorage
+- ✅ Event delegation para reducir listeners
+
+### 11.2 Métricas de Rendimiento
+
+#### **Tiempos de respuesta estimados (red local):**
+- Login: < 200 ms
+- Listar documentos (página de 20): < 300 ms
+- Buscar documento por código: < 150 ms
+- Crear documento: < 250 ms
+- Generar reporte PDF: < 2 segundos
+- Generar reporte Excel: < 3 segundos
+
+#### **Capacidad estimada:**
+- Usuarios concurrentes: 50-100 (con 4 GB RAM)
+- Documentos en BD: 100,000+ sin degradación
+- Uploads simultáneos: 10-20 (según ancho de banda)
+
+### 11.3 Escalabilidad
+
+#### **Escalamiento vertical (mejorar hardware):**
+- Aumentar RAM: Mejora cache y conexiones concurrentes
+- CPU más rápida: Reduce tiempo de procesamiento de reportes
+- SSD: Mejora tiempos de lectura/escritura de archivos
+
+#### **Escalamiento horizontal (preparación futura):**
+- Load balancer con múltiples instancias del backend
+- Base de datos en clúster o réplicas
+- Almacenamiento de archivos en S3 o similar
+- Cache distribuido con Redis
+
+---
+
+## 12. RESOLUCIÓN DE PROBLEMAS
+
+### 12.1 Problemas Comunes
+
+#### **Error: "Cannot connect to database"**
+- **Causa:** MySQL no está corriendo o credenciales incorrectas
+- **Solución:** 
+  ```bash
+  # Verificar que MySQL esté corriendo
+  mysql -u root -p
+  
+  # Revisar application.properties
+  spring.datasource.url=jdbc:mysql://localhost:3306/mesa_partes_db
+  spring.datasource.username=root
+  spring.datasource.password=tu_contraseña
+  ```
+
+#### **Error: "401 Unauthorized" en todas las peticiones**
+- **Causa:** Token JWT expirado o inválido
+- **Solución:**
+  ```javascript
+  // Hacer logout y login nuevamente
+  localStorage.removeItem('token');
+  window.location.href = '/pages/auth/login.html';
+  ```
+
+#### **Error: "CORS policy blocked"**
+- **Causa:** Origen no permitido en configuración
+- **Solución:**
+  ```properties
+  # Agregar origen en application.properties
+  mesadepartes.app.allowedOrigins=http://localhost:5500,http://127.0.0.1:5500
+  ```
+
+#### **Error: "FileNotFoundException" al subir archivo**
+- **Causa:** Directorio `uploads/` no existe
+- **Solución:**
+  ```bash
+  mkdir -p backend/uploads/documentos
+  mkdir -p backend/uploads/cargos
+  ```
+
+#### **Error 400 en endpoint de HT**
+- **Causa:** Entidad HojaTramite con FetchType.LAZY causa error de serialización
+- **Solución:** Ya implementada con `@JsonIgnoreProperties`
+
+### 12.2 Logs de Depuración
+
+#### **Activar logs detallados:**
+```properties
+# application.properties
+logging.level.com.pnp.mesadepartes=TRACE
+logging.level.org.springframework.web=DEBUG
+logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
+```
+
+#### **Revisar logs en tiempo real:**
+```bash
+# Windows
+type logs\mesa-partes.log
+
+# Linux
+tail -f logs/mesa-partes.log
+```
+
+---
+
+## 13. MEJORAS FUTURAS
+
+### 13.1 Corto Plazo (1-3 meses)
+
+- [ ] **Notificaciones push en tiempo real** con WebSockets
+- [ ] **Firma digital de documentos** con certificados digitales
+- [ ] **Escáner de documentos integrado** desde navegador
+- [ ] **Búsqueda full-text** con Elasticsearch
+- [ ] **App móvil nativa** (Android/iOS)
+
+### 13.2 Mediano Plazo (3-6 meses)
+
+- [ ] **Integración con RENIEC** para validación de identidad
+- [ ] **Reconocimiento OCR** de documentos escaneados
+- [ ] **Flujos de aprobación multinivel** configurables
+- [ ] **Dashboard ejecutivo** con BI integrado
+- [ ] **API pública** para integraciones externas
+
+### 13.3 Largo Plazo (6-12 meses)
+
+- [ ] **Inteligencia artificial** para clasificación automática de documentos
+- [ ] **Blockchain** para trazabilidad inmutable
+- [ ] **Multitenancy** para uso en múltiples dependencias PNP
+- [ ] **Integración con Sistema de Gestión de Expedientes**
+- [ ] **Módulo de correspondencia electrónica** con otras instituciones
+
+---
+
+## 14. CONCLUSIONES
+
+### 14.1 Logros del Proyecto
+
+El Sistema de Mesa de Partes Digital representa un avance significativo en la modernización de procesos administrativos de la PNP, logrando:
+
+✅ **Digitalización completa** del flujo documental  
+✅ **Trazabilidad total** de documentos desde ingreso hasta salida  
+✅ **Reducción de tiempos** de procesamiento y búsqueda  
+✅ **Auditoría exhaustiva** de todas las operaciones  
+✅ **Acceso remoto** desde cualquier ubicación  
+✅ **Reportes en tiempo real** para toma de decisiones  
+✅ **Seguridad robusta** con autenticación y control de acceso  
+
+### 14.2 Impacto Esperado
+
+- **Eficiencia operativa:** Reducción del 70% en tiempos de registro y búsqueda
+- **Transparencia:** Visibilidad completa del estado de documentos
+- **Ahorro de recursos:** Reducción de papel, impresiones y archivos físicos
+- **Mejora en servicio:** Atención más rápida a consultas y derivaciones
+- **Cumplimiento normativo:** Registro auditable de todas las operaciones
+
+### 14.3 Recomendaciones
+
+1. **Capacitación continua** del personal en el uso del sistema
+2. **Monitoreo regular** de logs y métricas de rendimiento
+3. **Backups frecuentes** y pruebas de restauración
+4. **Actualizaciones periódicas** de dependencias y parches de seguridad
+5. **Feedback constante** de usuarios para mejoras iterativas
+
+---
+
+## 15. ANEXOS
+
+### 15.1 Glosario de Términos
+
+- **JWT:** JSON Web Token - Token de autenticación basado en JSON
+- **REST:** Representational State Transfer - Arquitectura de servicios web
+- **CORS:** Cross-Origin Resource Sharing - Compartir recursos entre orígenes
+- **JPA:** Java Persistence API - API de persistencia de Java
+- **DTO:** Data Transfer Object - Objeto de transferencia de datos
+- **CRUD:** Create, Read, Update, Delete - Operaciones básicas de BD
+- **BCrypt:** Algoritmo de hash de contraseñas
+- **ORM:** Object-Relational Mapping - Mapeo objeto-relacional
+- **API:** Application Programming Interface - Interfaz de programación
+
+### 15.2 Referencias
+
+- [Documentación Spring Boot](https://spring.io/projects/spring-boot)
+- [Documentación MySQL](https://dev.mysql.com/doc/)
+- [JWT.io](https://jwt.io/) - Información sobre JSON Web Tokens
+- [MDN Web Docs](https://developer.mozilla.org/) - Referencia de JavaScript/HTML/CSS
+
+### 15.3 Información de Contacto
+
+**Equipo de Desarrollo:**  
+Proyecto Mesa de Partes PNP  
+Email: soporte@mesadepartes.pnp.gob.pe  
+GitHub: https://github.com/Nakusuo/ProyectoMesaDePartes
+
+---
+
+**DOCUMENTO GENERADO AUTOMÁTICAMENTE**  
+**Fecha:** 3 de Diciembre de 2025  
+**Versión:** 1.0  
+**Estado:** COMPLETO
