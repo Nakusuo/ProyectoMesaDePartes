@@ -11,6 +11,13 @@
   > Sistema de gestión documental desarrollado para la Policía Nacional del Perú como parte del Curso Integrador I de la Universidad Tecnológica del Perú
 </div>
 
+## **Informe Técnico Público**
+
+- **Ubicación:** `public/INFORME_TECNICO_PUBLICO.md`
+- **Propósito:** Copia pública del `INFORME_TÉCNICO.md` creada para facilitar el acceso a compañeras y colaboradores internos.
+- **Advertencia:** Antes de compartir fuera de la organización, revise la copia por información sensible (credenciales, direcciones privadas, claves, tokens).
+
+
 ---
 
 ## 📑 Tabla de Contenidos
