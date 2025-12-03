@@ -72,12 +72,15 @@ public class DocumentoController {
      * Obtiene la hoja de trámite de un documento
      */
     @GetMapping("/hojas-tramite/documento/{idDocumento}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> obtenerHojaTramitePorDocumento(@PathVariable Long idDocumento) {
         try {
+            logger.info("Obteniendo hoja de trámite para documento ID: {}", idDocumento);
             List<HojaTramite> hojasTramite = hojaTramiteRepository.findByIdDocumento(idDocumento);
+            logger.info("Hojas de trámite encontradas: {}", hojasTramite.size());
             return ResponseEntity.ok(hojasTramite);
         } catch (Exception e) {
-            logger.error("Error al obtener hoja de trámite: {}", e.getMessage());
+            logger.error("Error al obtener hoja de trámite para documento {}: {}", idDocumento, e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Error al obtener hoja de trámite: " + e.getMessage()));
         }

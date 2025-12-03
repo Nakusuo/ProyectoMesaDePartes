@@ -50,6 +50,24 @@ function configurarEventos() {
     document.getElementById('limpiarBtn').addEventListener('click', limpiarFormulario);
     // verHistorialBtn removido del HTML - redirección eliminada
     
+    // Formatear HT automáticamente
+    const numeroHTInput = document.getElementById('numeroHT');
+    numeroHTInput.addEventListener('input', function(e) {
+        let valor = e.target.value.replace(/\D/g, ''); // Solo números
+        e.target.value = valor;
+    });
+    
+    numeroHTInput.addEventListener('blur', function(e) {
+        let valor = e.target.value.trim();
+        if (valor && valor.length > 0) {
+            // Si solo tiene números sin año, agregar el año actual al inicio
+            if (valor.length < 9 && !/^202[0-9]/.test(valor)) {
+                const año = new Date().getFullYear();
+                e.target.value = año + valor;
+            }
+        }
+    });
+    
     // Archivo de cargo
     const inputArchivo = document.getElementById('archivoCargo');
     inputArchivo.addEventListener('change', function() {
@@ -152,24 +170,35 @@ async function buscarDocumento() {
 // =====================================================
 async function cargarHojaTramite(idDocumento) {
     try {
-        const response = await fetch(`${API_URL}/hojas-tramite/documento/${idDocumento}`, {
+        console.log('🔍 Buscando HT para documento ID:', idDocumento);
+        const response = await fetch(`${API_URL}/documentos/hojas-tramite/documento/${idDocumento}`, {
             headers: {
                 'Authorization': `Bearer ${getToken()}`
             }
         });
 
+        console.log('📡 Response HT status:', response.status);
+
         if (response.ok) {
             const hojasTramite = await response.json();
+            console.log('📦 Hojas de trámite recibidas:', hojasTramite);
             if (hojasTramite && hojasTramite.length > 0) {
-                document.getElementById('numeroHT').value = hojasTramite[0].numeroHt;
+                const numeroHT = hojasTramite[0].numeroHt;
+                document.getElementById('numeroHT').value = numeroHT;
+                console.log('✅ HT cargada automáticamente:', numeroHT);
+                showToast(`HT cargada: ${numeroHT}`, 'info');
+            } else {
+                console.log('ℹ️ Documento sin hoja de trámite');
+                document.getElementById('numeroHT').value = '';
             }
         } else if (response.status === 404) {
             // No tiene hoja de trámite, dejar vacío
-            console.log('ℹ️ Documento sin hoja de trámite');
+            console.log('ℹ️ Documento sin hoja de trámite (404)');
+            document.getElementById('numeroHT').value = '';
         }
     } catch (error) {
-        console.error('Error al cargar HT:', error);
-        // No mostrar error al usuario, solo dejar el campo vacío
+        console.error('❌ Error al cargar HT:', error);
+        document.getElementById('numeroHT').value = '';
     }
 }
 
@@ -178,8 +207,9 @@ async function cargarHojaTramite(idDocumento) {
 // =====================================================
 async function actualizarHojaTramite(idDocumento, numeroHT) {
     try {
+        console.log('📝 Actualizando/creando HT para documento:', idDocumento, 'HT:', numeroHT);
         // Primero verificar si ya existe una HT para este documento
-        const getResponse = await fetch(`${API_URL}/hojas-tramite/documento/${idDocumento}`, {
+        const getResponse = await fetch(`${API_URL}/documentos/hojas-tramite/documento/${idDocumento}`, {
             headers: {
                 'Authorization': `Bearer ${getToken()}`
             }
@@ -190,7 +220,8 @@ async function actualizarHojaTramite(idDocumento, numeroHT) {
             const hojasTramite = await getResponse.json();
             if (hojasTramite && hojasTramite.length > 0) {
                 const htExistente = hojasTramite[0];
-                const updateResponse = await fetch(`${API_URL}/hojas-tramite/${htExistente.idHojaTramite}`, {
+                console.log('🔄 HT existe, actualizando ID:', htExistente.idHojaTramite);
+                const updateResponse = await fetch(`${API_URL}/documentos/hojas-tramite/${htExistente.idHojaTramite}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -203,12 +234,15 @@ async function actualizarHojaTramite(idDocumento, numeroHT) {
                 });
                 
                 if (!updateResponse.ok) {
-                    console.error('Error al actualizar HT');
+                    console.error('❌ Error al actualizar HT');
+                } else {
+                    console.log('✅ HT actualizada correctamente');
                 }
             }
         } else {
             // No existe, crear nueva
-            const createResponse = await fetch(`${API_URL}/hojas-tramite`, {
+            console.log('➕ HT no existe, creando nueva');
+            const createResponse = await fetch(`${API_URL}/documentos/hojas-tramite`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -221,11 +255,13 @@ async function actualizarHojaTramite(idDocumento, numeroHT) {
             });
             
             if (!createResponse.ok) {
-                console.error('Error al crear HT');
+                console.error('❌ Error al crear HT');
+            } else {
+                console.log('✅ HT creada correctamente');
             }
         }
     } catch (error) {
-        console.error('Error al actualizar/crear HT:', error);
+        console.error('❌ Error al actualizar/crear HT:', error);
         // No lanzar error para no interrumpir el registro de salida
     }
 }

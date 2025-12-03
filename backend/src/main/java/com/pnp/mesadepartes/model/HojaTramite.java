@@ -1,5 +1,6 @@
 package com.pnp.mesadepartes.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,6 +15,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "hojas_tramite")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "documento"})
 public class HojaTramite {
 
     @Id
