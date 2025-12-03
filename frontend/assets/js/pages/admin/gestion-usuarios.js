@@ -190,13 +190,31 @@ async function guardarUsuario(event) {
 
   // Validar que se haya seleccionado un área y un rol
   if (!areaSelect.value || !rolesSelect.value) {
-    alert('Por favor seleccione un área y un rol');
+    if (typeof mostrarNotificacionToast === 'function') {
+      mostrarNotificacionToast('⚠️ Datos Incompletos', 'Por favor seleccione un área y un rol', 'warning');
+    } else {
+      alert('Por favor seleccione un área y un rol');
+    }
     return;
   }
 
   // Validar contraseña para usuario nuevo
   if (esNuevo && !passwordField.value) {
-    alert('La contraseña es obligatoria para usuarios nuevos');
+    if (typeof mostrarNotificacionToast === 'function') {
+      mostrarNotificacionToast('⚠️ Contraseña Requerida', 'La contraseña es obligatoria para usuarios nuevos', 'warning');
+    } else {
+      alert('La contraseña es obligatoria para usuarios nuevos');
+    }
+    return;
+  }
+
+  // Validar longitud de contraseña
+  if (passwordField.value && passwordField.value.length < 6) {
+    if (typeof mostrarNotificacionToast === 'function') {
+      mostrarNotificacionToast('⚠️ Contraseña Débil', 'La contraseña debe tener al menos 6 caracteres', 'warning');
+    } else {
+      alert('La contraseña debe tener al menos 6 caracteres');
+    }
     return;
   }
 
@@ -245,11 +263,42 @@ async function guardarUsuario(event) {
 
     cerrarModal();
     cargarUsuarios();
-    alert(esNuevo ? 'Usuario creado exitosamente' : 'Usuario actualizado exitosamente');
+    
+    if (typeof mostrarNotificacionToast === 'function') {
+      mostrarNotificacionToast(
+        '✅ Usuario Guardado',
+        esNuevo ? 'Usuario creado exitosamente' : 'Usuario actualizado exitosamente',
+        'success'
+      );
+    } else {
+      alert(esNuevo ? 'Usuario creado exitosamente' : 'Usuario actualizado exitosamente');
+    }
 
   } catch (error) {
     console.error('Error guardando:', error);
-    alert('Error al guardar: ' + error.message);
+    
+    // Determinar tipo de error y mensaje apropiado
+    let titulo = '❌ Error al Guardar';
+    let mensaje = error.message;
+    
+    if (error.message.includes('nombre de usuario ya existe')) {
+      titulo = '⚠️ Usuario Duplicado';
+      mensaje = 'El nombre de usuario ya está registrado. Por favor elija otro.';
+    } else if (error.message.includes('email ya está registrado')) {
+      titulo = '⚠️ Email Duplicado';
+      mensaje = 'El email ya está en uso. Por favor utilice otro correo.';
+    } else if (error.message.includes('Duplicate entry') && error.message.includes('telefono')) {
+      titulo = '⚠️ Teléfono Duplicado';
+      mensaje = 'El número de teléfono ya está registrado. Por favor utilice otro número.';
+    } else if (error.message.includes('contraseña')) {
+      titulo = '⚠️ Error en Contraseña';
+    }
+    
+    if (typeof mostrarNotificacionToast === 'function') {
+      mostrarNotificacionToast(titulo, mensaje, 'error');
+    } else {
+      alert('Error al guardar: ' + mensaje);
+    }
   }
 }
 

@@ -92,6 +92,78 @@ public class UsuarioController {
     }
 
     /**
+     * Crea un nuevo usuario en el sistema
+     * 
+     * @param usuarioDetails Datos del nuevo usuario
+     * @return Usuario creado (sin contraseña)
+     */
+    @PostMapping
+    @Operation(summary = "Crear usuario", description = "Crea un nuevo usuario en el sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuario creado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos")
+    })
+    public ResponseEntity<Usuario> createUsuario(@Valid @RequestBody @Parameter(description = "Datos del nuevo usuario") Usuario usuarioDetails) {
+        logger.info("Creando nuevo usuario: {}", usuarioDetails.getUsername());
+        
+        try {
+            // Verificar si ya existe el username
+            if (usuarioRepository.existsByUsername(usuarioDetails.getUsername())) {
+                throw new ValidationException("El nombre de usuario ya existe");
+            }
+            
+            // Verificar si ya existe el email
+            if (usuarioDetails.getEmail() != null && usuarioRepository.existsByEmail(usuarioDetails.getEmail())) {
+                throw new ValidationException("El email ya está registrado");
+            }
+            
+            Usuario usuario = new Usuario();
+            usuario.setNombre(usuarioDetails.getNombre());
+            usuario.setApellido(usuarioDetails.getApellido());
+            usuario.setUsername(usuarioDetails.getUsername());
+            usuario.setEmail(usuarioDetails.getEmail());
+            usuario.setTelefono(usuarioDetails.getTelefono());
+            usuario.setActivo(usuarioDetails.isActivo());
+            usuario.setTipoContrato(usuarioDetails.getTipoContrato());
+            
+            // Encriptar contraseña
+            if (usuarioDetails.getPasswordHash() != null && !usuarioDetails.getPasswordHash().isEmpty()) {
+                usuario.setPasswordHash(passwordEncoder.encode(usuarioDetails.getPasswordHash()));
+            } else {
+                throw new ValidationException("La contraseña es obligatoria");
+            }
+            
+            // Asignar área
+            if (usuarioDetails.getArea() != null && usuarioDetails.getArea().getIdArea() != null) {
+                Area area = areaRepository.findById(usuarioDetails.getArea().getIdArea())
+                                .orElseThrow(() -> new ValidationException("Área no encontrada"));
+                usuario.setArea(area);
+            }
+            
+            // Asignar roles
+            if (usuarioDetails.getRoles() != null && !usuarioDetails.getRoles().isEmpty()) {
+                Set<Rol> roles = usuarioDetails.getRoles().stream()
+                    .map(rolDto -> rolRepository.findById(rolDto.getIdRol())
+                                    .orElseThrow(() -> new ValidationException("Rol no encontrado: " + rolDto.getIdRol())))
+                    .collect(Collectors.toSet());
+                usuario.setRoles(roles);
+            }
+            
+            Usuario nuevoUsuario = usuarioRepository.save(usuario);
+            nuevoUsuario.setPasswordHash(null);
+            logger.info("Usuario creado exitosamente: {}", nuevoUsuario.getUsername());
+            return ResponseEntity.ok(nuevoUsuario);
+            
+        } catch (ValidationException e) {
+            logger.error("Error de validación al crear usuario: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            logger.error("Error al crear usuario", e);
+            throw new ValidationException("Error al crear usuario: " + e.getMessage());
+        }
+    }
+
+    /**
      * Actualiza los datos de un usuario existente
      * 
      * @param id ID del usuario a actualizar
